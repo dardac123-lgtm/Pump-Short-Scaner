@@ -33,14 +33,14 @@ jobs:
           PUMP_HOURS: '24'
         run: python scanner.py
 
-      - name: Save sent-alert state
+      - name: Save alert history
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          if [ -f alerts_state.json ]; then
-            git add alerts_state.json
-            if ! git diff --cached --quiet; then
-              git commit -m 'Update pump alert history'
-              git push
-            fi
+
+          git add alerts_state.json alerts_history.json
+
+          if ! git diff --cached --quiet; then
+            git commit -m 'Update pump alert history'
+            git push
           fi
