@@ -1,19 +1,46 @@
-import json
-import urllib.request
-import urllib.error
 
-URL = 'https://api-contract.weex.com/capi/v3/market/ticker/24hr?symbol=BTCUSDT'
-print('Testing WEEX API from GitHub Actions...', flush=True)
-request = urllib.request.Request(URL, headers={'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json'})
-try:
-    with urllib.request.urlopen(request, timeout=25) as response:
-        data = json.load(response)
-        print('HTTP status:', response.status)
-        print('WEEX response:', json.dumps(data, ensure_ascii=False)[:1500])
-        print('SUCCESS: GitHub Actions can access WEEX API')
-except urllib.error.HTTPError as exc:
-    print(f'FAILED: HTTP {exc.code} {exc.reason}')
-    raise
-except Exception as exc:
-    print(f'FAILED: {type(exc).__name__}: {exc}')
-    raise
+name: Pump Short Scanner
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pump-short-scanner
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Scan and alert
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          PUMP_THRESHOLD: '80'
+          PUMP_HOURS: '24'
+        run: python scanner.py
+
+      - name: Save sent-alert state
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if [ -f alerts_state.json ]; then
+            git add alerts_state.json
+            if ! git diff --cached --quiet; then
+              git commit -m 'Update pump alert history'
+              git push
+            fi
+          fi
