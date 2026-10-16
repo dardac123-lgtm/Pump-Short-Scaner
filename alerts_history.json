@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "symbol": "TESTUSDT",
+    "detected_at": "2026-10-16T23:07:02.127091+00:00",
+    "change_percent": 125.0,
+    "price": 0.0125,
+    "threshold": 80.0,
+    "telegram_sent": true,
+    "test": true,
+    "test_id": "MANUAL_TEST_125"
+  }
+]
