@@ -1,46 +1,18 @@
 
-name: Pump Short Scanner
+import json
+import urllib.request
 
-on:
-  workflow_dispatch:
-  schedule:
-    - cron: '*/5 * * * *'
+url = "https://api-contract.weex.com/capi/v3/market/ticker/24hr?symbol=BTCUSDT"
 
-permissions:
-  contents: write
+print("Testing WEEX API connection...")
 
-concurrency:
-  group: pump-short-scanner
-  cancel-in-progress: false
+req = urllib.request.Request(
+    url,
+    headers={"User-Agent": "Mozilla/5.0"}
+)
 
-jobs:
-  scan:
-    runs-on: ubuntu-latest
-    timeout-minutes: 8
+with urllib.request.urlopen(req, timeout=30) as response:
+    data = json.load(response)
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Scan and alert
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          PUMP_THRESHOLD: '80'
-          PUMP_HOURS: '24'
-        run: python scanner.py
-
-      - name: Save sent-alert state
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          if [ -f alerts_state.json ]; then
-            git add alerts_state.json
-            if ! git diff --cached --quiet; then
-              git commit -m 'Update pump alert history'
-              git push
-            fi
-          fi
+print("WEEX CONNECTION OK")
+print(json.dumps(data, indent=2))
