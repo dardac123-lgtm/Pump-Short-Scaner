@@ -1,0 +1,66 @@
+name: Test Pump Alert
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Send one test alert and save history
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python - <<'PY'
+          import json, os, urllib.parse, urllib.request
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+          chat_id = os.environ.get('TELEGRAM_CHAT_ID', '')
+          if not token or not chat_id:
+              raise RuntimeError('Missing Telegram secrets')
+
+          history_file = Path('alerts_history.json')
+          history = json.loads(history_file.read_text(encoding='utf-8')) if history_file.exists() else []
+          if not isinstance(history, list):
+              raise RuntimeError('Invalid alerts_history.json')
+
+          marker = 'MANUAL_TEST_125'
+          if any(isinstance(x, dict) and x.get('test_id') == marker for x in history):
+              print('Test record already exists; not sending another message')
+          else:
+              message = '🧪 TEST PUMP-SHORT (FIKCYJNY)\nTESTUSDT +125%\nTo nie jest sygnal transakcyjny.'
+              payload = urllib.parse.urlencode({'chat_id': chat_id, 'text': message}).encode()
+              req = urllib.request.Request(f'https://api.telegram.org/bot{token}/sendMessage', data=payload)
+              with urllib.request.urlopen(req, timeout=20) as response:
+                  result = json.load(response)
+              if not result.get('ok'):
+                  raise RuntimeError('Telegram did not confirm delivery')
+              history.append({
+                  'symbol': 'TESTUSDT',
+                  'detected_at': datetime.now(timezone.utc).isoformat(),
+                  'change_percent': 125.0,
+                  'price': 0.0125,
+                  'threshold': 80.0,
+                  'telegram_sent': True,
+                  'test': True,
+                  'test_id': marker
+              })
+              history_file.write_text(json.dumps(history, ensure_ascii=False, indent=2), encoding='utf-8')
+              print('Test message sent; history record prepared')
+          PY
+      - name: Commit test history
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add alerts_history.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Add one marked test alert'
+            git push
+          fi
