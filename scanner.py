@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 
 API = "https://api-contract.weex.com"
 STATE_FILE = Path("alerts_state.json")
+HISTORY_FILE = Path("alerts_history.json")
 
 THRESHOLD = float(os.getenv("PUMP_THRESHOLD", "80"))
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
@@ -15,12 +16,25 @@ CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 
 
 def get_json(url):
-    req = urllib.request.Request(
+    request = urllib.request.Request(
         url,
         headers={"User-Agent": "Mozilla/5.0"}
     )
-    with urllib.request.urlopen(req, timeout=35) as response:
+    with urllib.request.urlopen(request, timeout=35) as response:
         return json.load(response)
+
+
+def read_json(path, default):
+    if not path.exists():
+        return default
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def write_json(path, data):
+    path.write_text(
+        json.dumps(data, indent=2, ensure_ascii=False),
+        encoding="utf-8"
+    )
 
 
 def send_telegram(message):
@@ -29,13 +43,14 @@ def send_telegram(message):
         return False
 
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-    data = urllib.parse.urlencode({
+    payload = urllib.parse.urlencode({
         "chat_id": CHAT_ID,
         "text": message
     }).encode()
 
-    req = urllib.request.Request(url, data=data)
-    with urllib.request.urlopen(req, timeout=20) as response:
+    request = urllib.request.Request(url, data=payload)
+
+    with urllib.request.urlopen(request, timeout=20) as response:
         result = json.load(response)
 
     return result.get("ok", False)
@@ -44,21 +59,24 @@ def send_telegram(message):
 def main():
     print("Starting WEEX Pump Short Scanner")
 
-    url = API + "/capi/v3/market/ticker/24hr"
-    tickers = get_json(url)
+    tickers = get_json(API + "/capi/v3/market/ticker/24hr")
 
     if not isinstance(tickers, list) or not tickers:
         raise RuntimeError("WEEX returned no ticker list")
 
     print(f"Received {len(tickers)} tickers")
 
-    if STATE_FILE.exists():
-        state = json.loads(STATE_FILE.read_text())
-    else:
-        state = {}
+    state = read_json(STATE_FILE, {})
+    history = read_json(HISTORY_FILE, [])
+
+    if not isinstance(state, dict):
+        raise RuntimeError("Invalid alerts_state.json")
+    if not isinstance(history, list):
+        raise RuntimeError("Invalid alerts_history.json")
 
     active = set()
     pumps = []
+    now = datetime.now(timezone.utc).isoformat()
 
     for ticker in tickers:
         symbol = ticker.get("symbol", "")
@@ -69,7 +87,7 @@ def main():
         try:
             change = float(ticker["priceChangePercent"]) * 100
             price = float(ticker["lastPrice"])
-        except (ValueError, TypeError, KeyError):
+        except (KeyError, ValueError, TypeError):
             continue
 
         if change >= THRESHOLD:
@@ -77,7 +95,6 @@ def main():
             pumps.append((symbol, change, price))
 
     pumps.sort(key=lambda x: x[1], reverse=True)
-
     print(f"Pumps above {THRESHOLD}%: {len(pumps)}")
 
     for symbol, change, price in pumps:
@@ -94,11 +111,26 @@ def main():
             "Check manually before trading."
         )
 
+        event = {
+            "symbol": symbol,
+            "detected_at": now,
+            "change_percent": round(change, 2),
+            "price": price,
+            "threshold": THRESHOLD,
+            "telegram_sent": False
+        }
+
+        history.append(event)
+        write_json(HISTORY_FILE, history)
+
         if send_telegram(message):
-            state[symbol] = datetime.now(
-                timezone.utc
-            ).isoformat()
+            event["telegram_sent"] = True
+            state[symbol] = now
             print(f"Alert sent: {symbol}")
+        else:
+            print(f"Telegram not sent: {symbol}")
+
+        write_json(HISTORY_FILE, history)
 
     state = {
         symbol: timestamp
@@ -106,10 +138,10 @@ def main():
         if symbol in active
     }
 
-    STATE_FILE.write_text(
-        json.dumps(state, indent=2)
-    )
+    write_json(STATE_FILE, state)
+    write_json(HISTORY_FILE, history)
 
+    print(f"History records: {len(history)}")
     print("Scan completed")
 
 
