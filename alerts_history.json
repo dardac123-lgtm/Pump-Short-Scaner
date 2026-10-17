@@ -184,5 +184,13 @@
     "price": 0.12345,
     "threshold": 80,
     "telegram_sent": true
+  },
+  {
+    "symbol": "SANDUSDT",
+    "detected_at": "2026-10-17T11:53:16.270131+00:00",
+    "change_percent": 10.92,
+    "price": 0.06137,
+    "threshold": 10.0,
+    "telegram_sent": true
   }
 ]
