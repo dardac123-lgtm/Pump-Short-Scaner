@@ -72,5 +72,13 @@
     "price": 2.341,
     "threshold": 20.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "AVAAIUSDT",
+    "detected_at": "2026-10-17T08:26:58.861787+00:00",
+    "change_percent": 20.99,
+    "price": 0.008956,
+    "threshold": 20.0,
+    "telegram_sent": true
   }
 ]
