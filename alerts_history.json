@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "symbol": "AGTUSDT",
+    "detected_at": "2026-10-17T16:07:56.006149+00:00",
+    "change_percent": 86.1,
+    "price": 0.073383,
+    "threshold": 80.0,
+    "telegram_sent": true
+  }
+]
