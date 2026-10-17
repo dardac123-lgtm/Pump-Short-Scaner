@@ -32,7 +32,7 @@ jobs:
           chat_id = os.environ["TELEGRAM_CHAT_ID"]
 
           message = (
-              "🧪 TEST PUMP ALERT\n\n"
+              "🚨 TEST SPYDON COIN 🚨\n\n"
               "Coin: TESTUSDT\n"
               "24h change: +120.00%\n"
               "Price: 0.12345 USDT\n\n"
@@ -71,7 +71,7 @@ jobs:
               encoding="utf-8"
           )
 
-          print("Test Telegram sent and history updated")
+          print("TEST SPYDON COIN sent successfully")
           PY
 
       - name: Save test history
@@ -80,6 +80,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add alerts_history.json
           if ! git diff --cached --quiet; then
-            git commit -m "Add test pump alert"
+            git commit -m "Add TEST SPYDON COIN alert"
             git push
           fi
