@@ -35,7 +35,7 @@ jobs:
           if any(isinstance(x, dict) and x.get('test_id') == marker for x in history):
               print('Test record already exists; not sending another message')
           else:
-              message = '🧪 TEST PUMP-SHORT (FIKCYJNY)\nTESTUSDT +125%\nTo nie jest sygnal transakcyjny.'
+              message = '🧪 TEST PUMP-SHORT (FIKCYJNY)\nTESTUSDT +999%\nTO JEST ALERT SPYDONOWY.'
               payload = urllib.parse.urlencode({'chat_id': chat_id, 'text': message}).encode()
               req = urllib.request.Request(f'https://api.telegram.org/bot{token}/sendMessage', data=payload)
               with urllib.request.urlopen(req, timeout=20) as response:
