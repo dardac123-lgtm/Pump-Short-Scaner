@@ -1,23 +1,33 @@
-"""PUMP-SHORT WEEX: one Telegram alert per continuous threshold episode.
+"""PUMP-SHORT WEEX 24h: one Telegram alert per continuous pump episode.
 
-Funding and OI are supplementary information. They never block an alert.
+In addition to alerts, save bounded public WEEX Open Interest snapshots to
+`oi_history.json` so Netlify can compare OI even when the website is closed.
+Funding and OI do NOT modify the alert criteria.
 """
 
 import json
 import math
 import os
-import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+import urllib.parse
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 API = "https://api-contract.weex.com"
 STATE_FILE = Path("alerts_state.json")
 HISTORY_FILE = Path("alerts_history.json")
 CONFIG_FILE = Path("scanner_config.json")
+OI_FILE = Path("oi_history.json")
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
+
+OI_TRACKED_LIMIT = 15
+OI_KEEP_HOURS = 30
+OI_MAX_SAMPLES_PER_SYMBOL = 360
+OI_MAX_TOTAL_SAMPLES = 5000
+OI_MIN_SAMPLE_INTERVAL_SECONDS = 240
 
 
 def get_json(url, timeout=35):
@@ -36,61 +46,119 @@ def write_json(path, data):
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
+def safe_number(raw):
+    try:
+        value = float(raw)
+        return value if math.isfinite(value) else None
+    except (TypeError, ValueError):
+        return None
+
+
 def get_threshold():
     config = read_json(CONFIG_FILE, {})
     if not isinstance(config, dict):
         raise RuntimeError("Invalid scanner_config.json")
-    threshold = float(config.get("threshold", os.getenv("PUMP_THRESHOLD", "80")))
-    if not math.isfinite(threshold) or not (0 < threshold <= 100000):
-        raise ValueError("Threshold must be a positive finite number")
+    threshold = safe_number(config.get("threshold", os.getenv("PUMP_THRESHOLD", "80")))
+    if threshold is None or not 1 <= threshold <= 1000:
+        raise ValueError("Threshold must be between 1 and 1000%")
     print(f"Active threshold from configuration: {threshold}%")
     return threshold
-
-
-def safe_number(value):
-    try:
-        number = float(value)
-        return number if math.isfinite(number) else None
-    except (ValueError, TypeError):
-        return None
-
-
-def fetch_funding_by_symbol():
-    """One bulk request when at least one *new* alert is needed."""
-    try:
-        values = get_json(API + "/capi/v3/market/premiumIndex", timeout=8)
-        if not isinstance(values, list):
-            print("Funding: unexpected WEEX response, continuing without funding")
-            return {}
-        return {item["symbol"]: item for item in values if isinstance(item, dict) and isinstance(item.get("symbol"), str)}
-    except Exception as exc:
-        print(f"Funding temporarily unavailable: {type(exc).__name__}")
-        return {}
-
-
-def fetch_open_interest(symbol):
-    """WEEX openInterest is contracts, NOT USDT and NOT 24h OI change."""
-    try:
-        query = urllib.parse.urlencode({"symbol": symbol})
-        value = get_json(API + "/capi/v3/market/openInterest?" + query, timeout=8)
-        if isinstance(value, dict):
-            return safe_number(value.get("openInterest"))
-    except Exception as exc:
-        print(f"Open interest unavailable for {symbol}: {type(exc).__name__}")
-    return None
 
 
 def send_telegram(message):
     if not TOKEN or not CHAT_ID:
         print("Telegram configuration missing")
         return False
-
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
     payload = urllib.parse.urlencode({"chat_id": CHAT_ID, "text": message}).encode()
     request = urllib.request.Request(url, data=payload)
     with urllib.request.urlopen(request, timeout=20) as response:
         result = json.load(response)
     return result.get("ok", False)
+
+
+def fetch_open_interest(symbol):
+    """WEEX returns openInterest in contracts, not USDT."""
+    try:
+        query = urllib.parse.urlencode({"symbol": symbol})
+        data = get_json(API + "/capi/v3/market/openInterest?" + query, timeout=9)
+        if not isinstance(data, dict):
+            return symbol, None
+        number = safe_number(data.get("openInterest"))
+        return symbol, number if number is not None and number > 0 else None
+    except Exception as exc:
+        print(f"OI unavailable for {symbol}: {type(exc).__name__}")
+        return symbol, None
+
+
+def store_oi_snapshots(current_pumps, now):
+    """Best effort. Failure here must never prevent Telegram alerts."""
+    data = read_json(OI_FILE, {})
+    if not isinstance(data, dict):
+        print("Invalid OI history, starting new measurement store")
+        data = {}
+    cutoff = now - timedelta(hours=OI_KEEP_HOURS)
+    now_stamp = now.isoformat()
+
+    cleaned = {}
+    for symbol, samples in data.items():
+        if not isinstance(symbol, str) or not isinstance(samples, list):
+            continue
+        valid = []
+        for item in samples[-500:]:
+            if not isinstance(item, dict):
+                continue
+            try:
+                t = datetime.fromisoformat(str(item["t"]).replace("Z", "+00:00"))
+                oi = safe_number(item.get("oi"))
+                price = safe_number(item.get("price"))
+                if t.tzinfo is None or not cutoff <= t.astimezone(timezone.utc) <= now:
+                    continue
+                if oi is None or price is None or oi <= 0 or price <= 0:
+                    continue
+                valid.append({"t": t.astimezone(timezone.utc).isoformat(), "oi": oi, "price": price})
+            except (KeyError, TypeError, ValueError):
+                continue
+        if valid:
+            valid.sort(key=lambda p: p["t"])
+            cleaned[symbol] = valid[-OI_MAX_SAMPLES_PER_SYMBOL:]
+
+    selected = current_pumps[:OI_TRACKED_LIMIT]
+    fetched = {}
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        jobs = [pool.submit(fetch_open_interest, symbol) for symbol, _, _ in selected]
+        for job in as_completed(jobs):
+            symbol, amount = job.result()
+            fetched[symbol] = amount
+
+    added = 0
+    for symbol, _, price in selected:
+        oi = fetched.get(symbol)
+        if oi is None:
+            continue
+        samples = cleaned.setdefault(symbol, [])
+        if samples:
+            previous = datetime.fromisoformat(samples[-1]["t"])
+            if (now - previous).total_seconds() < OI_MIN_SAMPLE_INTERVAL_SECONDS:
+                continue
+        samples.append({"t": now_stamp, "oi": oi, "price": price})
+        cleaned[symbol] = samples[-OI_MAX_SAMPLES_PER_SYMBOL:]
+        added += 1
+
+    # Bound the GitHub Contents API payload without discarding today's history
+    # of a continuously active pump unnecessarily.
+    all_rows = [(point["t"], symbol, point) for symbol, rows in cleaned.items() for point in rows]
+    if len(all_rows) > OI_MAX_TOTAL_SAMPLES:
+        all_rows.sort(key=lambda row: row[0], reverse=True)
+        keep = set((symbol, point["t"]) for _, symbol, point in all_rows[:OI_MAX_TOTAL_SAMPLES])
+        cleaned = {
+            symbol: [point for point in rows if (symbol, point["t"]) in keep]
+            for symbol, rows in cleaned.items()
+        }
+        cleaned = {symbol: rows for symbol, rows in cleaned.items() if rows}
+
+    write_json(OI_FILE, cleaned)
+    print(f"OI snapshots saved: {added}; tracked coins: {len(cleaned)}")
 
 
 def main():
@@ -110,7 +178,8 @@ def main():
 
     active = set()
     pumps = []
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(timezone.utc)
+    now_stamp = now.isoformat()
     for ticker in tickers:
         if not isinstance(ticker, dict):
             continue
@@ -121,74 +190,58 @@ def main():
         price = safe_number(ticker.get("lastPrice"))
         if change_ratio is None or price is None or price <= 0:
             continue
-        change = change_ratio * 100  # WEEX priceChangePercent uses fraction, e.g. 0.8 == 80%.
+        change = change_ratio * 100  # WEEX supplies a fraction: 0.8 means +80%.
         if change >= threshold:
             active.add(symbol)
             pumps.append((symbol, change, price))
-
-    pumps.sort(key=lambda row: row[1], reverse=True)
+    pumps.sort(key=lambda x: x[1], reverse=True)
     print(f"Pumps above {threshold}%: {len(pumps)}")
 
-    new_pumps = [entry for entry in pumps if entry[0] not in state]
-    funding_by_symbol = fetch_funding_by_symbol() if new_pumps else {}
-
+    # Preserve the original alert logic and message exactly.
     for symbol, change, price in pumps:
         print(f"{symbol}: +{change:.2f}% | {price}")
         if symbol in state:
             continue
-
-        funding = funding_by_symbol.get(symbol, {})
-        last_funding = safe_number(funding.get("lastFundingRate"))
-        forecast_funding = safe_number(funding.get("forecastFundingRate"))
-        oi_contracts = fetch_open_interest(symbol)
-
-        funding_text = f"{forecast_funding * 100:+.4f}%" if forecast_funding is not None else "brak danych"
-        oi_text = f"{oi_contracts:,.2f} kontraktow" if oi_contracts is not None else "brak danych"
         message = (
             "🚨 WEEX PUMP ALERT\n\n"
             f"Coin: {symbol}\n"
             f"24h change: +{change:.2f}%\n"
-            f"Price: {price} USDT\n"
-            f"Funding (prognoza): {funding_text}\n"
-            f"Open Interest: {oi_text}\n\n"
-            "Funding i OI sa danymi pomocniczymi, nie sygnalem SHORT."
+            f"Price: {price}\n\n"
+            "Check manually before trading."
         )
-
         event = {
             "symbol": symbol,
-            "detected_at": now,
+            "detected_at": now_stamp,
             "change_percent": round(change, 2),
             "price": price,
             "threshold": threshold,
             "telegram_sent": False,
         }
-        if last_funding is not None:
-            event["last_funding_percent"] = round(last_funding * 100, 6)
-        if forecast_funding is not None:
-            event["forecast_funding_percent"] = round(forecast_funding * 100, 6)
-        if oi_contracts is not None:
-            event["open_interest_contracts"] = oi_contracts
-
         history.append(event)
         write_json(HISTORY_FILE, history)
         try:
-            delivered = send_telegram(message)
+            sent = send_telegram(message)
         except Exception as exc:
             print(f"Telegram send failed for {symbol}: {type(exc).__name__}")
-            delivered = False
-
-        if delivered:
+            sent = False
+        if sent:
             event["telegram_sent"] = True
-            state[symbol] = now
+            state[symbol] = now_stamp
             print(f"Alert sent: {symbol}")
         else:
             print(f"Telegram not sent: {symbol}")
         write_json(HISTORY_FILE, history)
 
-    # Preserve established semantics: one alert while symbol stays above the threshold.
     state = {symbol: timestamp for symbol, timestamp in state.items() if symbol in active}
     write_json(STATE_FILE, state)
     write_json(HISTORY_FILE, history)
+
+    # Historical OI is auxiliary. A temporary WEEX API error must not fail alerts.
+    try:
+        store_oi_snapshots(pumps, now)
+    except Exception as exc:
+        print(f"OI collection skipped: {type(exc).__name__}: {exc}")
+
     print(f"History records: {len(history)}")
     print("Scan completed")
 
