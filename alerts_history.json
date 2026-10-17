@@ -80,5 +80,93 @@
     "price": 0.008956,
     "threshold": 20,
     "telegram_sent": true
+  },
+  {
+    "symbol": "EPICUSDT",
+    "detected_at": "2026-10-17T11:11:36.447338+00:00",
+    "change_percent": 34.18,
+    "price": 0.2917,
+    "threshold": 10.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "ICNTUSDT",
+    "detected_at": "2026-10-17T11:11:36.447338+00:00",
+    "change_percent": 29.27,
+    "price": 0.1802,
+    "threshold": 10.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "BTWUSDT",
+    "detected_at": "2026-10-17T11:11:36.447338+00:00",
+    "change_percent": 15.59,
+    "price": 2.1378,
+    "threshold": 10.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "FOLKSUSDT",
+    "detected_at": "2026-10-17T11:11:36.447338+00:00",
+    "change_percent": 15.44,
+    "price": 2.251,
+    "threshold": 10.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "UVXYUSDT",
+    "detected_at": "2026-10-17T11:11:36.447338+00:00",
+    "change_percent": 15.24,
+    "price": 18.582,
+    "threshold": 10.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "BRUSDT",
+    "detected_at": "2026-10-17T11:11:36.447338+00:00",
+    "change_percent": 14.9,
+    "price": 0.38987,
+    "threshold": 10.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "TRUTHUSDT",
+    "detected_at": "2026-10-17T11:11:36.447338+00:00",
+    "change_percent": 14.77,
+    "price": 0.018397,
+    "threshold": 10.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "AVAUSDT",
+    "detected_at": "2026-10-17T11:11:36.447338+00:00",
+    "change_percent": 14.11,
+    "price": 0.3218,
+    "threshold": 10.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "ERAUSDT",
+    "detected_at": "2026-10-17T11:11:36.447338+00:00",
+    "change_percent": 12.93,
+    "price": 0.06638,
+    "threshold": 10.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "SIRENUSDT",
+    "detected_at": "2026-10-17T11:11:36.447338+00:00",
+    "change_percent": 12.37,
+    "price": 0.03252,
+    "threshold": 10.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "4STOCKUSDT",
+    "detected_at": "2026-10-17T11:11:36.447338+00:00",
+    "change_percent": 11.82,
+    "price": 0.00388,
+    "threshold": 10.0,
+    "telegram_sent": true
   }
 ]
