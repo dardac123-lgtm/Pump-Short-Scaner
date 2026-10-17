@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "symbol": "SIRENUSDT",
+    "detected_at": "2026-10-17T12:57:15.502436+00:00",
+    "change_percent": 12.99,
+    "price": 0.03096,
+    "threshold": 10.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "FOLKSUSDT",
+    "detected_at": "2026-10-17T12:57:15.502436+00:00",
+    "change_percent": 11.16,
+    "price": 2.172,
+    "threshold": 10.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "ERAUSDT",
+    "detected_at": "2026-10-17T12:57:15.502436+00:00",
+    "change_percent": 10.04,
+    "price": 0.06455,
+    "threshold": 10.0,
+    "telegram_sent": true
+  }
+]
