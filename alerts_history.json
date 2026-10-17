@@ -4,15 +4,15 @@
     "detected_at": "2026-10-17T00:44:19.187616+00:00",
     "change_percent": 110.69,
     "price": 0.07406,
-    "threshold": 80.0,
+    "threshold": 80,
     "telegram_sent": true
   },
   {
     "symbol": "TESTUSDT",
     "detected_at": "2026-10-17T01:04:50.647066+00:00",
-    "change_percent": 125.0,
+    "change_percent": 125,
     "price": 0.0125,
-    "threshold": 80.0,
+    "threshold": 80,
     "telegram_sent": true,
     "test": true,
     "test_id": "MANUAL_TEST_125"
@@ -20,7 +20,7 @@
   {
     "symbol": "TESTUSDT",
     "detected_at": "2026-10-17T01:12:25.762372+00:00",
-    "change_percent": 120.0,
+    "change_percent": 120,
     "price": 0.12345,
     "threshold": 80,
     "telegram_sent": true
@@ -28,7 +28,7 @@
   {
     "symbol": "TESTUSDT",
     "detected_at": "2026-10-17T01:14:07.303412+00:00",
-    "change_percent": 120.0,
+    "change_percent": 120,
     "price": 0.12345,
     "threshold": 80,
     "telegram_sent": true
@@ -38,7 +38,7 @@
     "detected_at": "2026-10-17T03:02:25.062252+00:00",
     "change_percent": 53.54,
     "price": 0.2036,
-    "threshold": 50.0,
+    "threshold": 50,
     "telegram_sent": true
   },
   {
@@ -46,7 +46,7 @@
     "detected_at": "2026-10-17T07:24:14.352632+00:00",
     "change_percent": 47.83,
     "price": 0.2145,
-    "threshold": 20.0,
+    "threshold": 20,
     "telegram_sent": true
   },
   {
@@ -54,7 +54,7 @@
     "detected_at": "2026-10-17T07:24:14.352632+00:00",
     "change_percent": 23.47,
     "price": 0.2862,
-    "threshold": 20.0,
+    "threshold": 20,
     "telegram_sent": true
   },
   {
@@ -62,7 +62,7 @@
     "detected_at": "2026-10-17T07:24:14.352632+00:00",
     "change_percent": 22.63,
     "price": 0.0382,
-    "threshold": 20.0,
+    "threshold": 20,
     "telegram_sent": true
   },
   {
@@ -70,7 +70,7 @@
     "detected_at": "2026-10-17T07:24:14.352632+00:00",
     "change_percent": 20.11,
     "price": 2.341,
-    "threshold": 20.0,
+    "threshold": 20,
     "telegram_sent": true
   },
   {
@@ -78,15 +78,7 @@
     "detected_at": "2026-10-17T08:26:58.861787+00:00",
     "change_percent": 20.99,
     "price": 0.008956,
-    "threshold": 20.0,
-    "telegram_sent": true
-  },
-  {
-    "symbol": "TESTUSDT",
-    "detected_at": "2026-10-17T09:51:15.333759+00:00",
-    "change_percent": 120.0,
-    "price": 0.12345,
-    "threshold": 80,
+    "threshold": 20,
     "telegram_sent": true
   }
 ]
