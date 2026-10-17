@@ -40,5 +40,37 @@
     "price": 0.2036,
     "threshold": 50.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "ICNTUSDT",
+    "detected_at": "2026-10-17T07:24:14.352632+00:00",
+    "change_percent": 47.83,
+    "price": 0.2145,
+    "threshold": 20.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "EPICUSDT",
+    "detected_at": "2026-10-17T07:24:14.352632+00:00",
+    "change_percent": 23.47,
+    "price": 0.2862,
+    "threshold": 20.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "SIRENUSDT",
+    "detected_at": "2026-10-17T07:24:14.352632+00:00",
+    "change_percent": 22.63,
+    "price": 0.0382,
+    "threshold": 20.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "FOLKSUSDT",
+    "detected_at": "2026-10-17T07:24:14.352632+00:00",
+    "change_percent": 20.11,
+    "price": 2.341,
+    "threshold": 20.0,
+    "telegram_sent": true
   }
 ]
