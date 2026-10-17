@@ -80,5 +80,13 @@
     "price": 0.008956,
     "threshold": 20.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "TESTUSDT",
+    "detected_at": "2026-10-17T09:51:15.333759+00:00",
+    "change_percent": 120.0,
+    "price": 0.12345,
+    "threshold": 80,
+    "telegram_sent": true
   }
 ]
