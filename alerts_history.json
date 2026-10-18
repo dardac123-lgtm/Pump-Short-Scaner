@@ -6,5 +6,13 @@
     "price": 0.073383,
     "threshold": 80.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "ARIAUSDT",
+    "detected_at": "2026-10-18T17:51:24.201945+00:00",
+    "change_percent": 44.0,
+    "price": 0.05636,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
