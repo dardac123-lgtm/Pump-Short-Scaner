@@ -38,5 +38,13 @@
     "price": 0.06661,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "BRUSDT",
+    "detected_at": "2026-10-19T22:58:59.971741+00:00",
+    "change_percent": 41.24,
+    "price": 0.68315,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
