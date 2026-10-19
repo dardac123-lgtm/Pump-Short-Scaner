@@ -1,0 +1,214 @@
+name: CTUSDT - test swiec WEEX (bez alertow)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ct_probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Analyze CTUSDT 1m on WEEX
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import csv
+          import json
+          import os
+          import sys
+          import time
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          from datetime import datetime, timedelta, timezone
+          from zoneinfo import ZoneInfo
+
+          PAIR = "CTUSDT"
+          API = "https://api-contract.weex.com/capi/v3/market/historyKlines"
+          LOCAL_TZ = ZoneInfo("Europe/Oslo")
+          START = datetime(2026, 10, 19, 0, 0, tzinfo=timezone.utc)
+          NOW = datetime.now(timezone.utc)
+          END = min(datetime(2026, 10, 19, 12, 0, tzinfo=timezone.utc), NOW - timedelta(minutes=2))
+          ONE_MIN_MS = 60_000
+
+
+          def stamp(ms):
+              return datetime.fromtimestamp(ms / 1000, tz=timezone.utc).astimezone(LOCAL_TZ).strftime("%d.%m.%Y %H:%M")
+
+
+          def pct(new, old):
+              return 100 * (new / old - 1) if old > 0 else None
+
+
+          def fmt(v, digits=2):
+              return "brak danych" if v is None else f"{v:+.{digits}f}%"
+
+
+          def get_json(params):
+              url = API + "?" + urllib.parse.urlencode(params)
+              last_error = None
+              for attempt in range(3):
+                  try:
+                      req = urllib.request.Request(url, headers={"User-Agent": "PUMP-SHORT-CT-research/1.0", "Accept": "application/json"})
+                      with urllib.request.urlopen(req, timeout=25) as response:
+                          result = json.load(response)
+                      if not isinstance(result, list):
+                          raise RuntimeError(f"Odpowiedz WEEX nie jest lista swiec: {str(result)[:250]}")
+                      return result
+                  except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, ValueError, RuntimeError) as err:
+                      last_error = err
+                      if attempt < 2:
+                          time.sleep(2 ** attempt)
+              raise RuntimeError(f"Nie udalo sie pobrac swiec WEEX ({last_error}).")
+
+
+          def download():
+              if END <= START:
+                  raise RuntimeError("Okno analizy jeszcze sie nie rozpoczelo")
+              start_ms = int(START.timestamp() * 1000)
+              end_ms = int(END.timestamp() * 1000)
+              all_bars = {}
+              cursor = start_ms
+              pages = 0
+              while cursor <= end_ms:
+                  page_end = min(end_ms, cursor + 99 * ONE_MIN_MS)
+                  params = {"symbol": PAIR, "interval": "1m", "startTime": cursor, "endTime": page_end, "limit": 100, "priceType": "LAST"}
+                  records = get_json(params)
+                  pages += 1
+                  for r in records:
+                      if not isinstance(r, list) or len(r) < 11:
+                          continue
+                      try:
+                          t = int(r[0])
+                          if not (start_ms <= t <= end_ms):
+                              continue
+                          bar = {"time": t, "open": float(r[1]), "high": float(r[2]), "low": float(r[3]), "close": float(r[4]), "base_volume": float(r[5]), "quote_volume": float(r[7]), "taker_buy_quote": float(r[10])}
+                          if any(bar[x] <= 0 for x in ("open", "high", "low", "close")) or bar["high"] < bar["low"]:
+                              continue
+                          all_bars[t] = bar
+                      except (TypeError, ValueError, OverflowError):
+                          continue
+                  cursor = page_end + ONE_MIN_MS
+                  time.sleep(0.12)
+              bars = sorted(all_bars.values(), key=lambda c: c["time"])
+              print(f"WEEX: {len(bars)} unikatowych swiec 1m z {pages} zapytan; oczekiwany zakres: {stamp(start_ms)} - {stamp(end_ms)}.")
+              if len(bars) < 50:
+                  raise RuntimeError("Za malo swiec CTUSDT do wiarygodnego testu. Sprawdz dostępność instrumentu i API.")
+              gaps = [(stamp(bars[i - 1]["time"]), stamp(bars[i]["time"])) for i in range(1, len(bars)) if bars[i]["time"] - bars[i - 1]["time"] != ONE_MIN_MS]
+              if gaps:
+                  print(f"UWAGA: luki czasowe pomiedzy swiecami: {len(gaps)}. Przyklad: {gaps[:3]}")
+              return bars, gaps
+
+
+          def share(bars):
+              v = sum(x["quote_volume"] for x in bars)
+              b = sum(x["taker_buy_quote"] for x in bars)
+              return (100 * b / v) if v > 0 else None
+
+
+          def close_change(bars, idx, minutes):
+              older = bars[idx - minutes] if idx - minutes >= 0 else None
+              if not older or bars[idx]["time"] - older["time"] != minutes * ONE_MIN_MS:
+                  return None
+              return pct(bars[idx]["close"], older["close"])
+
+
+          def first_watch(bars):
+              # Testowy warunek rozpoczynajacy obserwacje, NIE sygnal do otwarcia SHORT.
+              for i in range(60, len(bars)):
+                  prev = bars[max(0, i - 60):i]
+                  baseline = min(b["low"] for b in prev)
+                  return15 = close_change(bars, i, 15)
+                  if baseline > 0 and pct(bars[i]["high"], baseline) >= 20 and return15 is not None and return15 >= 8:
+                      return i, baseline, return15
+              return None
+
+
+          def ensure_report(text):
+              with open("ct_probe_report.txt", "w", encoding="utf-8") as f:
+                  f.write(text)
+              summary_path = os.getenv("GITHUB_STEP_SUMMARY")
+              if summary_path:
+                  with open(summary_path, "a", encoding="utf-8") as f:
+                      f.write("## CTUSDT, test świec WEEX\n\n")
+                      f.write("```\n" + text + "\n```\n")
+
+
+          def main():
+              print("TEST CTUSDT: tylko badanie historyczne, bez Telegrama i zapisu do repozytorium.")
+              bars, gaps = download()
+              with open("ct_probe_1m.csv", "w", newline="", encoding="utf-8") as f:
+                  writer = csv.DictWriter(f, fieldnames=["time_oslo", "open", "high", "low", "close", "quote_volume_usdt", "taker_buy_quote_usdt", "taker_buy_share_percent"])
+                  writer.writeheader()
+                  for c in bars:
+                      writer.writerow({"time_oslo": stamp(c["time"]), "open": c["open"], "high": c["high"], "low": c["low"], "close": c["close"], "quote_volume_usdt": round(c["quote_volume"], 2), "taker_buy_quote_usdt": round(c["taker_buy_quote"], 2), "taker_buy_share_percent": round(100 * c["taker_buy_quote"] / c["quote_volume"], 2) if c["quote_volume"] > 0 else ""})
+
+              # Sprawdzamy pik bliski wartosci z ekranu; gdy brak, najwyzszy szczyt z badanego okna.
+              target = 0.42855
+              nearest = min(range(len(bars)), key=lambda i: abs(bars[i]["high"] - target))
+              if abs(bars[nearest]["high"] - target) / target <= 0.005:
+                  peak_i = nearest
+                  peak_reason = "WYKRYTO maksimum zgodne z przeslanym wykresem (tolerancja 0,5%)"
+              else:
+                  peak_i = max(range(len(bars)), key=lambda i: bars[i]["high"])
+                  peak_reason = "NIE POTWIERDZONO szczytu 0,42855; wybrano maksimum z dostepnych swiec"
+              peak = bars[peak_i]
+              baseline = min(x["low"] for x in bars[max(0, peak_i-90):peak_i]) if peak_i else None
+              lines = [
+                  "RAPORT CTUSDT | WEEX futures, 1-minutowe swiece LAST",
+                  "Uwaga: godziny przedstawione w Europe/Oslo (czas norweski).",
+                  f"Swiece: {len(bars)}, od {stamp(bars[0]['time'])} do {stamp(bars[-1]['time'])}; luki: {len(gaps)}",
+                  f"SZCZYT: {peak['high']:.5f} USDT, swieca {stamp(peak['time'])}. {peak_reason}.",
+                  f"Lokalny dol (90 min przed szczytem): {baseline:.5f} USDT; impuls od dolka do maksimum: {fmt(pct(peak['high'], baseline))}." if baseline else "Brak dostatecznie wczesnych danych do oszacowania dolka.",
+                  f"KNOT SZCZYTOWEJ SWIECY: gorny {pct(peak['high'], max(peak['open'],peak['close'])):+.2f}% powyzej korpusu (liczone od jego gory).",
+              ]
+              watch = first_watch(bars)
+              if watch:
+                  i, low, r15 = watch
+                  lines.append(f"PIERWSZY CICHY TRIGGER (test progow 20% z 60m dolka i +8%/15m): {stamp(bars[i]['time'])}, cena zamkniecia {bars[i]['close']:.5f}, wzrost 15m {fmt(r15)}.")
+                  lines.append("Uwaga: sa to wstepne progi do testow, NIE zatwierdzona strategia wejscia.")
+              else:
+                  lines.append("Brak cichego triggera w przyjetych testowych progach (20% z lokalnego dolka i +8% w 15m).")
+              lines.append("RETROSPEKTYWNA ANALIZA PO SZCZYCIE: nie oznacza, ze mozna bylo znac przyszle ceny przy alercie.")
+              for mins in (1, 3, 5, 8, 10, 15, 30):
+                  i = peak_i + mins
+                  if i >= len(bars) or bars[i]["time"] - peak["time"] != mins * ONE_MIN_MS:
+                      lines.append(f"T+{mins:02d} min: brak ciaglych swiec.")
+                      continue
+                  cur = bars[i]
+                  s5 = share(bars[max(0, i-4):i+1])
+                  vol5 = sum(c["quote_volume"] for c in bars[max(0, i-4):i+1])
+                  lines.append(f"T+{mins:02d} min ({stamp(cur['time'])}): close {cur['close']:.5f}, od szczytu {fmt(pct(cur['close'],peak['high']))}, zmiana ceny 5m {fmt(close_change(bars,i,5))}, taker BUY ~5m {fmt(s5)} udzialu, obrot ~5m {vol5:,.0f} USDT.")
+              before_share = share(bars[max(0, peak_i - 4):peak_i + 1])
+              after_share = share(bars[peak_i+1:peak_i+6]) if peak_i+5<len(bars) else None
+              lines.append(f"TAKER BUY 5m z zakonczona swieca szczytowa: {fmt(before_share)} udzialu. W 5 nastepnych swiecach: {fmt(after_share)} udzialu (to analiza po fakcie).")
+              for threshold in (3, 5, 8, 9, 10, 15):
+                  first = next((b for b in bars[peak_i + 1:] if b["low"] <= peak["high"] * (1 - threshold / 100)), None)
+                  lines.append(f"Pierwsza swieca z cena przynajmniej {threshold}% ponizej szczytu: {stamp(first['time']) if first else 'nie zarejestrowano'}. (Minimum swiecy, bez kolejnosci transakcji wewnatrz minuty).")
+              lines.append("POROWNANIE Z SYGNALEM TRADERA: 0,38800 wzgledem 0,42855 = " + fmt(pct(0.388, 0.42855)) + ". To roznica cen z ekranu, a nie potwierdzony czas egzekucji.")
+              lines.append("Funding i OI nie sa zawarte w historycznych swiecach. W tym tescie nie dopisujemy fikcyjnych wartosci.")
+              lines.append("Wynik nie jest walidacja skutecznosci strategii. To analiza JEDNEGO zdarzenia, bez sygnalow do handlu.")
+              report = "\n".join(lines)
+              print("\n" + report)
+              ensure_report(report)
+
+
+          if __name__ == "__main__":
+              try:
+                  main()
+              except Exception as exc:
+                  print(f"BLAD TESTU CTUSDT: {type(exc).__name__}: {exc}", file=sys.stderr)
+                  raise
+          PY
+      - name: Save CTUSDT research report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CTUSDT-WEEX-19-10-2026
+          path: |
+            ct_probe_report.txt
+            ct_probe_1m.csv
+          if-no-files-found: warn
