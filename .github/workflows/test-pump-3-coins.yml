@@ -1,0 +1,231 @@
+name: PUMP-SHORT - TEST 4 (CT BR JCT bez alertow)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare_pumps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Compare 3 coins using historical WEEX candles
+        shell: bash
+        run: |
+          python3 - <<'PYCODE'
+          import json, math, os, sys, time, urllib.parse, urllib.request, urllib.error
+          from datetime import datetime, timedelta, timezone
+          from zoneinfo import ZoneInfo
+          
+          API = 'https://api-contract.weex.com/capi/v3/market/historyKlines'
+          TZ = ZoneInfo('Europe/Oslo')
+          MIN = 60000
+          # Ustawienia WYŁĄCZNIE do eksperymentu, nie są zaleceniem transakcyjnym.
+          WATCH_24H = 20
+          WATCH_4H_LOW = 15
+          WATCH_60M_LOW = 12
+          WATCH_15M = 7
+          WATCH_5M = 5
+          BUY_DROP_PP = 10
+          DECEL_PP = 4
+          WICK_RATIO = .50
+          WICK_PCT = 2
+          ABSORB_VOLUME = 1.3
+          
+          # Badamy wyłącznie świece już zamknięte. Okna czasu są w strefie Oslo.
+          CASES = [
+              ('CTUSDT', '2026-10-18 12:00', '2026-10-19 17:30', '2026-10-19 09:40', 'szczyt 0.42855 (retrospekcja)'),
+              ('BRUSDT', '2026-10-18 12:00', '2026-10-19 17:30', '2026-10-19 10:06', 'wiadomosc tradera 10:06 (nie wejscie)'),
+              ('JCTUSDT', '2026-10-19 07:00', '2026-10-20 16:00', '2026-10-20 09:56', 'alert skanera 09:56'),
+          ]
+          
+          def local_ms(s):
+              return int(datetime.strptime(s, '%Y-%m-%d %H:%M').replace(tzinfo=TZ).timestamp()*1000)
+          
+          def stamp(ms):
+              return datetime.fromtimestamp(ms/1000, timezone.utc).astimezone(TZ).strftime('%d.%m %H:%M')
+          
+          def pct(value, baseline):
+              return 100*(value/baseline-1) if baseline is not None and baseline>0 else None
+          
+          def fmt(v):
+              return 'n/d' if v is None else f'{v:+.2f}%'
+          
+          def get_candles(symbol, begin, finish):
+              # Nie pobieramy świecy bieżącej ani minut historycznych, które jeszcze nie istnieją.
+              now = int((datetime.now(timezone.utc)-timedelta(minutes=2)).timestamp()*1000)
+              first, last = local_ms(begin), min(local_ms(finish), now)
+              rows={}; calls=0
+              if first>=last: raise RuntimeError(f'Brak zamknietych swiec dla {symbol}')
+              for t in range(first,last+1,100*MIN):
+                  end=min(last,t+99*MIN)
+                  q=urllib.parse.urlencode({'symbol':symbol,'interval':'1m','startTime':t,'endTime':end,'limit':100,'priceType':'LAST'})
+                  url=API+'?'+q
+                  for attempt in range(5):
+                      try:
+                          r=urllib.request.Request(url,headers={'Accept':'application/json','User-Agent':'PUMP-SHORT-test-4-research/1.0'})
+                          with urllib.request.urlopen(r, timeout=30) as response: data=json.load(response)
+                          if not isinstance(data,list): raise ValueError('Nieoczekiwany format WEEX: '+str(data)[:150])
+                          break
+                      except (urllib.error.HTTPError,urllib.error.URLError, TimeoutError, ValueError) as exc:
+                          if attempt==4: raise RuntimeError(f'Blad WEEX {symbol}: {exc}') from exc
+                          time.sleep(min(2**attempt,8))
+                  calls+=1
+                  for record in data:
+                      if not isinstance(record,list) or len(record)<11: continue
+                      try:
+                          key=int(record[0]); o,h,l,c=map(float,record[1:5]); volume=float(record[7]); buy=float(record[10])
+                          if not(first<=key<=last and all(map(math.isfinite,(o,h,l,c,volume,buy)))): continue
+                          if min(o,h,l,c)<=0 or l>min(o,c) or h<max(o,c) or volume<0 or buy<0 or buy>volume*1.001: continue
+                          rows[key]={'t':key,'o':o,'h':h,'l':l,'c':c,'v':volume,'b':buy}
+                      except (TypeError,ValueError,OverflowError): continue
+                  time.sleep(.15)
+              candles=[rows[x] for x in sorted(rows)]
+              gaps={i for i in range(1,len(candles)) if candles[i]['t']-candles[i-1]['t']!=MIN}
+              if len(candles)<300: raise RuntimeError(f'Za malo danych {symbol}: {len(candles)}')
+              return candles,gaps,calls
+          
+          def share(items):
+              total=sum(b['v'] for b in items)
+              return 100*sum(b['b'] for b in items)/total if total>0 else None
+          
+          def features(rows,gaps):
+              result=[]; seg=0
+              for i,b in enumerate(rows):
+                  if i in gaps: seg=i
+                  if i-seg<240:
+                      result.append(None); continue
+                  # Baza jest z przeszłości. Nie wykorzystujemy przyszłego maksimum pompy.
+                  min60=min(x['l'] for x in rows[i-60:i])
+                  min240=min(x['l'] for x in rows[i-240:i])
+                  r5=pct(b['c'],rows[i-5]['c'])
+                  r15=pct(b['c'],rows[i-15]['c'])
+                  r60=pct(b['c'],rows[i-60]['c'])
+                  four_high=pct(b['h'],min240)
+                  four_close=pct(b['c'],min240)
+                  one_high=pct(b['h'],min60)
+                  one_close=pct(b['c'],min60)
+                  r24=pct(b['c'],rows[i-1440]['c']) if i-seg>=1440 else None
+                  gates=[]
+                  if r24 is not None and r24>=WATCH_24H: gates.append('24h')
+                  if four_high>=WATCH_4H_LOW and four_close>=8: gates.append('wzrost_4h')
+                  if one_high>=WATCH_60M_LOW and one_close>=6: gates.append('impuls_60m')
+                  if r15>=WATCH_15M: gates.append('impuls_15m')
+                  if r5>=WATCH_5M: gates.append('impuls_5m')
+                  prev5=rows[i-9:i-4]; last5=rows[i-4:i+1]
+                  buy_prev,buy_now=share(prev5),share(last5)
+                  buy_drop=buy_prev-buy_now if buy_prev is not None and buy_now is not None else None
+                  prev_r5=pct(rows[i-5]['c'],rows[i-10]['c'])
+                  slowdown=prev_r5-r5
+                  wick=(b['h']-max(b['o'],b['c']))/(b['h']-b['l']) if b['h']>b['l'] else 0
+                  wick_percent=pct(b['h'],max(b['o'],b['c']))
+                  oldvol=sum(x['v'] for x in prev5); newvol=sum(x['v'] for x in last5)
+                  vol_ratio=newvol/oldvol if oldvol>0 else None
+                  signs=[]
+                  if buy_drop is not None and buy_drop>=BUY_DROP_PP: signs.append('kupujacy_slabna')
+                  if prev_r5>1 and slowdown>=DECEL_PP: signs.append('momentum_hamuje')
+                  if wick>=WICK_RATIO and wick_percent is not None and wick_percent>=WICK_PCT: signs.append('gorny_knot')
+                  if vol_ratio is not None and vol_ratio>=ABSORB_VOLUME and prev_r5>2 and r5<=prev_r5*.4 and buy_now is not None and buy_now>=50:
+                      signs.append('mozliwa_absorpcja')
+                  result.append({'t':b['t'],'close':b['c'],'gates':gates,'signs':signs,'r24':r24,'r15':r15,'r5':r5,'r60':r60,'r4low':four_close,'buy5':buy_now,'buydrop':buy_drop})
+              return result
+          
+          def evaluate(rows, feats, focus_date):
+              # Pamięć obserwacji trwa do 30 min po ostatnim impulsie.
+              # Informacje przypisujemy do CZASU DOSTĘPNOŚCI, tj. zamknięcia świecy t+1m.
+              active_until=-1; first={'watch':None,'weak':None,'pullback':None}; modes={}
+              max_so_far=None; last_episode_peak=None
+              events=[]; total_obs=0
+              for i,f in enumerate(feats):
+                  if f is None: continue
+                  date=datetime.fromtimestamp(f['t']/1000,timezone.utc).astimezone(TZ).strftime('%Y-%m-%d')
+                  if date!=focus_date: continue
+                  if f['gates']:
+                      active_until=i+30
+                      if first['watch'] is None: first['watch']=i
+                      for gate in f['gates']:
+                          if gate not in modes: modes[gate]=i
+                  if i<=active_until:
+                      total_obs+=1
+                      if len(f['signs'])>=1 and first['weak'] is None: first['weak']=i
+                      if len(f['signs'])>=2 and first['pullback'] is None: first['pullback']=i
+                      # Najwyższa cena już zaobserwowana, nie ostateczny szczyt całego dnia.
+                      last_episode_peak=max(last_episode_peak or 0,rows[i]['h'])
+                      if f['gates'] or len(f['signs'])>=2:
+                          events.append((i,round(pct(f['close'],last_episode_peak),2)))
+                  else:
+                      last_episode_peak=None
+              return first,modes,total_obs,events
+          
+          def event_line(label, idx, rows, feats):
+              if idx is None: return label+': BRAK'
+              f=feats[idx]
+              return (f"{label}: {stamp(f['t']+MIN)} (zamknieta swieca {stamp(f['t'])}), "
+                      f"cena {f['close']:.6f}, 15m {fmt(f['r15'])}, 24h {fmt(f['r24'])}, "
+                      f"BUY5 {fmt(f['buy5'])}; bramki: {', '.join(f['gates']) or '-'}; "
+                      f"oznaki: {', '.join(f['signs']) or '-'}")
+          
+          def main():
+              lines=['PUMP-SHORT / TEST 4: trzy instrumenty, JEDEN zestaw progow',
+                     'Wylacznie test na zamknietych swiecach 1m WEEX, zadnych prawdziwych alarmow ani transakcji.',
+                     'Start obserwacji, gdy JEDEN z warunkow: +20%/24h LUB +15% high od min 4h (close +8%) LUB +12% high od min 60m (close +6%) LUB +7%/15m LUB +5%/5m.',
+                     '1 oznaka -> slabnie; 2+ oznaki -> mozliwy pullback (obserwacja tylko w trakcie epizodu).',
+                     'Oznaki jak w testach 2/3: spadek BUY 10pp, hamowanie 5m 4pp, gorny knot, mozliwa absorpcja.',
+                     'Wskazniki OI i funding sa tu nieobecne. Nie oceniamy skutecznosci; weryfikacja na 3 coinkach NIE wystarcza.',
+                     'Godziny Europe/Oslo. Swieca z etykieta np. 09:40 jest dostepna dopiero po 09:41.',
+                     '']
+              failed=0
+              for symbol,start,end,reference,refdescription in CASES:
+                  lines.append('======== '+symbol+' ========')
+                  try:
+                      candles,gaps,calls=get_candles(symbol,start,end)
+                      f=features(candles,gaps)
+                      day=reference[:10]
+                      idx,modes,obs,events=evaluate(candles,f,day)
+                      lines.append(f'Dane: {len(candles)} swiec, {calls} zapytan WEEX, luki {len(gaps)}, min. wymagany rozruch 240 min; aktywna obserwacja {obs} minut w badanym dniu.')
+                      if gaps:
+                          lines.append('OSTRZEZENIE: wykryto luki! Po kazdej luce analizujemy od nowa po 240 minutach.')
+                      for key,label in [('watch','PIERWSZA OBSERWACJA'),('weak','PIERWSZE OSLABIENIE'),('pullback','PIERWSZY MOZLIWY PULLBACK')]:
+                          lines.append(event_line(label,idx[key],candles,f))
+                      modes_sorted=sorted(modes.items(),key=lambda x:x[1])
+                      lines.append('PIERWSZE URUCHOMIENIE WARUNKOW: '+ ('; '.join(f'{k} {stamp(f[i]["t"]+MIN)}' for k,i in modes_sorted) if modes_sorted else 'BRAK'))
+                      cutoff=local_ms(reference)-MIN
+                      available=[i for i,b in enumerate(candles) if b['t']<=cutoff]
+                      before_idx=available[-1] if available else None
+                      lines.append(f'PUNKT POROWNANIA: {reference} Oslo, {refdescription}; tylko odniesienie, NIE warunek skanera.')
+                      if before_idx is not None and f[before_idx] is not None:
+                          lines.append(event_line('OSTATNIA SWIECA ZNANA W PUNKCIE POROWNANIA',before_idx,candles,f))
+                          if idx['watch'] is not None:
+                              w_at=candles[idx['watch']]['t']+MIN
+                              lines.append('OBSERWACJA ZACZETA PRZED PUNKTEM POROWNANIA: '+('TAK' if w_at<=local_ms(reference) else 'NIE'))
+                      if symbol=='CTUSDT':
+                          # Retrospekcja wyłącznie do jakości danych, nie do wyzwalania stanów.
+                          focus=[b for b in candles if local_ms('2026-10-19 09:00')<=b['t']<=local_ms('2026-10-19 10:30')]
+                          if focus:
+                              top=max(focus,key=lambda b:b['h'])
+                              lines.append(f'SZCZYT 09-10:30 (TYLKO RETROSPEKCJA): {top["h"]:.5f} {stamp(top["t"])}; ekran 0.42855')
+                      if symbol=='BRUSDT':
+                          focus=[b for b in candles if local_ms('2026-10-19 09:00')<=b['t']<=local_ms('2026-10-19 17:00')]
+                          if focus:
+                              top=max(focus,key=lambda b:b['h'])
+                              lines.append(f'SZCZYT 09-17 (TYLKO RETROSPEKCJA): {top["h"]:.5f} {stamp(top["t"])}; ekran 0.54965')
+                      if symbol=='JCTUSDT':
+                          lines.append('JCT: screen pokazuje SHORT i poziom FVG, ale dokladny czas wejscia nie jest ustalony. NIE przypisujemy wyniku transakcji testowi.')
+                      lines.append('')
+                  except Exception as exc:
+                      failed+=1
+                      lines.append('BLAD POBIERANIA/ANALIZY: '+str(exc)); lines.append('')
+              lines += ['OCENA: Porownaj godziny rozpoczecia obserwacji, opoznienia i niepotrzebne wyzwolenia.',
+                        'Samo wykrycie 3 przykladow nie jest dowodem skutecznosci. Kolejne testy powinny obejmowac nieudane pompy i rozne dni.',
+                        'BIEZACY SCANNER, TELEGRAM, OI HISTORIA, KONFIGURACJA I NETLIFY NIE SA ZMIENIANE.']
+              report='\n'.join(lines)+'\n'
+              print(report)
+              if os.getenv('GITHUB_STEP_SUMMARY'):
+                  with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as out:
+                      out.write('## PUMP-SHORT: TEST 4 (CT / BR / JCT)\n\n```text\n'+report+'\n```\n')
+              if failed: sys.exit(1)
+          
+          if __name__=='__main__': main()
+          PYCODE
