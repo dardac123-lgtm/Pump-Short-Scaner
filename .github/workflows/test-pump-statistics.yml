@@ -1,0 +1,346 @@
+name: PUMP-SHORT - TEST 5 (szersza statystyka, bez alertow)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  research_5:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Historyczne dane WEEX i symulacja zamknietych swiec
+        shell: bash
+        run: |
+          cat > /tmp/pump_short_test5.py <<'PYCODE'
+          #!/usr/bin/env python3
+          """Read-only WEEX study on past 1-minute futures bars. No orders or Telegram."""
+          import csv
+          import hashlib
+          import json
+          import math
+          import os
+          import statistics
+          import sys
+          import time
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          from datetime import datetime, timedelta, timezone
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          ROOT = 'https://api-contract.weex.com'
+          MIN = 60000
+          TZ = ZoneInfo('Europe/Oslo')
+          # Historical study interval, fixed BEFORE observing the backtest results.
+          FETCH_BEGIN = '2026-10-18 00:00'
+          SIGNAL_BEGIN = '2026-10-19 00:00'
+          SIGNAL_END = '2026-10-20 09:30'
+          FETCH_END = '2026-10-20 10:35'  # at least 60m followup for signals through 09:30
+          WATCH24 = 20
+          WATCH4_HIGH = 15
+          WATCH4_CLOSE = 8
+          WATCH60_HIGH = 12
+          WATCH60_CLOSE = 6
+          WATCH15 = 7
+          WATCH5 = 5
+          BUYDROP = 10
+          SLOWDOWN = 4
+          WICK_SHARE = .50
+          WICK_RISE = 2
+          ABSORB_VOL = 1.3
+          WATCH_HOLD = 30
+          HORIZONS = (5, 15, 30, 60)
+          # WEEX assumed market fees 0.06% each side + illustrative slippage 0.10% each side.
+          FEES_ROUNDTRIP = .12
+          SLIP_ROUNDTRIP = .20
+          COST = FEES_ROUNDTRIP + SLIP_ROUNDTRIP
+          PAIRS_TP_SL = [(3,5), (5,5), (8,6), (10,8)]
+          KNOWN = ['CTUSDT', 'BRUSDT', 'JCTUSDT']
+          OUT = Path('test5-results')
+
+
+          def at_ms(s):
+              return int(datetime.strptime(s, '%Y-%m-%d %H:%M').replace(tzinfo=TZ).timestamp()*1000)
+
+
+          def ts(t):
+              return datetime.fromtimestamp(t/1000, timezone.utc).astimezone(TZ).strftime('%Y-%m-%d %H:%M')
+
+
+          def change(new, old):
+              return 100*(new/old-1) if old and old>0 else None
+
+
+          def request_json(url):
+              for attempt in range(5):
+                  try:
+                      req=urllib.request.Request(url, headers={'Accept':'application/json','User-Agent':'PumpShortResearch-5/1.0'})
+                      with urllib.request.urlopen(req,timeout=35) as response:
+                          return json.load(response)
+                  except (urllib.error.HTTPError,urllib.error.URLError, TimeoutError, ValueError) as exc:
+                      if attempt==4: raise RuntimeError(f'{type(exc).__name__}: {exc}') from exc
+                      time.sleep(min(2**attempt,12))
+
+
+          def choose_universe():
+              tickers=request_json(ROOT+'/capi/v3/market/ticker/24hr')
+              if not isinstance(tickers,list): raise RuntimeError('WEEX ticker/24hr nie zwrocil listy')
+              valid=[]
+              for r in tickers:
+                  if not isinstance(r,dict): continue
+                  s=r.get('symbol','')
+                  if not isinstance(s,str) or not s.endswith('USDT') or not s.isalnum(): continue
+                  try:
+                      vol=float(r['quoteVolume']); p=float(r['lastPrice']); rate=float(r['priceChangePercent'])
+                      if not all(map(math.isfinite,(vol,p,rate))) or vol<200000 or p<=0: continue
+                  except (ValueError,TypeError,KeyError): continue
+                  valid.append((s,vol,rate))
+              if len(valid)<30:
+                  raise RuntimeError('Zbyt malo plynnych instrumentow z WEEX: '+str(len(valid)))
+              byvol=sorted(valid,key=lambda x:(-x[1],x[0]))
+              top=[x[0] for x in byvol[:9]]
+              # Deterministic broader sample; selection independent from historical outcomes.
+              remainder=[x[0] for x in byvol[9:250] if x[0] not in KNOWN]
+              diverse=sorted(remainder,key=lambda s:hashlib.sha256(('study-five-v1:'+s).encode()).hexdigest())[:9]
+              # Intentionally pump-enriched group. SEPARATE from broader samples in reporting.
+              leaders=[x[0] for x in sorted(valid,key=lambda x:(-x[2],-x[1],x[0]))
+                       if x[0] not in top and x[0] not in diverse and x[0] not in KNOWN][:9]
+              group=[]; seen=set()
+              for category,ss in [('duzy_obrot',top),('przekroj',diverse),('liderzy_teraz',leaders),('przyklady_uzytkownika',KNOWN)]:
+                  for s in ss:
+                      if s not in seen: seen.add(s); group.append((s,category))
+              return group, len(valid)
+
+
+          def download(symbol):
+              # Deliberately avoid today's unfinished minute. This is read-only.
+              first=at_ms(FETCH_BEGIN); stop=min(at_ms(FETCH_END),int((datetime.now(timezone.utc)-timedelta(minutes=2)).timestamp()*1000))
+              if stop-first < 300*MIN: raise RuntimeError('Okno badan jeszcze nie gotowe')
+              bars={}; calls=0
+              for low in range(first,stop+1,100*MIN):
+                  high=min(stop,low+99*MIN)
+                  q=urllib.parse.urlencode({'symbol':symbol,'interval':'1m','startTime':low,'endTime':high,'limit':100,'priceType':'LAST'})
+                  data=request_json(ROOT+'/capi/v3/market/historyKlines?'+q)
+                  calls+=1
+                  if not isinstance(data,list): raise RuntimeError('Niepoprawny format swiec WEEX')
+                  for r in data:
+                      if not isinstance(r,list) or len(r)<11: continue
+                      try:
+                          t=int(r[0]); o,h,l,c=map(float,r[1:5]); v=float(r[7]); buy=float(r[10])
+                          if not(first<=t<=stop) or any(not math.isfinite(x) for x in (o,h,l,c,v,buy)): continue
+                          if min(o,h,l,c)<=0 or l>min(o,c) or h<max(o,c) or v<0 or not 0<=buy<=v*1.001: continue
+                          bars[t]={'t':t,'o':o,'h':h,'l':l,'c':c,'v':v,'b':min(v,buy)}
+                      except (ValueError, TypeError, OverflowError): continue
+                  time.sleep(.22)
+              ordered=[bars[k] for k in sorted(bars)]
+              if len(ordered)<250: raise RuntimeError('Za malo swiec: '+str(len(ordered)))
+              gaps=sum(ordered[i]['t']-ordered[i-1]['t']!=MIN for i in range(1,len(ordered)))
+              return ordered,gaps,calls
+
+
+          def buyshare(rows):
+              volume=sum(x['v'] for x in rows)
+              return 100*sum(x['b'] for x in rows)/volume if volume>0 else None
+
+
+          def features(bars):
+              res=[]; continuous=0
+              for i,b in enumerate(bars):
+                  if i and b['t']-bars[i-1]['t']!=MIN: continuous=i
+                  if i-continuous<240: res.append(None); continue
+                  base60=min(x['l'] for x in bars[i-60:i]); base240=min(x['l'] for x in bars[i-240:i])
+                  r5=change(b['c'],bars[i-5]['c']); r15=change(b['c'],bars[i-15]['c'])
+                  r24=change(b['c'],bars[i-1440]['c']) if i-continuous>=1440 else None
+                  gates=[]
+                  if r24 is not None and r24>=WATCH24: gates.append('24h')
+                  if change(b['h'],base240)>=WATCH4_HIGH and change(b['c'],base240)>=WATCH4_CLOSE: gates.append('4h')
+                  if change(b['h'],base60)>=WATCH60_HIGH and change(b['c'],base60)>=WATCH60_CLOSE: gates.append('60m')
+                  if r15>=WATCH15: gates.append('15m')
+                  if r5>=WATCH5: gates.append('5m')
+                  earlier=bars[i-9:i-4]; recent=bars[i-4:i+1]
+                  buy_old,buy_new=buyshare(earlier),buyshare(recent)
+                  r5prev=change(bars[i-5]['c'],bars[i-10]['c'])
+                  wick=(b['h']-max(b['o'],b['c']))/(b['h']-b['l']) if b['h']>b['l'] else 0
+                  wick_height=change(b['h'],max(b['o'],b['c']))
+                  vold=sum(x['v'] for x in earlier); vnow=sum(x['v'] for x in recent)
+                  signs=[]
+                  if buy_old is not None and buy_new is not None and buy_old-buy_new>=BUYDROP: signs.append('kupujacy_slabna')
+                  if r5prev>1 and r5prev-r5>=SLOWDOWN: signs.append('momentum_hamuje')
+                  if wick>=WICK_SHARE and wick_height is not None and wick_height>=WICK_RISE: signs.append('gorny_knot')
+                  if vold>0 and vnow/vold>=ABSORB_VOL and r5prev>2 and r5<=r5prev*.4 and buy_new is not None and buy_new>=50:
+                      signs.append('mozliwa_absorpcja')
+                  res.append({'gates':gates,'signs':signs,'r24':r24,'r5':r5,'r15':r15,'buy5':buy_new})
+              return res
+
+
+          def signals(bars, f):
+              # One PULLBACK observation per continuous watch episode, rearm after >=30m no gates.
+              last_gate_idx=-100000; in_episode=False; triggered=False; episodes=0; watches=0; weak=0; result=[]
+              lo=at_ms(SIGNAL_BEGIN); hi=at_ms(SIGNAL_END)
+              for i,feat in enumerate(f):
+                  if feat is None: continue
+                  bar=bars[i]
+                  if not lo<=bar['t']+MIN<=hi: continue
+                  if i-last_gate_idx>WATCH_HOLD:
+                      in_episode=False; triggered=False
+                  if feat['gates']:
+                      last_gate_idx=i
+                      if not in_episode:
+                          in_episode=True; triggered=False; episodes+=1; watches+=1
+                  if not in_episode: continue
+                  if len(feat['signs'])>=1: weak+=1
+                  if len(feat['signs'])>=2 and not triggered:
+                      triggered=True
+                      result.append((i,feat))
+              return result,episodes,watches,weak
+
+
+          def metrics(bars, i, tp, sl, limit=60):
+              # Signal calculated at close[i]; hypothetical entry at next candle OPEN.
+              # The next candle is observed only for EX-POST results, not for deciding signal.
+              if i+1>=len(bars) or bars[i+1]['t']!=bars[i]['t']+MIN:
+                  return {'status':'nieocenione','entry':None,'n':0}
+              entry=bars[i+1]['o']; high=entry; low=entry; complete=True; trade='nierozstrzygniete'; elapsed=None
+              for j in range(1,limit+1):
+                  if i+j>=len(bars) or bars[i+j]['t']!=bars[i]['t']+j*MIN:
+                      complete=False; break
+                  b=bars[i+j]; high=max(high,b['h']); low=min(low,b['l'])
+                  # For SHORT: favorable movement downward hits target, adverse upward hits stop.
+                  hit_tp=b['l']<=entry*(1-tp/100)
+                  hit_sl=b['h']>=entry*(1+sl/100)
+                  if trade=='nierozstrzygniete' and (hit_tp or hit_sl):
+                      elapsed=j
+                      if hit_tp and hit_sl: trade='niejednoznaczne'
+                      elif hit_tp: trade='TP'
+                      else: trade='SL'
+              # An early TP/SL remains decided even if later candles are missing.
+              moves={'status':trade if complete or trade!='nierozstrzygniete' else 'nieocenione', 'entry':entry,
+                     'n':limit if complete else min(limit,len(bars)-i-1),
+                     'max_adverse':change(high,entry),
+                     'max_favorable':-change(low,entry),
+                     'exit_min':elapsed, 'complete':complete}
+              return moves
+
+
+          def horizon_stats(bars,i,limit):
+              if i+limit>=len(bars): return None
+              if any(bars[i+j]['t']!=bars[i]['t']+j*MIN for j in range(1,limit+1)): return None
+              entry=bars[i+1]['o']
+              nextbars=bars[i+1:i+limit+1]
+              return {'adverse':change(max(b['h'] for b in nextbars),entry),
+                      'favorable':-change(min(b['l'] for b in nextbars),entry)}
+
+
+          def report_group(name, events):
+              resolved=[x for x in events if x['status_5_5'] in ('TP','SL')]
+              tp=sum(x['status_5_5']=='TP' for x in resolved)
+              los=sum(x['status_5_5']=='SL' for x in resolved)
+              ambiguous=sum(x['status_5_5']=='niejednoznaczne' for x in events)
+              unknown=sum(x['status_5_5']=='nierozstrzygniete' for x in events)
+              incomplete=sum(x['status_5_5']=='nieocenione' for x in events)
+              scores=[x['adverse_60'] for x in events if x['adverse_60'] is not None]
+              bad=sum(v>=5 for v in scores)
+              return (f'| {name} | {len(events)} | {tp} | {los} | {ambiguous} | {unknown} | {incomplete} | '
+                      f'{tp/len(resolved)*100:.1f}%' if resolved else
+                      f'| {name} | {len(events)} | 0 | 0 | {ambiguous} | {unknown} | {incomplete} | n/d') + ' | '+(f'{bad}/{len(scores)}' if scores else 'n/d')+' |'
+
+
+          def main():
+              OUT.mkdir(parents=True,exist_ok=True)
+              universe,total_available=choose_universe()
+              print(f'WEEX: kwalifikuje sie {total_available} plynnych instrumentow. Wybrano {len(universe)} (3 kontrolne w oddzielnej kategorii).',flush=True)
+              events=[]; problems=[]; coverage=[]; total_reqs=0; tested=0; signal_stats={}
+              for k,(symbol,category) in enumerate(universe,1):
+                  try:
+                      bars,gaps,calls=download(symbol)
+                      f=features(bars)
+                      sigs,episodes,watches,weak=signals(bars,f)
+                      total_reqs+=calls; tested+=1
+                      coverage.append({'symbol':symbol,'kategoria':category,'swiece':len(bars),'luki':gaps,'epizody':episodes,'sygnaly':len(sigs)})
+                      print(f'[{k}/{len(universe)}] {symbol}: {len(bars)} świec, {gaps} luk, {episodes} epizodow, {len(sigs)} sygnalow',flush=True)
+                      for i,feat in sigs:
+                          b=bars[i]
+                          item={'symbol':symbol,'kategoria':category,'czas_dostepnosci_Oslo':ts(b['t']+MIN),
+                                'cena_sygnalu':b['c'],'oznaki':'+'.join(feat['signs']), 'bramki':'+'.join(feat['gates']),
+                                'buy5':feat['buy5'], 'r15':feat['r15'],'r24':feat['r24']}
+                          for n in HORIZONS:
+                              r=horizon_stats(bars,i,n)
+                              item[f'adverse_{n}']=round(r['adverse'],3) if r else None
+                              item[f'favorable_{n}']=round(r['favorable'],3) if r else None
+                          for tp,sl in PAIRS_TP_SL:
+                              r=metrics(bars,i,tp,sl,60)
+                              item[f'status_{tp}_{sl}']=r['status']
+                              item[f'minuta_{tp}_{sl}']=r.get('exit_min')
+                              if tp==5 and sl==5:
+                                  item['cena_testowego_wejscia']=r['entry']
+                          events.append(item)
+                  except Exception as exc:
+                      problems.append((symbol,str(exc)))
+                      print(f'[{k}/{len(universe)}] {symbol}: POMINIETY: {exc}',flush=True)
+              if tested<10: raise RuntimeError(f'Tylko {tested} kompletnych instrumentow. Za malo do testu. Bledy: {problems[:4]}')
+
+              columns=['symbol','kategoria','czas_dostepnosci_Oslo','cena_sygnalu','cena_testowego_wejscia','oznaki','bramki','buy5','r15','r24']
+              for n in HORIZONS: columns.extend([f'adverse_{n}',f'favorable_{n}'])
+              for tp,sl in PAIRS_TP_SL: columns.extend([f'status_{tp}_{sl}',f'minuta_{tp}_{sl}'])
+              with (OUT/'sygnaly_i_wyniki.csv').open('w',newline='',encoding='utf-8-sig') as handle:
+                  writer=csv.DictWriter(handle,fieldnames=columns,extrasaction='ignore'); writer.writeheader();writer.writerows(events)
+              with (OUT/'instrumenty.csv').open('w',newline='',encoding='utf-8-sig') as handle:
+                  writer=csv.DictWriter(handle,fieldnames=['symbol','kategoria','swiece','luki','epizody','sygnaly']);writer.writeheader();writer.writerows(coverage)
+
+              cohorts=['duzy_obrot','przekroj','liderzy_teraz','przyklady_uzytkownika']
+              md=['# PUMP-SHORT / TEST 5: szersza próba, bez alertów',
+                  '',f'Zbadano **{tested}/{len(universe)}** instrumentów, **{sum(x["epizody"] for x in coverage)}** epizodów obserwacji i **{len(events)}** pierwszych wskazań „możliwy pullback”.',
+                  f'Historia: {SIGNAL_BEGIN} do {SIGNAL_END} (Europe/Oslo), dane rozruchowe od {FETCH_BEGIN}. Dane ze świec 1m WEEX. Zapytania o świece: {total_reqs}.',
+                  '', '**Reguły:** identyczne jak TEST 4, bez zmian pod jakikolwiek coin. Jeden pierwszy sygnał „pullback” na epizod. Decyzja na zamkniętej świecy, testowe wejście na otwarciu następnej.',
+                  '', '## Wyniki hipotetycznego SHORT: TP 5%, SL 5%, do 60 minut',
+                  '', '| Grupa | Sygnały | TP przed SL | SL przed TP | Oba w 1m | Żaden w 60m | Bez 60m danych | TP / rozstrzygnięte | Wzrost ≥5% po sygnale / pełne 60m |',
+                  '|---|---:|---:|---:|---:|---:|---:|---:|---:|']
+              for cat in cohorts:
+                  subset=[e for e in events if e['kategoria']==cat]
+                  md.append(report_group(cat,subset))
+              md.append(report_group('RAZEM (grupy mieszane)',events))
+              md.extend(['', '**Nie traktuj sumy jako skuteczności na całym rynku.** Dobór symboli bazuje na OBECNYCH tickerach/obrotach; grupa liderów jest celowo wzbogacona o obecne pompy, a 3 przykłady są wybrane przez użytkownika. To oznacza błąd selekcji i możliwość biasu. Wybór symboli nie wpływa na obliczanie sygnałów w przeszłości.',
+                        '', '**TP/SL:** z perspektywy SHORTA: TP gdy low świecy ≤ wejście × (1−TP), SL gdy high ≥ wejście × (1+SL). Jeśli w tej samej świecy dotknięto obu, wynik **niejednoznaczny**. Bez pełnych 60 min wynik **nieoceniony**. Nie utożsamiamy późniejszego cofnięcia z opłacalnym wejściem.',
+                        f'',f'Koszty przykładowe: market 0,06% wejście + 0,06% wyjście = 0,12% nominału, plus założony poślizg po 0,10% na stronę = **~{COST:.2f}%** nominału. Po trafieniu TP 5% hipotetyczny wynik przed fundingiem ~+{5-COST:.2f}% nominału; po SL 5% ~−{5+COST:.2f}%. Poślizg nie jest pomiarem rzeczywistym, finansowanie nie jest symulowane. Brak modelu likwidacji na Cross.',
+                        '', '## Rozkład dalszego wzrostu i spadku (60m)', ''])
+              complete=[e for e in events if e['adverse_60'] is not None and e['favorable_60'] is not None]
+              if complete:
+                  adverse=[e['adverse_60'] for e in complete]
+                  favorable=[e['favorable_60'] for e in complete]
+                  md.append(f'- Pełne okno 60m: **{len(complete)}** wskazań.')
+                  md.append(f'- Maksymalny dalszy WZROST przeciw SHORT: mediana **{statistics.median(adverse):.2f}%**, maksimum **{max(adverse):.2f}%**.')
+                  md.append(f'- Maksymalny spadek sprzyjający SHORT: mediana **{statistics.median(favorable):.2f}%**, maksimum **{max(favorable):.2f}%**.')
+                  md.append(f'- Dalszy wzrost ≥5%: **{sum(x>=5 for x in adverse)}/{len(complete)}**; późniejszy spadek ≥5%: **{sum(x>=5 for x in favorable)}/{len(complete)}**. Te zdarzenia mogą wystąpić w tej samej transakcji.')
+              else: md.append('Brak pełnych okien 60 minut do policzenia ruchów.')
+              md.extend(['', '## TP/SL porównawcze, 60m (wszystkie grupy; wyniki rozstrzygnięte)', '', '| TP/SL | TP | SL | Niejednoznaczne | Żaden | Bez danych |', '|---|---:|---:|---:|---:|---:|'])
+              for tp,sl in PAIRS_TP_SL:
+                  counts={s:sum(e[f'status_{tp}_{sl}']==s for e in events) for s in ('TP','SL','niejednoznaczne','nierozstrzygniete','nieocenione')}
+                  md.append(f'| {tp}% / {sl}% | {counts["TP"]} | {counts["SL"]} | {counts["niejednoznaczne"]} | {counts["nierozstrzygniete"]} | {counts["nieocenione"]} |')
+              md.extend(['','## Instrumenty i błędy',f'- Wszystkie sprawdzone instrumenty: {tested}. Pełna lista z epizodami oraz bez sygnałów jest w `instrumenty.csv`.','- Dobór symboli: 9 największych obrotów, 9 deterministycznie wybranych z płynnych, 9 obecnych liderów wzrostu, plus CT/BR/JCT (bez duplikatów).'])
+              if problems:
+                  md.append(f'- Błędy/pominięte: {len(problems)}. '+ '; '.join(f'{symbol}: {error[:70]}' for symbol,error in problems[:10]))
+              md += ['','**Ograniczenia:** żadnych OI/funding ani FVG, żadnych rzeczywistych zleceń. Próba ograniczona do krótkiego okresu. Historię aktywnych instrumentów wybrano w dniu testu. Świece 1m nie pozwalają rozpoznać wewnętrznej kolejności TP i SL. GitHubowe wyzwalanie co kilka minut nie jest testowane. Przed wdrożeniem potrzebne okresy poza próbą i testy „na żywo” bez transakcji.','', '**Działający scanner.py, Telegram, konfiguracja, OI i Netlify nie są zmieniane.**']
+              report='\n'.join(md)+'\n'
+              (OUT/'raport.md').write_text(report,encoding='utf-8')
+              print(report,flush=True)
+              step_summary=os.environ.get('GITHUB_STEP_SUMMARY')
+              if step_summary:
+                  with open(step_summary,'a',encoding='utf-8') as f: f.write(report)
+
+          if __name__=='__main__':
+              main()
+          PYCODE
+          python3 /tmp/pump_short_test5.py
+
+      - name: Zapisz raport i CSV do pobrania
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PUMP-SHORT-TEST-5-raport
+          path: test5-results/
+          if-no-files-found: warn
+          retention-days: 30
