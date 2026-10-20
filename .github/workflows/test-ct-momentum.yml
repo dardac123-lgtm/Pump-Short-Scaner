@@ -1,0 +1,275 @@
+name: CTUSDT - test wyhamowania 1m (bez alertow)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  momentum_probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Analyze CTUSDT minute-by-minute (only closed candles)
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import csv
+          import json
+          import math
+          import os
+          import sys
+          import time
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          from datetime import datetime, timedelta, timezone
+          from zoneinfo import ZoneInfo
+
+          API = "https://api-contract.weex.com/capi/v3/market/historyKlines"
+          SYMBOL = "CTUSDT"
+          TZ = ZoneInfo("Europe/Oslo")
+          START = datetime(2026, 10, 19, 0, 0, tzinfo=timezone.utc)
+          END = min(datetime(2026, 10, 19, 12, 0, tzinfo=timezone.utc), datetime.now(timezone.utc) - timedelta(minutes=2))
+          MINUTE = 60000
+          # Testowe wartosci. NIE sa zoptymalizowane ani zaleceniem transakcyjnym.
+          IMPULSE_FROM_LOW_PCT = 20
+          IMPULSE_15M_PCT = 8
+          BUY_DROP_PP = 10
+          DECEL_5M_PP = 4
+          ABSORPTION_VOL_RATIO = 1.30
+
+          def stamp(ms):
+              return datetime.fromtimestamp(ms / 1000, timezone.utc).astimezone(TZ).strftime("%d.%m.%Y %H:%M")
+
+          def pct(a, b):
+              return 100.0 * (a / b - 1.0) if b is not None and b > 0 else None
+
+          def fmt(v, unit="%"):
+              return "n/d" if v is None or not math.isfinite(v) else f"{v:+.2f}{unit}"
+
+          def download():
+              start_ms, end_ms = int(START.timestamp() * 1000), int(END.timestamp() * 1000)
+              if end_ms <= start_ms:
+                  raise RuntimeError("Okno danych jeszcze niedostepne")
+              bars = {}
+              pages = 0
+              for cursor in range(start_ms, end_ms + 1, 100 * MINUTE):
+                  finish = min(end_ms, cursor + 99 * MINUTE)
+                  params = {"symbol": SYMBOL, "interval": "1m", "startTime": cursor, "endTime": finish,
+                            "limit": 100, "priceType": "LAST"}
+                  url = API + "?" + urllib.parse.urlencode(params)
+                  data = None
+                  for attempt in range(3):
+                      try:
+                          req = urllib.request.Request(url, headers={"Accept": "application/json",
+                              "User-Agent": "PUMP-SHORT-CT-momentum-research/1.0"})
+                          with urllib.request.urlopen(req, timeout=25) as response:
+                              data = json.load(response)
+                          if not isinstance(data, list):
+                              raise ValueError("API nie zwrocilo listy swiec: " + str(data)[:180])
+                          break
+                      except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, ValueError) as exc:
+                          if attempt == 2:
+                              raise RuntimeError(f"WEEX API error: {exc}") from exc
+                          time.sleep(2 ** attempt)
+                  pages += 1
+                  for record in data:
+                      if not isinstance(record, list) or len(record) < 11:
+                          continue
+                      try:
+                          t = int(record[0])
+                          if t < start_ms or t > end_ms:
+                              continue
+                          c = dict(t=t, o=float(record[1]), h=float(record[2]),
+                                   l=float(record[3]), c=float(record[4]),
+                                   vol=float(record[7]), buy=float(record[10]))
+                          if (not all(math.isfinite(x) for x in (c["o"], c["h"], c["l"], c["c"], c["vol"], c["buy"]))
+                              or min(c["o"], c["h"], c["l"], c["c"]) <= 0
+                              or c["h"] < max(c["o"], c["c"], c["l"])
+                              or c["l"] > min(c["o"], c["c"])
+                              or c["vol"] < 0 or c["buy"] < 0 or c["buy"] > c["vol"] * 1.001):
+                              continue
+                          bars[t] = c
+                      except (ValueError, TypeError, OverflowError):
+                          continue
+                  time.sleep(0.1)
+              rows = [bars[k] for k in sorted(bars)]
+              if len(rows) < 120:
+                  raise RuntimeError("Za malo prawidlowych swiec (" + str(len(rows)) + ")")
+              gaps = [i for i in range(1, len(rows)) if rows[i]["t"] - rows[i-1]["t"] != MINUTE]
+              return rows, gaps, pages
+
+          def buy_share(window):
+              total = sum(b["vol"] for b in window)
+              return 100 * sum(b["buy"] for b in window) / total if total > 0 else None
+
+          def all_features(bars, gaps):
+              output = []
+              segment_begins = [0] * len(bars)
+              for i in range(1, len(bars)):
+                  segment_begins[i] = i if i in gaps else segment_begins[i-1]
+              for i, b in enumerate(bars):
+                  # Wszystkie obliczenia wykorzystuja SWIECE ZAMKNIETE do i wlacznie.
+                  # Nie wykorzystujemy historycznego maksimum ustalonego po fakcie.
+                  if i - segment_begins[i] < 60:
+                      output.append(None)
+                      continue
+                  prior60 = bars[i-60:i]   # minimum przed biezaca swieca
+                  prev5 = bars[i-9:i-4]  # 5 swiec (t-9..t-5)
+                  last5 = bars[i-4:i+1]  # 5 swiec (t-4..t)
+                  baseline = min(x["l"] for x in prior60)
+                  growth = pct(b["h"], baseline)
+                  ret15 = pct(b["c"], bars[i-15]["c"])
+                  ret5 = pct(b["c"], bars[i-5]["c"])
+                  prevret5 = pct(bars[i-5]["c"], bars[i-10]["c"])
+                  sh5, shp = buy_share(last5), buy_share(prev5)
+                  buy_drop = (shp - sh5) if sh5 is not None and shp is not None else None
+                  slowdown = prevret5 - ret5
+                  cur_vol = sum(x["vol"] for x in last5)
+                  prev_vol = sum(x["vol"] for x in prev5)
+                  vol_ratio = cur_vol / prev_vol if prev_vol > 0 else None
+                  rng = b["h"] - b["l"]
+                  upper_wick = (b["h"] - max(b["o"], b["c"])) / rng if rng > 0 else 0.0
+                  upper_pct = pct(b["h"], max(b["o"], b["c"]))
+
+                  # Obserwacja: lokalny impuls. Nie jest sygnalem SHORT.
+                  impulse = growth >= IMPULSE_FROM_LOW_PCT and ret15 >= IMPULSE_15M_PCT
+                  # Wczesne oznaki wyhamowania liczone niezaleznie.
+                  flags = []
+                  if buy_drop is not None and buy_drop >= BUY_DROP_PP:
+                      flags.append("spadek_udzialu_kupujacych")
+                  if slowdown >= DECEL_5M_PP and prevret5 > 1:
+                      flags.append("spowolnienie_momentum")
+                  if upper_wick >= 0.50 and upper_pct is not None and upper_pct >= 2:
+                      flags.append("dlugi_gorny_knot")
+                  if (vol_ratio is not None and vol_ratio >= ABSORPTION_VOL_RATIO
+                      and prevret5 > 2 and ret5 <= prevret5 * 0.4 and sh5 is not None and sh5 >= 50):
+                      flags.append("mozliwa_absorpcja")
+                  output.append(dict(t=b["t"], close=b["c"], high=b["h"],
+                      baseline=baseline, growth=growth, ret15=ret15, ret5=ret5,
+                      ret5prev=prevret5, share=sh5, share_prev=shp,
+                      buy_drop=buy_drop, slowdown=slowdown, vol_ratio=vol_ratio,
+                      vol5=cur_vol, upper_wick=100*upper_wick,
+                      flags=flags, impulse=impulse))
+              return output
+
+          def events(bars, features):
+              # Stany sa AKTYWOWANE WYŁĄCZNIE od chwili pierwszej obserwacji.
+              # Przyklady dla jednego epizodu; zero powiadomien.
+              first_watch = None
+              first_weak = None
+              first_pullback = None
+              first_pump_peak_so_far = None
+              watch_until = -1
+              for i, f in enumerate(features):
+                  if f is None:
+                      continue
+                  if f["impulse"]:
+                      # Epizod trzyma się przez 30 minut od ostatniej minuty z impulsem.
+                      watch_until = i + 30
+                      if first_watch is None:
+                          first_watch = i
+                  if first_watch is None or i > watch_until:
+                      continue
+                  if len(f["flags"]) >= 1 and first_weak is None:
+                      first_weak = i
+                  # Dwie niezalezne oznaki (z dopuszczeniem ze nie sa statystycznie niezalezne).
+                  if len(f["flags"]) >= 2 and first_pullback is None:
+                      first_pullback = i
+              return first_watch, first_weak, first_pullback
+
+          def main():
+              bars, gaps, pages = download()
+              features = all_features(bars, gaps)
+              w, weak, pullback = events(bars, features)
+              # Szczyt znany dopiero w RETROSPEKCJI; nigdy nie steruje alertami.
+              target = 0.42855
+              peak_idx = min(range(len(bars)), key=lambda j: abs(bars[j]["h"] - target))
+              peak_match = abs(bars[peak_idx]["h"] / target - 1) <= 0.005
+              if not peak_match:
+                  peak_idx = max(range(len(bars)), key=lambda j: bars[j]["h"])
+              peak = bars[peak_idx]
+
+              header = [
+                  "CTUSDT / TEST 2 - symulacja minutowa na ZAMKNIETYCH swiecach WEEX",
+                  f"Dane: {len(bars)} swiec, {pages} pobran, luki czasowe: {len(gaps)}; godziny Oslo",
+                  "Wyniki NIE sa sygnalami handlowymi ani ocena skutecznosci strategii.",
+                  "Progi sa eksperymentalne; wskazniki OI/funding nie wystepuja w swiecach i nie sa tu symulowane.",
+                  "Definicje: 20% od minimum 60m + 8%/15m => cicha obserwacja; 1 oznaka => slabnie; 2+ => pullback.",
+                  "Oznaki: spadek taker BUY o 10pp/5m, hamowanie momentum 5m o 4pp, knot >=50% z >2% od korpusu, absorpcja testowa.",
+              ]
+              def event_line(label, idx):
+                  if idx is None:
+                      return label + ": BRAK przy testowych progach"
+                  f = features[idx]
+                  return (f"{label}: swieca {stamp(f['t'])}, informacja dostepna ok. "
+                          f"{stamp(f['t'] + MINUTE)}; close {f['close']:.5f}; "
+                          f"15m {fmt(f['ret15'])}; BUY5 {fmt(f['share'])}; "
+                          f"cechy: {', '.join(f['flags']) or 'brak'}")
+              header.append(event_line("PIERWSZA OBSERWACJA", w))
+              header.append(event_line("PIERWSZE OSLABIENIE", weak))
+              header.append(event_line("PIERWSZY MOZLIWY PULLBACK", pullback))
+              header.append(f"SZCZYT (TYLKO RETROSPEKCJA): {peak['h']:.5f} @ {stamp(peak['t'])}; zgodny z ekranem: {peak_match}")
+              for label, j in (("Obserwacja",w),("Oslabienie",weak),("Pullback",pullback)):
+                  if j is not None:
+                      f = features[j]
+                      header.append(f"{label}: close wobec pozniej znanego szczytu {fmt(pct(f['close'],peak['h']))}; "
+                                    f"opoznienie od czasu swiecy szczytowej {(f['t'] - peak['t'])//MINUTE:+d} min.")
+              header += ["", "OKOLICE SZCZYTU (kazdy wiersz to dane dostepne po ZAMKNIECIU podanej swiecy):"]
+              for i in range(max(0, peak_idx - 12), min(len(bars), peak_idx + 16)):
+                  f = features[i]
+                  if f is None:
+                      continue
+                  status = ("OBS" if f["impulse"] else "---") + "/" + ("W" if f["flags"] else "-") + "/" + ("P" if len(f["flags"]) >= 2 else "-")
+                  header.append(f"{stamp(f['t'])} | close {f['close']:.5f} | 5m {fmt(f['ret5']):>8} | "
+                      f"15m {fmt(f['ret15']):>8} | BUY5 {fmt(f['share']):>8} | BUY poprzednie5 {fmt(f['share_prev']):>8} | "
+                      f"knot {f['upper_wick']:5.1f}% | {status} | {', '.join(f['flags']) or '-'}")
+              header += ["", "UWAGA: o faktycznym spadku po szczycie dowiadujemy sie po czasie; "
+                  "zaden stan nie wykorzystuje przyszlych swiec ani wczesniej ustalonego 0,42855.",
+                  "Poziom OI i funding w tym tescie: brak danych; nie imputujemy ich."]
+              report = "\n".join(header)
+              print(report)
+              with open("ct_momentum_report.txt", "w", encoding="utf-8") as out:
+                  out.write(report + "\n")
+              with open("ct_momentum_all_minutes.csv", "w", encoding="utf-8", newline="") as out:
+                  fieldnames = ["time_oslo", "available_at_oslo", "close", "high", "growth60_low_pct", "change5_pct", "change15_pct",
+                                "buyer_share_last5_pct", "buyer_share_prev5_pct", "buyer_drop_pp", "momentum_slowdown_pp",
+                                "volume_5m_usdt", "volume_ratio_5m_vs_prev5", "upper_wick_pct_range",
+                                "watch_trigger", "weakening_features", "feature_count"]
+                  writer = csv.DictWriter(out, fieldnames=fieldnames)
+                  writer.writeheader()
+                  for f in features:
+                      if f is None:
+                          continue
+                      writer.writerow(dict(time_oslo=stamp(f["t"]), available_at_oslo=stamp(f["t"] + MINUTE),
+                          close=f["close"], high=f["high"], growth60_low_pct=f["growth"],
+                          change5_pct=f["ret5"], change15_pct=f["ret15"],
+                          buyer_share_last5_pct=f["share"], buyer_share_prev5_pct=f["share_prev"],
+                          buyer_drop_pp=f["buy_drop"], momentum_slowdown_pp=f["slowdown"],
+                          volume_5m_usdt=f["vol5"], volume_ratio_5m_vs_prev5=f["vol_ratio"],
+                          upper_wick_pct_range=f["upper_wick"], watch_trigger=f["impulse"],
+                          weakening_features=";".join(f["flags"]), feature_count=len(f["flags"])))
+              summary = os.getenv("GITHUB_STEP_SUMMARY")
+              if summary:
+                  with open(summary, "a", encoding="utf-8") as out:
+                      out.write("## CTUSDT - test 2 wyhamowania pompy (1 minuta)\n\n")
+                      out.write("```text\n" + report + "\n```\n")
+
+          if __name__ == "__main__":
+              try:
+                  main()
+              except Exception as err:
+                  print(f"BLAD TESTU: {type(err).__name__}: {err}", file=sys.stderr)
+                  raise
+          PY
+      - name: Attach full one-minute feature history
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CTUSDT-momentum-test2-19-10-2026
+          path: |
+            ct_momentum_report.txt
+            ct_momentum_all_minutes.csv
+          if-no-files-found: warn
