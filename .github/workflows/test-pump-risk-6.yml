@@ -1,0 +1,353 @@
+name: PUMP-SHORT - TEST 6 (kontrola ryzyka, bez alertow)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  research_6:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Pobierz historyczne swiece WEEX i porownaj 4 warianty
+        shell: bash
+        run: |
+          python3 - <<'PYCODE'
+          import json, math, os, sys, time, urllib.parse, urllib.request, urllib.error
+          from datetime import datetime, timedelta, timezone
+          from zoneinfo import ZoneInfo
+          
+          API = 'https://api-contract.weex.com/capi/v3/market/historyKlines'
+          TZ = ZoneInfo('Europe/Oslo')
+          MIN = 60000
+          # Ustawienia WYŁĄCZNIE do eksperymentu, nie są zaleceniem transakcyjnym.
+          WATCH_24H = 20
+          WATCH_4H_LOW = 15
+          WATCH_60M_LOW = 12
+          WATCH_15M = 7
+          WATCH_5M = 5
+          BUY_DROP_PP = 10
+          DECEL_PP = 4
+          WICK_RATIO = .50
+          WICK_PCT = 2
+          ABSORB_VOLUME = 1.3
+          
+          def local_ms(s):
+              return int(datetime.strptime(s, '%Y-%m-%d %H:%M').replace(tzinfo=TZ).timestamp()*1000)
+          
+          def stamp(ms):
+              return datetime.fromtimestamp(ms/1000, timezone.utc).astimezone(TZ).strftime('%d.%m %H:%M')
+          
+          def pct(value, baseline):
+              return 100*(value/baseline-1) if baseline is not None and baseline>0 else None
+          
+          def fmt(v):
+              return 'n/d' if v is None else f'{v:+.2f}%'
+          
+          def get_candles(symbol, begin, finish):
+              # Nie pobieramy świecy bieżącej ani minut historycznych, które jeszcze nie istnieją.
+              now = int((datetime.now(timezone.utc)-timedelta(minutes=2)).timestamp()*1000)
+              first, last = local_ms(begin), min(local_ms(finish), now)
+              rows={}; calls=0
+              if first>=last: raise RuntimeError(f'Brak zamknietych swiec dla {symbol}')
+              for t in range(first,last+1,100*MIN):
+                  end=min(last,t+99*MIN)
+                  q=urllib.parse.urlencode({'symbol':symbol,'interval':'1m','startTime':t,'endTime':end,'limit':100,'priceType':'LAST'})
+                  url=API+'?'+q
+                  for attempt in range(5):
+                      try:
+                          r=urllib.request.Request(url,headers={'Accept':'application/json','User-Agent':'PUMP-SHORT-test-6-research/1.0'})
+                          with urllib.request.urlopen(r, timeout=30) as response: data=json.load(response)
+                          if not isinstance(data,list): raise ValueError('Nieoczekiwany format WEEX: '+str(data)[:150])
+                          break
+                      except (urllib.error.HTTPError,urllib.error.URLError, TimeoutError, ValueError) as exc:
+                          if attempt==4: raise RuntimeError(f'Blad WEEX {symbol}: {exc}') from exc
+                          time.sleep(min(2**attempt,8))
+                  calls+=1
+                  for record in data:
+                      if not isinstance(record,list) or len(record)<11: continue
+                      try:
+                          key=int(record[0]); o,h,l,c=map(float,record[1:5]); volume=float(record[7]); buy=float(record[10])
+                          if not(first<=key<=last and all(map(math.isfinite,(o,h,l,c,volume,buy)))): continue
+                          if min(o,h,l,c)<=0 or l>min(o,c) or h<max(o,c) or volume<0 or buy<0 or buy>volume*1.001: continue
+                          rows[key]={'t':key,'o':o,'h':h,'l':l,'c':c,'v':volume,'b':buy}
+                      except (TypeError,ValueError,OverflowError): continue
+                  time.sleep(.15)
+              candles=[rows[x] for x in sorted(rows)]
+              gaps={i for i in range(1,len(candles)) if candles[i]['t']-candles[i-1]['t']!=MIN}
+              if len(candles)<300: raise RuntimeError(f'Za malo danych {symbol}: {len(candles)}')
+              return candles,gaps,calls
+          
+          def share(items):
+              total=sum(b['v'] for b in items)
+              return 100*sum(b['b'] for b in items)/total if total>0 else None
+          
+          def features(rows,gaps):
+              result=[]; seg=0
+              for i,b in enumerate(rows):
+                  if i in gaps: seg=i
+                  if i-seg<240:
+                      result.append(None); continue
+                  # Baza jest z przeszłości. Nie wykorzystujemy przyszłego maksimum pompy.
+                  min60=min(x['l'] for x in rows[i-60:i])
+                  min240=min(x['l'] for x in rows[i-240:i])
+                  r5=pct(b['c'],rows[i-5]['c'])
+                  r15=pct(b['c'],rows[i-15]['c'])
+                  r60=pct(b['c'],rows[i-60]['c'])
+                  four_high=pct(b['h'],min240)
+                  four_close=pct(b['c'],min240)
+                  one_high=pct(b['h'],min60)
+                  one_close=pct(b['c'],min60)
+                  r24=pct(b['c'],rows[i-1440]['c']) if i-seg>=1440 else None
+                  gates=[]
+                  if r24 is not None and r24>=WATCH_24H: gates.append('24h')
+                  if four_high>=WATCH_4H_LOW and four_close>=8: gates.append('wzrost_4h')
+                  if one_high>=WATCH_60M_LOW and one_close>=6: gates.append('impuls_60m')
+                  if r15>=WATCH_15M: gates.append('impuls_15m')
+                  if r5>=WATCH_5M: gates.append('impuls_5m')
+                  prev5=rows[i-9:i-4]; last5=rows[i-4:i+1]
+                  buy_prev,buy_now=share(prev5),share(last5)
+                  buy_drop=buy_prev-buy_now if buy_prev is not None and buy_now is not None else None
+                  prev_r5=pct(rows[i-5]['c'],rows[i-10]['c'])
+                  slowdown=prev_r5-r5
+                  wick=(b['h']-max(b['o'],b['c']))/(b['h']-b['l']) if b['h']>b['l'] else 0
+                  wick_percent=pct(b['h'],max(b['o'],b['c']))
+                  oldvol=sum(x['v'] for x in prev5); newvol=sum(x['v'] for x in last5)
+                  vol_ratio=newvol/oldvol if oldvol>0 else None
+                  signs=[]
+                  if buy_drop is not None and buy_drop>=BUY_DROP_PP: signs.append('kupujacy_slabna')
+                  if prev_r5>1 and slowdown>=DECEL_PP: signs.append('momentum_hamuje')
+                  if wick>=WICK_RATIO and wick_percent is not None and wick_percent>=WICK_PCT: signs.append('gorny_knot')
+                  if vol_ratio is not None and vol_ratio>=ABSORB_VOLUME and prev_r5>2 and r5<=prev_r5*.4 and buy_now is not None and buy_now>=50:
+                      signs.append('mozliwa_absorpcja')
+                  result.append({'t':b['t'],'close':b['c'],'gates':gates,'signs':signs,'r24':r24,'r15':r15,'r5':r5,'r60':r60,'r4low':four_close,'buy5':buy_now,'buydrop':buy_drop})
+              return result
+          
+          import csv
+          from collections import Counter, defaultdict
+          
+          # Lista zamrozona na podstawie pliku instrumenty.csv z TEST 5. Nie zmieniamy jej
+          # na podstawie wynikow TEST 6. Jest to test historyczny poza oknem TEST 5.
+          COHORT = [
+            ('BTCUSDT','duzy_obrot'), ('ETHUSDT','duzy_obrot'), ('1000PEPEUSDT','duzy_obrot'),
+            ('BZUSDT','duzy_obrot'), ('GOOGLUSDT','duzy_obrot'), ('SOLUSDT','duzy_obrot'),
+            ('SKHYNIXUSDT','duzy_obrot'), ('ZECUSDT','duzy_obrot'), ('BTWUSDT','duzy_obrot'),
+            ('SNXXUSDT','przekroj'), ('CVXUSDT','przekroj'), ('RLCUSDT','przekroj'),
+            ('MRVLUSDT','przekroj'), ('MAGMAUSDT','przekroj'), ('MYXUSDT','przekroj'),
+            ('CUSDT','przekroj'), ('HUSDT','przekroj'), ('CCUSDT','przekroj'),
+            ('ERAUSDT','liderzy_teraz'), ('GRVTUSDT','liderzy_teraz'), ('XNYUSDT','liderzy_teraz'),
+            ('PHAUSDT','liderzy_teraz'), ('ALTUSDT','liderzy_teraz'), ('CTRUSDT','liderzy_teraz'),
+            ('BATUSDT','liderzy_teraz'), ('METISUSDT','liderzy_teraz'), ('NILUSDT','liderzy_teraz'),
+            ('CTUSDT','przyklady_uzytkownika'),('BRUSDT','przyklady_uzytkownika'),
+            ('JCTUSDT','przyklady_uzytkownika')
+          ]
+          
+          START_DOWNLOAD = '2026-10-15 00:00'  # rozruch przed testem
+          END_DOWNLOAD   = '2026-10-19 01:00'  # bufor na wynik do 60 minut
+          START_TEST     = '2026-10-16 00:00'
+          END_TEST       = '2026-10-19 00:00'  # koniec 18.10, NIE wlaczamy 19.10
+          
+          VARIANTS = (
+              'BAZA',                       # dwa niezalezne sygnaly oslabienia
+              'SILNY_IMPULS',              # r15 >=7% LUB r5 >=5%
+              'BLISKO_MAKSIMUM',           # zamkniecie do 5% ponizej najwyzszej ceny ostatnich 60m
+              'OBA_FILTRY',                # polaczenie powyzszych
+          )
+          
+          FIELDS = ['symbol','grupa','wariant','czas_oslo','cena_sygnalu','cena_wejscia_test',
+                    'cechy','bramki','r5','r15','r24','buy5','odleglosc_od_szczytu_60m',
+                    'tp3_sl5','minuta_3_5','tp5_sl5','minuta_5_5','max_wzrost_przeciw_60m',
+                    'max_spadek_60m','dane_60m']
+          
+          
+          def passes(name, f, distance):
+              if len(f['signs'])<2:
+                  return False
+              impulse=(f['r15'] is not None and f['r15']>=7) or (f['r5'] is not None and f['r5']>=5)
+              near=(distance is not None and distance>=-5)
+              return (name=='BAZA' or
+                      (name=='SILNY_IMPULS' and impulse) or
+                      (name=='BLISKO_MAKSIMUM' and near) or
+                      (name=='OBA_FILTRY' and impulse and near))
+          
+          
+          def get_signals(candles, ff, category, symbol):
+              # Pierwszy kwalifikujacy sygnal w kazdym epizodzie DLA KAZDEGO WARIANTU.
+              # Zmiana filtra moze opoznic sygnal, ale nigdy nie korzysta z przyszlych danych.
+              # Nie jest to dowod poprawy. Porownania maja tylko charakter diagnostyczny.
+              allowed_start, allowed_end = local_ms(START_TEST),local_ms(END_TEST)
+              active_until=-1
+              episode=0
+              signals=[]
+              sent=set()
+              prev_t=None
+              for i, f in enumerate(ff):
+                  if f is None:
+                      continue
+                  if prev_t is not None and f['t']-prev_t!=MIN:
+                      active_until=-1
+                  prev_t=f['t']
+                  if f['gates']:
+                      if i>active_until:
+                          episode+=1
+                      active_until=i+30
+                  if i>active_until or not (allowed_start<=f['t']+MIN<allowed_end):
+                      continue
+                  high60=max(x['h'] for x in candles[i-59:i+1])
+                  distance=pct(f['close'],high60)
+                  for variant in VARIANTS:
+                      if (episode, variant) in sent or not passes(variant,f,distance):
+                          continue
+                      sent.add((episode,variant))
+                      signals.append({
+                          'symbol':symbol,'grupa':category,'wariant':variant,
+                          'czas_oslo':stamp(f['t']+MIN),'cena_sygnalu':f['close'],
+                          'cechy':'+'.join(f['signs']),'bramki':'+'.join(f['gates']),
+                          'r5':f['r5'],'r15':f['r15'],'r24':f['r24'],'buy5':f['buy5'],
+                          'odleglosc_od_szczytu_60m':distance,'index':i,
+                      })
+              return signals,episode
+          
+          
+          def outcome(rows, index, target, stop):
+              # Zadna z aktualnych swiec sygnalowych nie jest wykorzystywana do realizacji.
+              # Wejscie testowe nastepuje na OTWARCIU NASTEPNEJ swiecy (nie na close).
+              entry_i=index+1
+              if entry_i>=len(rows):
+                  return 'brak_danych', '', None, None, None, False
+              entry=rows[entry_i]['o']
+              if entry<=0:
+                  return 'brak_danych', '', None, None, None, False
+              end=entry_i+60
+              block=rows[entry_i:end]
+              full=(len(block)==60 and all(rows[j]['t']-rows[j-1]['t']==MIN for j in range(entry_i+1,end)))
+              if not full:
+                  return 'brak_danych','',entry,None,None,False
+              adverse=100*(max(b['h'] for b in block)/entry-1)
+              favorable=100*(1-min(b['l'] for b in block)/entry)
+              for minute,b in enumerate(block,1):
+                  hit_tp=b['l']<=entry*(1-target/100)
+                  hit_sl=b['h']>=entry*(1+stop/100)
+                  if hit_tp and hit_sl:
+                      return 'niejednoznaczne',minute,entry,adverse,favorable,True
+                  if hit_tp:
+                      return 'TP',minute,entry,adverse,favorable,True
+                  if hit_sl:
+                      return 'SL',minute,entry,adverse,favorable,True
+              return 'brak_rozstrzygniecia', '',entry,adverse,favorable,True
+          
+          
+          def main():
+              os.makedirs('test6_output', exist_ok=True)
+              all_signals=[]
+              inputs=[]
+              unavailable=[]
+              for j,(symbol,category) in enumerate(COHORT,1):
+                  try:
+                      candles,gaps,calls=get_candles(symbol,START_DOWNLOAD,END_DOWNLOAD)
+                      if gaps:
+                          # Luki swiec: nie wolno zakladac ciaglosci 5m/15m i nie wolno oceniac 60m w poprzek luk.
+                          # features() samo resetuje rozruch po kazdej luce.
+                          pass
+                      ff=features(candles,gaps)
+                      signals,episodes=get_signals(candles,ff,category,symbol)
+                      for event in signals:
+                          ix=event.pop('index')
+                          st3,t3,entry,adv,fav,full=outcome(candles,ix,3,5)
+                          st5,t5,_,_,_,_=outcome(candles,ix,5,5)
+                          event.update({'cena_wejscia_test':entry, 'tp3_sl5':st3,
+                                        'minuta_3_5':t3,'tp5_sl5':st5,'minuta_5_5':t5,
+                                        'max_wzrost_przeciw_60m':adv, 'max_spadek_60m':fav,
+                                        'dane_60m':full})
+                          all_signals.append(event)
+                      inputs.append({'symbol':symbol,'grupa':category,'swiece':len(candles),
+                                     'luki':len(gaps),'zapytania':calls,'epizody':episodes,
+                                     'sygnaly_bazowe':sum(s['wariant']=='BAZA' for s in signals)})
+                      print(f'[{j:02}/{len(COHORT)}] {symbol}: {len(candles)} swiec, '
+                            f'{len(gaps)} luk, {episodes} epizodow, '
+                            f'{sum(s["wariant"]=="BAZA" for s in signals)} sygnalow bazowych',flush=True)
+                  except Exception as e:
+                      unavailable.append((symbol,str(e)))
+                      print(f'[{j:02}/{len(COHORT)}] {symbol}: BRAK DANYCH / BLAD: {e}',flush=True)
+          
+              for name,records,fields in [
+                  ('sygnaly_test6.csv',all_signals,FIELDS),
+                  ('instrumenty_test6.csv',inputs,['symbol','grupa','swiece','luki','zapytania','epizody','sygnaly_bazowe'])
+              ]:
+                  with open('test6_output/'+name,'w',encoding='utf-8-sig',newline='') as handle:
+                      writer=csv.DictWriter(handle,fieldnames=fields,extrasaction='ignore')
+                      writer.writeheader(); writer.writerows(records)
+          
+              lines=[
+                  '# PUMP-SHORT / TEST 6: kontrola ryzyka wczesnych SHORTÓW',
+                  '',
+                  '## Uczciwy zakres',
+                  '- Oddzielny test historyczny na zamknietych swiecach 1m WEEX; BEZ tradingu, Telegrama i zmian w skanerze.',
+                  '- Badane dni: **16-18.10.2026** (Europe/Oslo). To **inny okres** niz test 5 (19-20.10.2026).',
+                  '- Ta sama, z gory zamrozona lista 30 instrumentow co TEST 5. **Dobor obecnych liderow do starszego okresu powoduje bias selekcji.**',
+                  '- Bazowy detektor z TEST 4/5: co najmniej jedna bramka obserwacji oraz co najmniej 2 oznaki oslabienia.',
+                  '- Przed wynikami okreslone filtry DIAGNOSTYCZNE (ponizej) porownane z baza. Nie optymalizujemy progow po wyniku.',
+                  '- Sygnał po zamknieciu swiecy 1m, wejscie hipotetyczne na otwarciu nastepnej swiecy. Tylko pierwsze wskazanie na epizod.',
+                  '- **Bez danych historycznych OI i fundingu.** Nie wolno ich dopisywac z obecnych odczytow; filtry OI przetestujemy dopiero po zebraniu ich historii.',
+                  '',
+                  '## Badane warianty',
+                  '1. **BAZA:** wszystkie bazowe sygnaly.',
+                  '2. **SILNY_IMPULS:** baza + wzrost >=7% w 15min lub >=5% w 5min.',
+                  '3. **BLISKO_MAKSIMUM:** baza + cena zamkniecia nie dalej niz 5% od NAJWYZSZEJ ceny znanej z ostatnich 60min.',
+                  '4. **OBA_FILTRY:** lacznie warunki z 2 i 3.',
+                  '',
+                  '## Porownanie wariantow (60 minut po sygnale)',
+                  '| Wariant | Sygnały | TP 3% / SL 5% | SL 3/5 | TP 5% / SL 5% | SL 5/5 | Nierozstrz. lub brak danych 5/5 | Wzrost >=5% przeciw SHORT |',
+                  '|---|---:|---:|---:|---:|---:|---:|---:|',
+              ]
+              for variant in VARIANTS:
+                  subset=[s for s in all_signals if s['wariant']==variant]
+                  c3=Counter(s['tp3_sl5'] for s in subset)
+                  c5=Counter(s['tp5_sl5'] for s in subset)
+                  risk=sum(s['max_wzrost_przeciw_60m'] is not None and s['max_wzrost_przeciw_60m']>=5 for s in subset)
+                  unresolved=len(subset)-c5['TP']-c5['SL']
+                  lines.append(f'| {variant} | {len(subset)} | {c3["TP"]} | {c3["SL"]} | {c5["TP"]} | {c5["SL"]} | {unresolved} | {risk} |')
+          
+              base=[s for s in all_signals if s['wariant']=='BAZA']
+              topbad=sorted((s for s in base if s['max_wzrost_przeciw_60m'] is not None),
+                            key=lambda s:s['max_wzrost_przeciw_60m'], reverse=True)[:12]
+              lines += ['', '## Największe ruchy przeciw SHORTOWI (z grupy BAZA)',
+                        '| Coin | Czas Oslo | Wzrost przeciw SHORT w 60min | Cofnięcie w 60min | TP5/SL5 |',
+                        '|---|---|---:|---:|---|']
+              for s in topbad:
+                  lines.append(f'| {s["symbol"]} | {s["czas_oslo"]} | {s["max_wzrost_przeciw_60m"]:+.2f}% | {s["max_spadek_60m"]:+.2f}% | {s["tp5_sl5"]} |')
+              lines += ['',f'Przetworzone instrumenty: **{len(inputs)}/{len(COHORT)}**. Sygnaly bazowe: **{len(base)}**.',
+                        f'Instrumenty bez pelnych danych lub bledy: **{len(unavailable)}**.',
+                        '', '## Ograniczenia i nastepny krok',
+                        '- Test nie przewiduje ruchow na podstawie przyszlego maksimum ani nie przypisuje zyskow recznie dokladanym siatkom.',
+                        '- Jesli TP i SL pada w tej samej 1m swiecy, oznaczamy **niejednoznaczne**.',
+                        '- Nie ma prowizji, slippage, fundingu ani modelu Cross w zestawieniu wygranych/przegranych. Zweryfikujemy je przed podejmowaniem jakichkolwiek wnioskow o rentownosci.',
+                        '- Porownanie ma ujawnic kompromis: ile ryzykownych sygnalow znika, ale tez ile korzystnych okazji zostaje utraconych lub opoznionych.',
+                        '- Dopiero po wiekszej liczbie niezaleznych epizodow warto badac ustawienia statystycznie i uruchomic cicha rejestracje OI.',
+                        '- **Działający PUMP-SHORT, Telegram, Netlify i historia alertow pozostają bez zmian.**',
+                       ]
+              if unavailable:
+                  lines+=['','## Nierozliczone symbole']
+                  lines.extend(f'- {symbol}: {error}' for symbol,error in unavailable)
+              report='\n'.join(lines)+'\n'
+              with open('test6_output/raport_test6.md','w',encoding='utf-8') as h:h.write(report)
+              print('\n'+report)
+              if os.getenv('GITHUB_STEP_SUMMARY'):
+                  with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as h:h.write(report)
+              if len(inputs)<20:
+                  print('BLAD: za malo instrumentow z kompletnymi danymi (mniej niz 20).',file=sys.stderr)
+                  sys.exit(1)
+          
+          if __name__ == '__main__':
+              main()
+          PYCODE
+      - name: Zapisz raport i CSV
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PUMP-SHORT-TEST-6-raport
+          path: test6_output/
+          if-no-files-found: warn
+          retention-days: 30
