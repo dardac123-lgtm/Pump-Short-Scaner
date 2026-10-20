@@ -1,0 +1,394 @@
+name: PUMP-SHORT - TEST 7 (ryzyko przed wyjsciem, bez alertow)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  research_7:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: WEEX 1m - test historyczny i TP SL do chwili wyjscia
+        shell: bash
+        run: |
+          python3 - <<'PYCODE'
+          import json, math, os, sys, time, urllib.parse, urllib.request, urllib.error
+          from datetime import datetime, timedelta, timezone
+          from zoneinfo import ZoneInfo
+          
+          API = 'https://api-contract.weex.com/capi/v3/market/historyKlines'
+          TZ = ZoneInfo('Europe/Oslo')
+          MIN = 60000
+          # Ustawienia WYŁĄCZNIE do eksperymentu, nie są zaleceniem transakcyjnym.
+          WATCH_24H = 20
+          WATCH_4H_LOW = 15
+          WATCH_60M_LOW = 12
+          WATCH_15M = 7
+          WATCH_5M = 5
+          BUY_DROP_PP = 10
+          DECEL_PP = 4
+          WICK_RATIO = .50
+          WICK_PCT = 2
+          ABSORB_VOLUME = 1.3
+          
+          def local_ms(s):
+              return int(datetime.strptime(s, '%Y-%m-%d %H:%M').replace(tzinfo=TZ).timestamp()*1000)
+          
+          def stamp(ms):
+              return datetime.fromtimestamp(ms/1000, timezone.utc).astimezone(TZ).strftime('%d.%m %H:%M')
+          
+          def pct(value, baseline):
+              return 100*(value/baseline-1) if baseline is not None and baseline>0 else None
+          
+          def fmt(v):
+              return 'n/d' if v is None else f'{v:+.2f}%'
+          
+          def get_candles(symbol, begin, finish):
+              # Nie pobieramy świecy bieżącej ani minut historycznych, które jeszcze nie istnieją.
+              now = int((datetime.now(timezone.utc)-timedelta(minutes=2)).timestamp()*1000)
+              first, last = local_ms(begin), min(local_ms(finish), now)
+              rows={}; calls=0
+              if first>=last: raise RuntimeError(f'Brak zamknietych swiec dla {symbol}')
+              for t in range(first,last+1,100*MIN):
+                  end=min(last,t+99*MIN)
+                  q=urllib.parse.urlencode({'symbol':symbol,'interval':'1m','startTime':t,'endTime':end,'limit':100,'priceType':'LAST'})
+                  url=API+'?'+q
+                  for attempt in range(5):
+                      try:
+                          r=urllib.request.Request(url,headers={'Accept':'application/json','User-Agent':'PUMP-SHORT-test-7-research/1.0'})
+                          with urllib.request.urlopen(r, timeout=30) as response: data=json.load(response)
+                          if not isinstance(data,list): raise ValueError('Nieoczekiwany format WEEX: '+str(data)[:150])
+                          break
+                      except (urllib.error.HTTPError,urllib.error.URLError, TimeoutError, ValueError) as exc:
+                          if attempt==4: raise RuntimeError(f'Blad WEEX {symbol}: {exc}') from exc
+                          time.sleep(min(2**attempt,8))
+                  calls+=1
+                  for record in data:
+                      if not isinstance(record,list) or len(record)<11: continue
+                      try:
+                          key=int(record[0]); o,h,l,c=map(float,record[1:5]); volume=float(record[7]); buy=float(record[10])
+                          if not(first<=key<=last and all(map(math.isfinite,(o,h,l,c,volume,buy)))): continue
+                          if min(o,h,l,c)<=0 or l>min(o,c) or h<max(o,c) or volume<0 or buy<0 or buy>volume*1.001: continue
+                          rows[key]={'t':key,'o':o,'h':h,'l':l,'c':c,'v':volume,'b':buy}
+                      except (TypeError,ValueError,OverflowError): continue
+                  time.sleep(.15)
+              candles=[rows[x] for x in sorted(rows)]
+              gaps={i for i in range(1,len(candles)) if candles[i]['t']-candles[i-1]['t']!=MIN}
+              if len(candles)<300: raise RuntimeError(f'Za malo danych {symbol}: {len(candles)}')
+              return candles,gaps,calls
+          
+          def share(items):
+              total=sum(b['v'] for b in items)
+              return 100*sum(b['b'] for b in items)/total if total>0 else None
+          
+          def features(rows,gaps):
+              result=[]; seg=0
+              for i,b in enumerate(rows):
+                  if i in gaps: seg=i
+                  if i-seg<240:
+                      result.append(None); continue
+                  # Baza jest z przeszłości. Nie wykorzystujemy przyszłego maksimum pompy.
+                  min60=min(x['l'] for x in rows[i-60:i])
+                  min240=min(x['l'] for x in rows[i-240:i])
+                  r5=pct(b['c'],rows[i-5]['c'])
+                  r15=pct(b['c'],rows[i-15]['c'])
+                  r60=pct(b['c'],rows[i-60]['c'])
+                  four_high=pct(b['h'],min240)
+                  four_close=pct(b['c'],min240)
+                  one_high=pct(b['h'],min60)
+                  one_close=pct(b['c'],min60)
+                  r24=pct(b['c'],rows[i-1440]['c']) if i-seg>=1440 else None
+                  gates=[]
+                  if r24 is not None and r24>=WATCH_24H: gates.append('24h')
+                  if four_high>=WATCH_4H_LOW and four_close>=8: gates.append('wzrost_4h')
+                  if one_high>=WATCH_60M_LOW and one_close>=6: gates.append('impuls_60m')
+                  if r15>=WATCH_15M: gates.append('impuls_15m')
+                  if r5>=WATCH_5M: gates.append('impuls_5m')
+                  prev5=rows[i-9:i-4]; last5=rows[i-4:i+1]
+                  buy_prev,buy_now=share(prev5),share(last5)
+                  buy_drop=buy_prev-buy_now if buy_prev is not None and buy_now is not None else None
+                  prev_r5=pct(rows[i-5]['c'],rows[i-10]['c'])
+                  slowdown=prev_r5-r5
+                  wick=(b['h']-max(b['o'],b['c']))/(b['h']-b['l']) if b['h']>b['l'] else 0
+                  wick_percent=pct(b['h'],max(b['o'],b['c']))
+                  oldvol=sum(x['v'] for x in prev5); newvol=sum(x['v'] for x in last5)
+                  vol_ratio=newvol/oldvol if oldvol>0 else None
+                  signs=[]
+                  if buy_drop is not None and buy_drop>=BUY_DROP_PP: signs.append('kupujacy_slabna')
+                  if prev_r5>1 and slowdown>=DECEL_PP: signs.append('momentum_hamuje')
+                  if wick>=WICK_RATIO and wick_percent is not None and wick_percent>=WICK_PCT: signs.append('gorny_knot')
+                  if vol_ratio is not None and vol_ratio>=ABSORB_VOLUME and prev_r5>2 and r5<=prev_r5*.4 and buy_now is not None and buy_now>=50:
+                      signs.append('mozliwa_absorpcja')
+                  result.append({'t':b['t'],'close':b['c'],'gates':gates,'signs':signs,'r24':r24,'r15':r15,'r5':r5,'r60':r60,'r4low':four_close,'buy5':buy_now,'buydrop':buy_drop})
+              return result
+          
+          import csv
+          from collections import Counter, defaultdict
+          
+          # Lista zamrozona na podstawie pliku instrumenty.csv z TEST 5. Nie zmieniamy jej
+          # na podstawie wynikow TEST 6. Jest to test historyczny poza oknem TEST 5.
+          COHORT = [
+            ('BTCUSDT','duzy_obrot'), ('ETHUSDT','duzy_obrot'), ('1000PEPEUSDT','duzy_obrot'),
+            ('BZUSDT','duzy_obrot'), ('GOOGLUSDT','duzy_obrot'), ('SOLUSDT','duzy_obrot'),
+            ('SKHYNIXUSDT','duzy_obrot'), ('ZECUSDT','duzy_obrot'), ('BTWUSDT','duzy_obrot'),
+            ('SNXXUSDT','przekroj'), ('CVXUSDT','przekroj'), ('RLCUSDT','przekroj'),
+            ('MRVLUSDT','przekroj'), ('MAGMAUSDT','przekroj'), ('MYXUSDT','przekroj'),
+            ('CUSDT','przekroj'), ('HUSDT','przekroj'), ('CCUSDT','przekroj'),
+            ('ERAUSDT','liderzy_teraz'), ('GRVTUSDT','liderzy_teraz'), ('XNYUSDT','liderzy_teraz'),
+            ('PHAUSDT','liderzy_teraz'), ('ALTUSDT','liderzy_teraz'), ('CTRUSDT','liderzy_teraz'),
+            ('BATUSDT','liderzy_teraz'), ('METISUSDT','liderzy_teraz'), ('NILUSDT','liderzy_teraz'),
+            ('CTUSDT','przyklady_uzytkownika'),('BRUSDT','przyklady_uzytkownika'),
+            ('JCTUSDT','przyklady_uzytkownika')
+          ]
+          
+          START_DOWNLOAD = '2026-10-09 00:00'  # rozruch przed testem
+          END_DOWNLOAD   = '2026-10-16 03:00'  # bufor na wynik do 60 minut
+          START_TEST     = '2026-10-10 00:00'
+          END_TEST       = '2026-10-16 00:00'  # koniec 18.10, NIE wlaczamy 19.10
+          
+          VARIANTS = (
+              'BAZA',                       # dwa niezalezne sygnaly oslabienia
+              'SILNY_IMPULS',              # r15 >=7% LUB r5 >=5%
+              'BLISKO_MAKSIMUM',           # zamkniecie do 5% ponizej najwyzszej ceny ostatnich 60m
+              'OBA_FILTRY',                # polaczenie powyzszych
+          )
+          
+          # Dane sygnalowe i symulacje dla 60 i 120 min. Te same progi i 30 coinow co TEST 6.
+          TP_LEVELS = (2,3,4,5)
+          STOP = 5
+          HORIZONS = (60,120)
+          VARIANTS = ('BAZA','SILNY_IMPULS','BLISKO_MAKSIMUM','OBA_FILTRY')
+          
+          
+          def passes(name, f, distance):
+              if len(f['signs'])<2:
+                  return False
+              impulse=(f['r15'] is not None and f['r15']>=7) or (f['r5'] is not None and f['r5']>=5)
+              near=(distance is not None and distance>=-5)
+              return (name=='BAZA' or
+                      (name=='SILNY_IMPULS' and impulse) or
+                      (name=='BLISKO_MAKSIMUM' and near) or
+                      (name=='OBA_FILTRY' and impulse and near))
+          
+          
+          def get_signals(candles, ff, category, symbol):
+              # Pierwszy kwalifikujacy sygnal w kazdym epizodzie DLA KAZDEGO WARIANTU.
+              # Zmiana filtra moze opoznic sygnal, ale nigdy nie korzysta z przyszlych danych.
+              # Nie jest to dowod poprawy. Porownania maja tylko charakter diagnostyczny.
+              allowed_start, allowed_end = local_ms(START_TEST),local_ms(END_TEST)
+              active_until=-1
+              episode=0
+              signals=[]
+              sent=set()
+              prev_t=None
+              for i, f in enumerate(ff):
+                  if f is None:
+                      continue
+                  if prev_t is not None and f['t']-prev_t!=MIN:
+                      active_until=-1
+                  prev_t=f['t']
+                  if f['gates']:
+                      if i>active_until:
+                          episode+=1
+                      active_until=i+30
+                  if i>active_until or not (allowed_start<=f['t']+MIN<allowed_end):
+                      continue
+                  high60=max(x['h'] for x in candles[i-59:i+1])
+                  distance=pct(f['close'],high60)
+                  for variant in VARIANTS:
+                      if (episode, variant) in sent or not passes(variant,f,distance):
+                          continue
+                      sent.add((episode,variant))
+                      signals.append({
+                          'symbol':symbol,'grupa':category,'wariant':variant,
+                          'czas_oslo':stamp(f['t']+MIN),'cena_sygnalu':f['close'],
+                          'cechy':'+'.join(f['signs']),'bramki':'+'.join(f['gates']),
+                          'r5':f['r5'],'r15':f['r15'],'r24':f['r24'],'buy5':f['buy5'],
+                          'odleglosc_od_szczytu_60m':distance,'index':i,
+                      })
+              return signals,episode
+          
+          
+          def outcome(rows, index, target, stop, horizon):
+              """TP/SL dla SHORT, na 1m. Swieca wyjscia: brak informacji o kolejnosci high/low.
+          
+              Ryzyko PRZED WYJSCIEM zawiera tylko ukonczone swiece przed swieca realizacji.
+              Dla TP zakres gorny uwzglednia high swiecy TP, ale to jedynie MOZLIWY ruch przed TP.
+              Dla SL ryzyko docelowe co najmniej stop%; rzeczywiste wypelnienie moze byc gorsze.
+              """
+              entry_i=index+1
+              empty={'wynik':'brak_danych','minuty':'','cena_wejscia':'',
+                     'ryzyko_przed_dolna':'','ryzyko_przed_gorna':'',
+                     'ryzyko_po_sygnale_60m':'','zysk_po_sygnale_60m':'',
+                     'osiagniete_tp_przed_sl':False}
+              if entry_i+horizon>len(rows): return empty
+              block=rows[entry_i:entry_i+horizon]
+              if any(block[k]['t']-block[k-1]['t']!=MIN for k in range(1,len(block))): return empty
+              entry=block[0]['o']
+              if entry<=0: return empty
+              high_before=entry
+              tp_price=entry*(1-target/100)
+              sl_price=entry*(1+stop/100)
+              result=dict(empty)
+              result['cena_wejscia']=entry
+              for minute,b in enumerate(block,1):
+                  tp=b['l']<=tp_price
+                  sl=b['h']>=sl_price
+                  if tp or sl:
+                      lower=max(0,100*(high_before/entry-1))
+                      upper=max(lower,100*(max(high_before,b['h'])/entry-1))
+                      result.update({'minuty':minute,'ryzyko_przed_dolna':round(lower,4),
+                                     'ryzyko_przed_gorna':round(upper,4)})
+                      if tp and sl: result['wynik']='niejednoznaczne'
+                      elif sl:
+                          result['wynik']='SL'
+                          # Dojscie do stopu jest pewne, ale ekstremum swiecy po stopie juz NIE.
+                          result['ryzyko_przed_dolna']=max(lower,stop)
+                          result['ryzyko_przed_gorna']=''
+                      else:
+                          result['wynik']='TP'
+                          result['osiagniete_tp_przed_sl']=True
+                      break
+                  high_before=max(high_before,b['h'])
+              else:
+                  risk=round(max(0,100*(high_before/entry-1)),4)
+                  result.update({'wynik':'brak_rozstrzygniecia', 'ryzyko_przed_dolna':risk,
+                                 'ryzyko_przed_gorna':risk})
+              # To jest ruch RYNKU od sygnalu, nawet PO mozliwym wyjsciu; nie traktowac jako MAE transakcji.
+              window=rows[entry_i:entry_i+60]
+              if len(window)==60 and all(window[k]['t']-window[k-1]['t']==MIN for k in range(1,60)):
+                  result['ryzyko_po_sygnale_60m']=round(max(0,100*(max(b['h'] for b in window)/entry-1)),4)
+                  result['zysk_po_sygnale_60m']=round(max(0,100*(1-min(b['l'] for b in window)/entry)),4)
+              return result
+          
+          
+          def main():
+              from collections import Counter
+              outdir='test7_output'
+              os.makedirs(outdir, exist_ok=True)
+              all_signals=[]; all_outcomes=[]; info=[]; errors=[]
+              columns_signal=['symbol','grupa','wariant','czas_oslo','cena_sygnalu','cechy','bramki',
+                              'r5','r15','r24','buy5','odleglosc_od_szczytu_60m','cena_wejscia_test',
+                              'wynik_TP3_SL5_60m','minuty_TP3_SL5_60m','MAE_przed_wyj_dolna_TP3_SL5',
+                              'MAE_przed_wyj_gorna_TP3_SL5','ruch_rynku_przeciw_60m_po_sygnale',
+                              'ruch_rynku_w_dol_60m_po_sygnale']
+              columns_outcome=['symbol','wariant','czas_oslo','cena_wejscia','tp_procent_ceny','sl_procent_ceny',
+                               'horyzont_min','wynik','minuty','ryzyko_przed_dolna','ryzyko_przed_gorna',
+                               'ryzyko_po_sygnale_60m','zysk_po_sygnale_60m']
+              test_start=local_ms(START_TEST); test_end=local_ms(END_TEST)
+              print('PUMP-SHORT TEST 7: nieruszana logika sygnalow; nowe rozliczanie wyjscia')
+              print(f'Okno sygnalow: {START_TEST} do {END_TEST} Oslo; {len(COHORT)} instrumentow; 1m',flush=True)
+              for j,(symbol,category) in enumerate(COHORT,1):
+                  try:
+                      candles,gaps,calls=get_candles(symbol,START_DOWNLOAD,END_DOWNLOAD)
+                      ff=features(candles,gaps)
+                      events, episodes=get_signals(candles,ff,category,symbol)
+                      for event in events:
+                          ix=event.pop('index')
+                          test=outcome(candles,ix,3,5,60)
+                          event.update({'cena_wejscia_test':test['cena_wejscia'],
+                                 'wynik_TP3_SL5_60m':test['wynik'],'minuty_TP3_SL5_60m':test['minuty'],
+                                 'MAE_przed_wyj_dolna_TP3_SL5':test['ryzyko_przed_dolna'],
+                                 'MAE_przed_wyj_gorna_TP3_SL5':test['ryzyko_przed_gorna'],
+                                 'ruch_rynku_przeciw_60m_po_sygnale':test['ryzyko_po_sygnale_60m'],
+                                 'ruch_rynku_w_dol_60m_po_sygnale':test['zysk_po_sygnale_60m']})
+                          all_signals.append(event)
+                          for duration in HORIZONS:
+                              for tp in TP_LEVELS:
+                                  o=outcome(candles,ix,tp,STOP,duration)
+                                  all_outcomes.append({'symbol':symbol,'wariant':event['wariant'],
+                                      'czas_oslo':event['czas_oslo'],'cena_wejscia':o['cena_wejscia'],
+                                      'tp_procent_ceny':tp,'sl_procent_ceny':STOP,
+                                      'horyzont_min':duration,
+                                      **{key:o[key] for key in ('wynik','minuty','ryzyko_przed_dolna','ryzyko_przed_gorna',
+                                          'ryzyko_po_sygnale_60m','zysk_po_sygnale_60m')}})
+                      info.append({'symbol':symbol,'grupa':category,'swiece':len(candles),
+                                   'luki':len(gaps),'zapytania':calls,'epizody':episodes,
+                                   'sygnaly_bazowe':sum(s['wariant']=='BAZA' for s in events)})
+                      print(f'[{j}/{len(COHORT)}] {symbol}: {len(candles)} swiec, '
+                            f'{len(events)} wskazan wariantow, '
+                            f'{sum(s["wariant"]=="BAZA" for s in events)} bazowych',flush=True)
+                  except Exception as e:
+                      errors.append((symbol,str(e)))
+                      print(f'[{j}/{len(COHORT)}] {symbol}: blad/brak danych: {e}',flush=True)
+              def save(name, rows, cols):
+                  with open(outdir+'/'+name,'w',encoding='utf-8-sig',newline='') as handle:
+                      w=csv.DictWriter(handle,fieldnames=cols,extrasaction='ignore')
+                      w.writeheader();w.writerows(rows)
+              save('sygnaly_test7.csv',all_signals,columns_signal)
+              save('rozliczenia_tp_sl_test7.csv',all_outcomes,columns_outcome)
+              save('instrumenty_test7.csv',info,['symbol','grupa','swiece','luki','zapytania','epizody','sygnaly_bazowe'])
+              lines=[
+                '# PUMP-SHORT / TEST 7: wyjscie z SHORTA i nowy okres',
+                '',
+                f'- Dane: **{START_TEST} do {END_TEST} Europe/Oslo** (6 dni); ponad badanym okresie jest bufor na 120 min.',
+                '- 30 instrumentow zamrozonych w poprzednich testach; ryzyko stronniczego doboru instrumentow nadal istnieje.',
+                '- Dokladnie te same progi i 4 warianty co w TEST 6. Nie wybieramy parametrow na podstawie dzisiejszego wyniku.',
+                '- Swiece 1m WEEX, sygnal po zamknieciu swiecy, wejscie na otwarciu nastepnej swiecy.',
+                '- Po dotknieciu TP lub SL hipotetyczna transakcja zostaje zamknieta. Pozniejszy wzrost NIE obciaza jej MAE.',
+                '- Gdy TP i SL dotkniete w tej samej swiecy: **niejednoznaczne**.',
+                '- MAE do chwili wyjscia: dolna granica z calkowicie zakonczonych swiec przed swieca wyjscia;',
+                  ' gorna przy TP dopuszcza high swiecy wyjscia, bo nie znamy kolejnosci cen wewnatrz minuty.',
+                '- Dla SL zakladamy mechaniczne zamkniecie po cenie progu; rzeczywisty poslizg/gap moze pogorszyc wynik.',
+                '- Ruch rynku przez cale 60 minut po sygnale jest osobna statystyka, NIE jest ryzykiem juz zamknietej transakcji.',
+                '- Brak historycznego OI/fundingu, prowizji, poslizgu, cross, a takze rzeczywistych filli.',
+                '- Wyniki to **hipotetyczne pojedyncze wejscia**, bez siatek i bez zlecen na gieldzie.',
+                '', '## Warianty (TP 3% / SL 5%; 60min)',
+                '| Wariant | Sygnały | TP | SL | Niejednoznaczne | Bez rozstrzygniecia | Brak danych |',
+                '|---|---:|---:|---:|---:|---:|---:|',
+              ]
+              for name in VARIANTS:
+                  ss=[o for o in all_outcomes if o['wariant']==name and o['tp_procent_ceny']==3 and o['horyzont_min']==60]
+                  c=Counter(o['wynik'] for o in ss)
+                  lines.append(f'| {name} | {len(ss)} | {c["TP"]} | {c["SL"]} | '
+                               f'{c["niejednoznaczne"]} | {c["brak_rozstrzygniecia"]} | {c["brak_danych"]} |')
+              lines+=['','## Baza: porownanie TP/SL w 60 i 120 minut',
+                      '| Horyzont | TP / SL (% ceny) | TP | SL | Niejedn. | Brak rozwiazania | Brak danych |',
+                      '|---|---|---:|---:|---:|---:|---:|']
+              for duration in HORIZONS:
+                  for tp in TP_LEVELS:
+                      ss=[o for o in all_outcomes if o['wariant']=='BAZA' and o['tp_procent_ceny']==tp and o['horyzont_min']==duration]
+                      c=Counter(o['wynik'] for o in ss)
+                      lines.append(f'| {duration}min | {tp}% / {STOP}% | {c["TP"]} | {c["SL"]} | '
+                                   f'{c["niejednoznaczne"]} | {c["brak_rozstrzygniecia"]} | {c["brak_danych"]} |')
+              lines+=['', '## Wczesne wyjscia: wzrost po TP nie jest strata transakcji',
+                       '| Coin | Czas | TP 3/5 | MAE dolna przed wyjsciem | MAE gorna mozliwa | Ruch rynku + przez 60m |',
+                       '|---|---|---|---:|---:|---:|']
+              early=[s for s in all_signals if s['wariant']=='BAZA' and s['wynik_TP3_SL5_60m']=='TP']
+              early.sort(key=lambda s: s['ruch_rynku_przeciw_60m_po_sygnale'] if isinstance(s['ruch_rynku_przeciw_60m_po_sygnale'],(int,float)) else -999,reverse=True)
+              def fnum(x):return f'{x:+.2f}%' if isinstance(x,(int,float)) else 'n/d'
+              for s in early[:12]:
+                  lines.append(f'| {s["symbol"]} | {s["czas_oslo"]} | TP w min {s["minuty_TP3_SL5_60m"]} | '
+                               f'{fnum(s["MAE_przed_wyj_dolna_TP3_SL5"])} | '
+                               f'{fnum(s["MAE_przed_wyj_gorna_TP3_SL5"])} | '
+                               f'{fnum(s["ruch_rynku_przeciw_60m_po_sygnale"])} |')
+              lines+=['',f'Instrumenty z danymi: {len(info)}/{len(COHORT)}, bledy: {len(errors)}.',
+                      f'Sygnaly bazowe: {sum(s["wariant"]=="BAZA" for s in all_signals)}.',
+                      '', '## Ważne ograniczenia',
+                      '- Ta probka nadal ma selection bias i skorelowane zdarzenia, nie stanowi walidacji strategii.',
+                      '- Nawet duza liczba hipotetycznych TP nie oznacza zysku po kosztach.',
+                      '- Udostepnione pliki CSV umozliwiaja dalsza kontrole konkretnych epizodow.',
+                      '- ZADNYCH zmian w scanner.py, Telegramie, Netlify, historii alertow ani konfiguracji.']
+              if errors:lines+=['','## Problemy z danymi']+[f'- {s}: {e}' for s,e in errors]
+              report='\n'.join(lines)+'\n'
+              with open(outdir+'/raport_test7.md','w',encoding='utf-8') as fh:fh.write(report)
+              print('\n'+report,flush=True)
+              if os.getenv('GITHUB_STEP_SUMMARY'):
+                  with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as fh:fh.write(report)
+              if len(info)<20:
+                  print('Test zakonczony niepowodzeniem: mniej niz 20 instrumentow',file=sys.stderr)
+                  sys.exit(1)
+          
+          if __name__=='__main__':main()
+          PYCODE
+      - name: Zapisz raport i CSV
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PUMP-SHORT-TEST-7-raport
+          path: test7_output/
+          if-no-files-found: warn
+          retention-days: 30
