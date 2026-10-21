@@ -1,0 +1,445 @@
+name: PUMP-SHORT - TEST 10 (ROI x5, koszty, ryzyko; bez alertow)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  research_10:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Test 10 - historyczne swiece WEEX i symulacja ROI NETTO
+        shell: bash
+        run: |
+          cat > test10.py <<'PYCODE'
+          """PUMP-SHORT / TEST 10: reewaluacja 69 sygnalow z testu 9.
+          NIE ODPALA TRANSAKCJI, NICZEGO NIE COMMITUJE.
+          Wyniki rynkowe, bez OI, fundingu i indywidualnych siatek.
+          """
+          import csv
+          import json
+          import math
+          import os
+          import statistics
+          import sys
+          import time
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          from collections import Counter
+          from concurrent.futures import ThreadPoolExecutor, as_completed
+          from datetime import datetime, timezone
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+          
+          API = 'https://api-contract.weex.com/capi/v3/market/historyKlines'
+          TZ = ZoneInfo('Europe/Oslo')
+          MIN = 60_000
+          LEVERAGE = 5
+          TAKER_FEE = 0.0006   # eksperymentalne 0,06% za kazda strone; sprawdz swoja faktyczna taryfe VIP
+          SLIPPAGE = 0.0005    # zalozony niekorzystny poslizg 0,05% na otwarciu i zamknieciu
+          TP_NET = (10, 15, 20)   # ROI, nie procent ceny coina
+          STOP_ROI = (None, 25, 40)  # None = bez SL, tylko demonstracyjny test; NIE zalecenie
+          HORIZONS = (60, 120)
+          OUT = Path('test10_output')
+          OUT.mkdir(exist_ok=True)
+          
+          # SHA256 CSV po redukcji z TESTU 9: e2bd159a6b00cb7a5d07449df12e9a8d6ff9b5f82a2fd3d9acf3b4b3fb7f1d3a
+          # Lista 69 niepowtarzanych w ciagu 24h sygnalow BAZA z TESTU 9.
+          # Zapisana ZANIM uruchomiono test 10, bez ponownego dobierania progow.
+          # Kazdy wpis: symbol, czas dostepnosci sygnalu Oslo, grupa z TEST 9.
+          SIGNALS = []
+          SIGNALS.append(('TFUELUSDT', '12.09 00:32', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('RIVERUSDT', '12.09 05:09', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('BTWUSDT', '12.09 11:12', 'poprzednia_proba'))
+          SIGNALS.append(('CTRUSDT', '13.09 07:58', 'poprzednia_proba'))
+          SIGNALS.append(('AKEUSDT', '13.09 11:12', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('BTWUSDT', '13.09 11:54', 'poprzednia_proba'))
+          SIGNALS.append(('MAGMAUSDT', '13.09 19:49', 'poprzednia_proba'))
+          SIGNALS.append(('BBUSDT', '14.09 10:06', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('TUSDT', '14.09 11:44', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('CAPUSDT', '14.09 14:13', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('STARUSDT', '14.09 15:09', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('BTWUSDT', '15.09 03:37', 'poprzednia_proba'))
+          SIGNALS.append(('AKEUSDT', '15.09 05:50', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('CTRUSDT', '15.09 06:48', 'poprzednia_proba'))
+          SIGNALS.append(('SYNUSDT', '16.09 00:07', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('CROSSUSDT', '16.09 04:17', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('AKEUSDT', '16.09 18:59', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('USELESSUSDT', '17.09 08:18', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('SYNUSDT', '17.09 12:32', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('MAGMAUSDT', '17.09 15:32', 'poprzednia_proba'))
+          SIGNALS.append(('CASHCATUSDT', '17.09 17:48', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('CROSSUSDT', '18.09 08:39', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('MYXUSDT', '18.09 14:51', 'poprzednia_proba'))
+          SIGNALS.append(('CUSDT', '18.09 17:24', 'poprzednia_proba'))
+          SIGNALS.append(('AKEUSDT', '18.09 19:28', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('USELESSUSDT', '18.09 20:15', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('SYNUSDT', '18.09 23:53', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('STARUSDT', '19.09 04:21', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('CAPUSDT', '19.09 13:56', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('NILUSDT', '19.09 14:07', 'poprzednia_proba'))
+          SIGNALS.append(('CUSDT', '19.09 18:38', 'poprzednia_proba'))
+          SIGNALS.append(('CASHCATUSDT', '20.09 10:10', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('BTWUSDT', '20.09 12:24', 'poprzednia_proba'))
+          SIGNALS.append(('ENSOUSDT', '20.09 12:37', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('SYNUSDT', '20.09 16:47', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('LUNAUSDT', '20.09 18:08', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('CUSDT', '20.09 19:58', 'poprzednia_proba'))
+          SIGNALS.append(('AKEUSDT', '20.09 21:25', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('NILUSDT', '20.09 22:29', 'poprzednia_proba'))
+          SIGNALS.append(('STARUSDT', '21.09 09:12', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('USELESSUSDT', '21.09 10:49', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('PHAUSDT', '21.09 11:32', 'poprzednia_proba'))
+          SIGNALS.append(('CASHCATUSDT', '21.09 14:32', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('BTWUSDT', '21.09 15:47', 'poprzednia_proba'))
+          SIGNALS.append(('COREUSDT', '21.09 18:07', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('1000SATSUSDT', '21.09 18:18', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('SYNUSDT', '21.09 18:31', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('AKEUSDT', '22.09 04:50', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('NILUSDT', '22.09 10:50', 'poprzednia_proba'))
+          SIGNALS.append(('BROCCOLIUSDT', '22.09 11:50', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('HOTUSDT', '22.09 13:05', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('USELESSUSDT', '22.09 20:14', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('AKEUSDT', '23.09 08:14', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('JCTUSDT', '23.09 09:50', 'poprzednia_proba'))
+          SIGNALS.append(('XNYUSDT', '23.09 14:48', 'poprzednia_proba'))
+          SIGNALS.append(('NOMUSDT', '23.09 22:20', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('NILUSDT', '24.09 00:25', 'poprzednia_proba'))
+          SIGNALS.append(('AKEUSDT', '24.09 10:07', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('BROCCOLIUSDT', '24.09 12:47', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('HUSDT', '24.09 13:19', 'poprzednia_proba'))
+          SIGNALS.append(('PHAUSDT', '24.09 14:23', 'poprzednia_proba'))
+          SIGNALS.append(('BBUSDT', '24.09 16:26', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('MYXUSDT', '24.09 16:34', 'poprzednia_proba'))
+          SIGNALS.append(('QNTUSDT', '25.09 06:42', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('NILUSDT', '25.09 08:16', 'poprzednia_proba'))
+          SIGNALS.append(('BTWUSDT', '26.09 03:58', 'poprzednia_proba'))
+          SIGNALS.append(('QNTUSDT', '26.09 17:41', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('1000SATSUSDT', '26.09 18:33', 'nowa_proba_losowa_deterministyczna'))
+          SIGNALS.append(('PHAUSDT', '26.09 20:55', 'poprzednia_proba'))
+          
+          
+          def local_ms(label):
+              dt = datetime.strptime('2026 '+label, '%Y %d.%m %H:%M').replace(tzinfo=TZ)
+              return int(dt.timestamp()*1000)
+          
+          
+          def fetch_candles(symbol, signal_time):
+              """Pobierz od pierwszej swiecy PO zamknieciu swiecy sygnalowej.
+              Potrzeba 120 pelnych swiec + otwarcie swiecy 121 do rozliczenia czasowego.
+              """
+              first = local_ms(signal_time)
+              last = first + 120*MIN
+              bars = {}
+              calls = 0
+              for batch_start in range(first, last+1, 100*MIN):
+                  end = min(last, batch_start + 99*MIN)
+                  params = urllib.parse.urlencode({
+                      'symbol':symbol,'interval':'1m','startTime':batch_start,
+                      'endTime':end,'limit':100,'priceType':'LAST'
+                  })
+                  url = API + '?' + params
+                  for retry in range(5):
+                      try:
+                          req = urllib.request.Request(url,headers={
+                              'Accept':'application/json',
+                              'User-Agent':'PUMP-SHORT-test10-research/1.0'})
+                          with urllib.request.urlopen(req,timeout=30) as response:
+                              payload=json.load(response)
+                          if not isinstance(payload,list):
+                              raise ValueError(f'Niespodziewany typ WEEX: {str(payload)[:120]}')
+                          break
+                      except (urllib.error.HTTPError,urllib.error.URLError,TimeoutError,ValueError) as exc:
+                          if retry==4:
+                              raise RuntimeError(f'Blad WEEX {symbol} {signal_time}: {exc}') from exc
+                          time.sleep(min(2**retry,8))
+                  calls+=1
+                  for record in payload:
+                      if not isinstance(record,list) or len(record)<5:
+                          continue
+                      try:
+                          t=int(record[0]); o,h,l,c=map(float,record[1:5])
+                          if not(first<=t<=last and all(math.isfinite(x) for x in (o,h,l,c))):
+                              continue
+                          if min(o,h,l,c)<=0 or not(l<=min(o,c)<=max(o,c)<=h):
+                              continue
+                          bars[t]={'t':t,'o':o,'h':h,'l':l,'c':c}
+                      except (ValueError,TypeError,OverflowError):
+                          continue
+                  time.sleep(.18)
+              candles=[]
+              for t in range(first,last+1,MIN):
+                  if t not in bars:
+                      raise RuntimeError(f'Brak swiecy 1m: {symbol}, {signal_time}, brak {datetime.fromtimestamp(t/1000,timezone.utc)}')
+                  candles.append(bars[t])
+              return candles,calls
+          
+          
+          def net_roi(entry_exec,exit_exec):
+              """ROI procentowy na poczatkowym marginie pojedynczej pozycji przy stalej x5.
+              PnL SHORT i taker fee rozliczone od obu notional, bez fundingu.
+              """
+              return 100*LEVERAGE*((entry_exec-exit_exec)/entry_exec - TAKER_FEE*(1+exit_exec/entry_exec))
+          
+          
+          def trigger_market_price(entry_exec,roi_pct):
+              """Cena rynkowa ktora, po poslizgu wyjscia, da zalozone NETTO ROI.
+              """
+              close_exec = entry_exec*(1-TAKER_FEE-roi_pct/(100*LEVERAGE))/(1+TAKER_FEE)
+              return close_exec/(1+SLIPPAGE)
+          
+          
+          def sim(bars,tp,stop,horizon):
+              # Pierwsze 120 swiec od zarejestrowania sygnalu, potem otwarcie 121.
+              entry_market = bars[0]['o']
+              entry_exec = entry_market*(1-SLIPPAGE)  # SHORT sprzedaz z gorszym wypelnieniem
+              tp_market = trigger_market_price(entry_exec,tp)
+              sl_market = trigger_market_price(entry_exec,-stop) if stop is not None else None
+              max_high_completed=entry_market
+              event='CZAS'
+              event_minute=horizon
+              roi=None
+              risk_low=0.0
+              risk_high=0.0
+              fill_price=None
+              for k,bar in enumerate(bars[:horizon],1):
+                  hit_tp = bar['l']<=tp_market
+                  hit_sl = sl_market is not None and bar['h']>=sl_market
+                  if hit_tp or hit_sl:
+                      event_minute=k
+                      risk_low=max(0,100*(max_high_completed/entry_market-1))
+                      # Ekstremum swiecy wyjscia nie musi byc PRZED samym wypelnieniem.
+                      risk_high=max(risk_low,100*(bar['h']/entry_market-1))
+                      if hit_sl:
+                          # Samo dotkniecie stopu potwierdza przynajmniej ten ruch,
+                          # takze gdy high swiecy po fakcie jest nieznane co do kolejnosci.
+                          risk_low=max(risk_low,100*(sl_market/entry_market-1))
+                      if hit_tp and hit_sl:
+                          event='NIEJEDNOZNACZNE'
+                      elif hit_tp:
+                          event='TP'
+                          fill_price=tp_market*(1+SLIPPAGE)  # nie przyznajemy lepszej ceny na przeskoku
+                          roi=net_roi(entry_exec,fill_price)
+                      else:
+                          event='SL'
+                          # Gdy swieca otworzy sie za stopem, uwzglednij taki gap.
+                          fill_price=max(bar['o'],sl_market)*(1+SLIPPAGE)
+                          roi=net_roi(entry_exec,fill_price)
+                      break
+                  max_high_completed=max(max_high_completed,bar['h'])
+              if event=='CZAS':
+                  # Po 60/120 zamknietych swiecach pozycja zamknieta na otwarciu kolejnej.
+                  exit_market=bars[horizon]['o']
+                  fill_price=exit_market*(1+SLIPPAGE)
+                  roi=net_roi(entry_exec,fill_price)
+                  risk_low=max(0,100*(max_high_completed/entry_market-1))
+                  risk_high=risk_low
+              # Oddzielny ruch rynku w calym oknie, rowniez PO wirtualnym TP/SL.
+              high_all=max(b['h'] for b in bars[:horizon])
+              low_all=min(b['l'] for b in bars[:horizon])
+              return {
+                  'TP_net_roi_cel':tp,'SL_net_roi': '' if stop is None else -stop,
+                  'horyzont_min':horizon,'wynik':event,'minuty_do_wyjscia':event_minute,
+                  'cena_otwarcia_rynkowa':entry_market,'cena_otwarcia_wykonania':entry_exec,
+                  'poziom_TP_cena_rynku':tp_market,
+                  'poziom_SL_cena_rynku':'' if sl_market is None else sl_market,
+                  'cena_wyjscia_wykonania':'' if fill_price is None else fill_price,
+                  'ROI_netto_proc':'' if roi is None else round(roi,4),
+                  'wzrost_ceny_przed_wyjsciem_min_proc':round(risk_low,4),
+                  'wzrost_ceny_przed_wyjsciem_max_proc':round(risk_high,4),
+                  'wzrost_ceny_w_calym_oknie_proc':round(max(0,100*(high_all/entry_market-1)),4),
+                  'spadek_ceny_w_calym_oknie_proc':round(max(0,100*(1-low_all/entry_market)),4),
+              }
+          
+          
+          def persist_csv(path, rows, keys):
+              with open(path,'w',newline='',encoding='utf-8-sig') as fp:
+                  writer=csv.DictWriter(fp,fieldnames=keys,extrasaction='ignore')
+                  writer.writeheader()
+                  writer.writerows(rows)
+          
+          
+          def median(nums):
+              return statistics.median(nums) if nums else None
+          
+          
+          def fmt(n,suffix='%'):
+              return 'n/d' if n is None else f'{n:.2f}{suffix}'
+          
+          
+          def summarize(rows, stop, tp, horizon):
+              arr=[r for r in rows if r['TP_net_roi_cel']==tp
+                   and r['SL_net_roi']==('' if stop is None else -stop)
+                   and r['horyzont_min']==horizon]
+              ct=Counter(r['wynik'] for r in arr)
+              decided=[float(r['ROI_netto_proc']) for r in arr if r['ROI_netto_proc']!='']
+              risks=[float(r['wzrost_ceny_przed_wyjsciem_min_proc']) for r in arr]
+              return {
+                  'n':len(arr),'TP':ct['TP'],'SL':ct['SL'],'CZAS':ct['CZAS'],
+                  'NIEJEDNOZNACZNE':ct['NIEJEDNOZNACZNE'],
+                  'mean_roi':statistics.mean(decided) if decided else None,
+                  'median_roi':median(decided),
+                  'positive':sum(v>0 for v in decided),
+                  'risk_median':median(risks),
+                  'risk_gt5':sum(r['wzrost_ceny_przed_wyjsciem_min_proc']>=5 for r in arr),
+                  'risk_gt10':sum(r['wzrost_ceny_przed_wyjsciem_min_proc']>=10 for r in arr),
+              }
+          
+          
+          def render_report(rows,failures,success_count,call_count):
+              head=[
+                  '# PUMP-SHORT / TEST 10: 10–20% ROI x5 oraz ryzyko przed cofka',
+                  '',
+                  '- TEST NIE JEST nowa proba niezaleznych pompek. To **ponowne przeliczenie 69 sygnalow BAZA z TESTU 9**, 12–26.09.2026.',
+                  '- ZRODLO: 69 historycznych znacznikow sygnalowych z przefiltrowanego CSV TESTU 9; nie zmieniamy progow wykrywania.',
+                  f'- Swiece 1m WEEX: pobrano **{success_count}/{len(SIGNALS)}** kompletow 121 kolejnych swiec; zapytania {call_count}; bledy {len(failures)}.',
+                  f'- Dzwignia x{LEVERAGE}, przyjeta prowizja taker **{TAKER_FEE*100:.3f}% na kazda strone**, poslizg **{SLIPPAGE*100:.3f}% na kazda strone**.',
+                  '- Zysk 10/15/20% to **ROI NETTO od wirtualnego marginu jednej pozycji**, po zalozonych prowizjach i poslizgu, **bez fundingu**.',
+                  '- To symulacja: wejscie na open kolejnej swiecy po sygnale, gorsza cena SHORT przez poslizg; zadne zlecenie nie zostalo wyslane.',
+                  '- Opcja `BEZ SL` oznacza wyłącznie **test potencjalnego ruchu i zamkniecie czasowe** po 60/120 min. Nie jest zaleceniem utrzymywania shorta bez stopa.',
+                  '- Dodatkowe -25% i -40% ROI to **przykladowe granice ryzyka pojedynczego wejscia**, NIE plan siatek, likwidacja ani preferencje uzytkownika.',
+                  '- Jesli TP i SL byly w tej samej swiecy, wynik = NIEJEDNOZNACZNE (nie przypisujemy zysku).',
+                  '- `CZAS` = gdy brak TP/SL, hipotetyczne zamkniecie na otwarciu swiecy po 60 lub 120 minutach z kosztami.',
+                  '- Ryzyko przed wyjsciem ma DOLNA i GORNA granice w swiecy wyjscia, bo nie znamy kolejnosci high/low 1m.',
+                  '- Czas/rozliczenie/ryzyko przy gappingu, slabym wolumenie lub spreadzie moze byc gorsze niz zalozone.',
+                  '- Brak historycznego fundingu, OI, wlasnych filli i siatek; na Cross nie symulujemy ceny likwidacji.',
+                  '- Historyczne sygnaly z rynku obecnie notowanych kontraktow; pozostaje blad doboru (survivorship) i powtarzalnosc sygnalow.',
+                  '',
+                  '## Warianty: ROI 10/15/20, horyzont 60 i 120 min',
+                  '| SL ROI | TP ROI netto | min | sygnaly | TP | SL | CZAS | niejedn. | sredni ROI netto | mediana ROI | mediana niekorzystnego wzrostu |',
+                  '|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|',
+              ]
+              for stop in STOP_ROI:
+                  for horizon in HORIZONS:
+                      for tp in TP_NET:
+                          s=summarize(rows,stop,tp,horizon)
+                          head.append(f'| {"BEZ SL" if stop is None else "-"+str(stop)+"%"} | +{tp}% | {horizon} | {s["n"]} | {s["TP"]} | {s["SL"]} | {s["CZAS"]} | {s["NIEJEDNOZNACZNE"]} | {fmt(s["mean_roi"])} | {fmt(s["median_roi"])} | {fmt(s["risk_median"])} |')
+              head.extend([
+                  '',
+                  '## Ryzyko dalszej pompy, zanim pozycja moglaby zostac zamknieta',
+                  '| Wariant | TP ROI | okno | >=5% wzrostu przed wyjsciem (dolne oszac.) | >=10% wzrostu przed wyjsciem (dolne oszac.) |',
+                  '|---|---:|---:|---:|---:|',
+              ])
+              for stop in STOP_ROI:
+                  for tp in TP_NET:
+                      s=summarize(rows,stop,tp,120)
+                      head.append(f'| {"BEZ SL" if stop is None else "SL -"+str(stop)+"%"} | {tp}% | 120m | {s["risk_gt5"]}/{s["n"]} | {s["risk_gt10"]}/{s["n"]} |')
+              head.extend([
+                  '',
+                  '## Interpretacja',
+                  '- Skutecznosc TP bez ograniczenia straty NIE jest rownowazna oplacalnosci, poniewaz pozycja mogla miec duze chwilowe straty.',
+                  '- Statystyki z 69 sygnalow pochodza z 29 coinow i 15 dni; nie sa w pelni niezalezne.',
+                  '- Nie odejmowano historycznego funding rate, bo brak potwierdzonych danych na kazdy moment rozliczenia.',
+                  '- Dalsze kroki: niezalezna walidacja na nastepnym okresie, kilka zalozen poslizgu, prawdziwa historia OI, ocena roznych rynkow.',
+                  '- Nie zmieniono scanner.py, skanera z harmonogramu, Netlify, Telegram, historii ani konfiguracji.',
+              ])
+              if failures:
+                  head.extend(['','## Braki danych / bledy', *[f'- {f["symbol"]} {f["czas_oslo"]}: {f["blad"]}' for f in failures]])
+              return '\n'.join(head)+'\n'
+          
+          
+          def main():
+              assert len(SIGNALS)==69, f'Oczekiwano 69 sygnalow, jest {len(SIGNALS)}'
+              assert len({(s,c) for s,c,_ in SIGNALS})==69, 'Wykryto duplikaty sygnalow'
+              print('TEST 10 / 69 sygnalow z testu nr 9, brak nowego doboru, okres 12-26 wrzesnia 2026.',flush=True)
+              print('Symulacja kosztow: fee taker 0.06% / strona, slip 0.05% / strona, x5; funding i siatki poza zakresem.',flush=True)
+              events=[]; failures=[]; fetched=[]; total_calls=0
+              def job(spec):
+                  symbol,when,group=spec
+                  bars,calls=fetch_candles(symbol,when)
+                  items=[]
+                  for horizon in HORIZONS:
+                      for tp in TP_NET:
+                          for stop in STOP_ROI:
+                              items.append({'symbol':symbol,'czas_oslo':when,'grupa':group,**sim(bars,tp,stop,horizon)})
+                  return items,calls
+              with ThreadPoolExecutor(max_workers=3) as pool:
+                  futures={pool.submit(job,spec):spec for spec in SIGNALS}
+                  for n,fut in enumerate(as_completed(futures),1):
+                      symbol,when,group=futures[fut]
+                      try:
+                          recs,calls=fut.result()
+                          total_calls+=calls
+                          events.extend(recs)
+                          fetched.append({'symbol':symbol,'czas_oslo':when,'grupa':group,'stan':'OK','zapytania':calls})
+                          print(f'[{n}/69] {symbol} {when}: OK, {len(recs)} rozliczen',flush=True)
+                      except Exception as exc:
+                          text=str(exc)[:240]
+                          failures.append({'symbol':symbol,'czas_oslo':when,'grupa':group,'blad':text})
+                          fetched.append({'symbol':symbol,'czas_oslo':when,'grupa':group,'stan':'BLAD','zapytania':0})
+                          print(f'[{n}/69] {symbol} {when}: BRAK DANYCH {text}',flush=True)
+              events.sort(key=lambda r:(r['czas_oslo'][3:5],r['czas_oslo'][:2],r['czas_oslo'][6:],r['symbol'],r['horyzont_min'],r['TP_net_roi_cel'],str(r['SL_net_roi'])))
+              report=render_report(events,failures,len(fetched)-len(failures),total_calls)
+              (OUT/'raport_test10.md').write_text(report,encoding='utf-8')
+              keys=['symbol','czas_oslo','grupa','TP_net_roi_cel','SL_net_roi','horyzont_min',
+                    'wynik','minuty_do_wyjscia','cena_otwarcia_rynkowa','cena_otwarcia_wykonania',
+                    'poziom_TP_cena_rynku','poziom_SL_cena_rynku','cena_wyjscia_wykonania','ROI_netto_proc',
+                    'wzrost_ceny_przed_wyjsciem_min_proc','wzrost_ceny_przed_wyjsciem_max_proc',
+                    'wzrost_ceny_w_calym_oknie_proc','spadek_ceny_w_calym_oknie_proc']
+              persist_csv(OUT/'rozliczenia_test10.csv',events,keys)
+              persist_csv(OUT/'pobrania_test10.csv',fetched,['symbol','czas_oslo','grupa','stan','zapytania'])
+              persist_csv(OUT/'bledy_test10.csv',failures,['symbol','czas_oslo','grupa','blad'])
+              print('\n'+report,flush=True)
+              if os.getenv('GITHUB_STEP_SUMMARY'):
+                  with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as fp:
+                      fp.write(report)
+              # W razie powaznych problemow zwroc blad mimo zapisu raportu.
+              if len(fetched)-len(failures)<50:
+                  raise RuntimeError('Za malo kompletnych przypadkow (<50). Nie interpretuj statystyk.')
+          
+          
+          def self_test():
+              # ROI dla symulowanego shorta TP - musi byc +/- co do kosztow.
+              e=1*(1-SLIPPAGE)
+              for target in TP_NET:
+                  price=trigger_market_price(e,target)
+                  actual=net_roi(e,price*(1+SLIPPAGE))
+                  assert abs(actual-target)<1e-9,(actual,target)
+              for target in (25,40):
+                  price=trigger_market_price(e,-target)
+                  actual=net_roi(e,price*(1+SLIPPAGE))
+                  assert abs(actual+target)<1e-9,(actual,target)
+              def build(values):
+                  a=[]
+                  for i,(o,h,l,c) in enumerate(values):
+                      a.append({'t':i*MIN,'o':o,'h':h,'l':l,'c':c})
+                  return a
+              # TP w pierwszej swiecy, późniejsze wysokie wzrosty NIE sa ryzykiem pozycji.
+              seq=build([(1,1.001,.96,.98)]+[(1.5,1.7,1.4,1.6)]*121)
+              x=sim(seq,10,25,60)
+              assert x['wynik']=='TP' and x['minuty_do_wyjscia']==1 and x['wzrost_ceny_przed_wyjsciem_min_proc']<1
+              assert x['wzrost_ceny_w_calym_oknie_proc']>60
+              # Obie bariery w jednej swiecy => niejednoznaczne.
+              seq=build([(1,1.2,.7,1)]+[(1,1.01,.99,1)]*120)
+              assert sim(seq,10,25,60)['wynik']=='NIEJEDNOZNACZNE'
+              # Brak bariery, po 60m zamykamy po cenie open nastepnej swiecy, po kosztach.
+              seq=build([(1,1.001,.999,1)]*121)
+              z=sim(seq,20,None,60)
+              assert z['wynik']=='CZAS' and z['ROI_netto_proc']<0
+              # SL w pierwszej swiecy => przed SL ryzyko co najmniej poziom stop.
+              seq=build([(1,1.2,.999,1.1)]+[(1,1.001,.999,1)]*120)
+              stop_case=sim(seq,10,25,60)
+              assert stop_case['wynik']=='SL' and stop_case['wzrost_ceny_przed_wyjsciem_min_proc']>=4
+              print('TESTY JEDNOSTKOWE: OK')
+          
+          if __name__ == '__main__':
+              if '--self-test' in sys.argv:
+                  self_test()
+              else:
+                  main()
+          PYCODE
+          python3 test10.py --self-test
+          python3 -u test10.py
+
+      - name: Zapisz raport i CSV z TESTU 10
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PUMP-SHORT-TEST-10-raport
+          path: test10_output/
+          if-no-files-found: warn
+          retention-days: 30
