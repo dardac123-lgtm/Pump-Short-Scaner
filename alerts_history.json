@@ -206,5 +206,13 @@
     "price": 2.1274,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "IRYSUSDT",
+    "detected_at": "2026-10-21T14:28:57.324056+00:00",
+    "change_percent": 40.0,
+    "price": 0.01813,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
