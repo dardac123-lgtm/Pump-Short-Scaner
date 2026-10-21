@@ -238,5 +238,13 @@
     "price": 0.013815,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "IOSTUSDT",
+    "detected_at": "2026-10-21T21:33:22.090054+00:00",
+    "change_percent": 43.44,
+    "price": 0.0015325,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
