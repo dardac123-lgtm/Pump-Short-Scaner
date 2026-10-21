@@ -544,6 +544,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: PUMP-SHORT-TEST-9-raport
-          path: test8_output/
+          path: test9_output/
           if-no-files-found: warn
           retention-days: 30
