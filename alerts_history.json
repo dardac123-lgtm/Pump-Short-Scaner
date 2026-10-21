@@ -230,5 +230,13 @@
     "price": 0.09996,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "ALTUSDT",
+    "detected_at": "2026-10-21T21:05:15.384168+00:00",
+    "change_percent": 40.44,
+    "price": 0.013815,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
