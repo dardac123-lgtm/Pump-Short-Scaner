@@ -1,0 +1,228 @@
+name: PUMP-SHORT TEST 13 - duze pompy 1m LONG SHORT (bez alertow)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  research_13:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Analiza 1m WEEX po zdarzeniach TEST 12
+        shell: bash
+        run: |
+          python3 - <<'PYCODE'
+          import csv,json,math,os,time,urllib.parse,urllib.request
+          from collections import Counter,defaultdict
+          from concurrent.futures import ThreadPoolExecutor,as_completed
+          from datetime import datetime,timezone,timedelta
+          from zoneinfo import ZoneInfo
+          
+          API='https://api-contract.weex.com/capi/v3/market/historyKlines'
+          TZ=ZoneInfo('Europe/Oslo'); MIN=60000
+          LEV=5; FEE=.0006; SLIP=.0005
+          HORIZON=120; ROI_TARGETS=(10,15,20)
+          EVENTS=json.loads('[{"coin":"BRUSDT","czas_oslo":"2026-09-03 08:25","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-03 10:45","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-03 14:30","okno_h":"24","prog_procent":"50","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-04 01:05","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-14 04:50","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"BRUSDT","czas_oslo":"2026-09-14 05:30","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-14 06:00","okno_h":"24","prog_procent":"50","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-14 12:00","okno_h":"24","prog_procent":"80","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-14 12:10","okno_h":"4","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-14 16:05","okno_h":"24","prog_procent":"100","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-15 05:35","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-16 11:55","okno_h":"4","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-16 12:05","okno_h":"4","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-16 12:25","okno_h":"4","prog_procent":"50","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-16 12:45","okno_h":"4","prog_procent":"80","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-16 12:45","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-16 13:05","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-16 13:10","okno_h":"4","prog_procent":"100","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-16 13:10","okno_h":"24","prog_procent":"50","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-16 13:35","okno_h":"24","prog_procent":"80","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-16 14:25","okno_h":"24","prog_procent":"100","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-18 15:20","okno_h":"4","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"BRUSDT","czas_oslo":"2026-09-18 15:20","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"BRUSDT","czas_oslo":"2026-09-18 19:35","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-19 00:35","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"BRUSDT","czas_oslo":"2026-09-19 07:20","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-19 09:35","okno_h":"24","prog_procent":"50","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-20 00:50","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"BRUSDT","czas_oslo":"2026-09-20 02:10","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"AGTUSDT","czas_oslo":"2026-09-22 06:15","okno_h":"4","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"AGTUSDT","czas_oslo":"2026-09-22 06:25","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"AGTUSDT","czas_oslo":"2026-09-22 06:40","okno_h":"4","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"AGTUSDT","czas_oslo":"2026-09-22 06:50","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"AGTUSDT","czas_oslo":"2026-09-22 07:00","okno_h":"4","prog_procent":"50","segment":"KUPUJACY_SLABNA"},{"coin":"AGTUSDT","czas_oslo":"2026-09-22 07:00","okno_h":"24","prog_procent":"50","segment":"KUPUJACY_SLABNA"},{"coin":"MAGMAUSDT","czas_oslo":"2026-09-02 01:05","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"MAGMAUSDT","czas_oslo":"2026-09-02 06:10","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"MAGMAUSDT","czas_oslo":"2026-09-02 10:10","okno_h":"24","prog_procent":"50","segment":"NEUTRALNY"},{"coin":"MAGMAUSDT","czas_oslo":"2026-09-18 23:15","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"MAGMAUSDT","czas_oslo":"2026-09-19 00:05","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"MYXUSDT","czas_oslo":"2026-09-18 14:40","okno_h":"4","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"MYXUSDT","czas_oslo":"2026-09-18 14:40","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"MYXUSDT","czas_oslo":"2026-09-18 14:40","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"MYXUSDT","czas_oslo":"2026-09-18 14:45","okno_h":"4","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"MYXUSDT","czas_oslo":"2026-09-18 14:55","okno_h":"24","prog_procent":"50","segment":"KUPUJACY_SLABNA"},{"coin":"MYXUSDT","czas_oslo":"2026-09-18 15:05","okno_h":"4","prog_procent":"50","segment":"NEUTRALNY"},{"coin":"MYXUSDT","czas_oslo":"2026-09-18 15:55","okno_h":"24","prog_procent":"80","segment":"NEUTRALNY"},{"coin":"MYXUSDT","czas_oslo":"2026-09-18 16:00","okno_h":"4","prog_procent":"80","segment":"NEUTRALNY"},{"coin":"MYXUSDT","czas_oslo":"2026-09-19 03:30","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"MYXUSDT","czas_oslo":"2026-09-19 04:20","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"MYXUSDT","czas_oslo":"2026-09-19 04:30","okno_h":"24","prog_procent":"50","segment":"NEUTRALNY"},{"coin":"1000PEPEUSDT","czas_oslo":"2026-09-22 05:50","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"PHAUSDT","czas_oslo":"2026-09-09 19:00","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"PHAUSDT","czas_oslo":"2026-09-21 11:25","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"PHAUSDT","czas_oslo":"2026-09-21 11:30","okno_h":"4","prog_procent":"30","segment":"KUPUJACY_SILNI"},{"coin":"PHAUSDT","czas_oslo":"2026-09-21 11:30","okno_h":"24","prog_procent":"40","segment":"KUPUJACY_SILNI"},{"coin":"PHAUSDT","czas_oslo":"2026-09-21 11:35","okno_h":"4","prog_procent":"40","segment":"KUPUJACY_SILNI"},{"coin":"PHAUSDT","czas_oslo":"2026-09-21 11:35","okno_h":"24","prog_procent":"50","segment":"KUPUJACY_SILNI"},{"coin":"PHAUSDT","czas_oslo":"2026-09-21 12:15","okno_h":"4","prog_procent":"50","segment":"KUPUJACY_SILNI"},{"coin":"PHAUSDT","czas_oslo":"2026-09-21 13:00","okno_h":"24","prog_procent":"80","segment":"KUPUJACY_SILNI"},{"coin":"PHAUSDT","czas_oslo":"2026-09-22 04:45","okno_h":"24","prog_procent":"40","segment":"KUPUJACY_SLABNA"},{"coin":"NILUSDT","czas_oslo":"2026-09-20 22:35","okno_h":"4","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"NILUSDT","czas_oslo":"2026-09-20 22:35","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"NILUSDT","czas_oslo":"2026-09-21 07:30","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"NILUSDT","czas_oslo":"2026-09-21 08:20","okno_h":"24","prog_procent":"40","segment":"KUPUJACY_SILNI"},{"coin":"NILUSDT","czas_oslo":"2026-09-22 15:50","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"METISUSDT","czas_oslo":"2026-09-07 03:05","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"EDGEUSDT","czas_oslo":"2026-09-03 08:50","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"EDGEUSDT","czas_oslo":"2026-09-03 09:50","okno_h":"24","prog_procent":"40","segment":"KUPUJACY_SILNI"},{"coin":"EDGEUSDT","czas_oslo":"2026-09-03 16:45","okno_h":"24","prog_procent":"50","segment":"NEUTRALNY"},{"coin":"EDGEUSDT","czas_oslo":"2026-09-04 01:30","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"EDGEUSDT","czas_oslo":"2026-09-04 02:30","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"EDGEUSDT","czas_oslo":"2026-09-04 04:25","okno_h":"24","prog_procent":"50","segment":"NEUTRALNY"},{"coin":"LSKUSDT","czas_oslo":"2026-09-12 02:40","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"LSKUSDT","czas_oslo":"2026-09-12 02:45","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"LSKUSDT","czas_oslo":"2026-09-12 04:10","okno_h":"4","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"LSKUSDT","czas_oslo":"2026-09-12 04:15","okno_h":"24","prog_procent":"50","segment":"KUPUJACY_SLABNA"},{"coin":"LSKUSDT","czas_oslo":"2026-09-12 05:20","okno_h":"4","prog_procent":"40","segment":"KUPUJACY_SLABNA"},{"coin":"LSKUSDT","czas_oslo":"2026-09-12 15:25","okno_h":"24","prog_procent":"80","segment":"KUPUJACY_SLABNA"},{"coin":"LSKUSDT","czas_oslo":"2026-09-12 16:40","okno_h":"24","prog_procent":"100","segment":"NEUTRALNY"},{"coin":"LSKUSDT","czas_oslo":"2026-09-13 00:40","okno_h":"24","prog_procent":"80","segment":"KUPUJACY_SILNI"},{"coin":"LSKUSDT","czas_oslo":"2026-09-13 00:50","okno_h":"24","prog_procent":"100","segment":"NEUTRALNY"},{"coin":"LSKUSDT","czas_oslo":"2026-09-13 01:20","okno_h":"4","prog_procent":"30","segment":"KUPUJACY_SILNI"},{"coin":"LSKUSDT","czas_oslo":"2026-09-13 01:30","okno_h":"4","prog_procent":"40","segment":"KUPUJACY_SLABNA"},{"coin":"LSKUSDT","czas_oslo":"2026-09-13 02:35","okno_h":"4","prog_procent":"50","segment":"NEUTRALNY"},{"coin":"LSKUSDT","czas_oslo":"2026-09-13 03:05","okno_h":"4","prog_procent":"80","segment":"NEUTRALNY"},{"coin":"LSKUSDT","czas_oslo":"2026-09-13 03:05","okno_h":"4","prog_procent":"100","segment":"NEUTRALNY"},{"coin":"LSKUSDT","czas_oslo":"2026-09-14 02:35","okno_h":"24","prog_procent":"100","segment":"KUPUJACY_SLABNA"},{"coin":"LSKUSDT","czas_oslo":"2026-09-14 03:30","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"LSKUSDT","czas_oslo":"2026-09-14 03:35","okno_h":"24","prog_procent":"50","segment":"NEUTRALNY"},{"coin":"LSKUSDT","czas_oslo":"2026-09-16 05:35","okno_h":"4","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"LSKUSDT","czas_oslo":"2026-09-16 05:35","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"LSKUSDT","czas_oslo":"2026-09-16 05:40","okno_h":"4","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"LSKUSDT","czas_oslo":"2026-09-16 05:40","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"LSKUSDT","czas_oslo":"2026-09-16 12:45","okno_h":"24","prog_procent":"50","segment":"NEUTRALNY"},{"coin":"LSKUSDT","czas_oslo":"2026-09-16 13:10","okno_h":"24","prog_procent":"80","segment":"NEUTRALNY"},{"coin":"LSKUSDT","czas_oslo":"2026-09-16 19:15","okno_h":"4","prog_procent":"50","segment":"NEUTRALNY"},{"coin":"LSKUSDT","czas_oslo":"2026-09-16 19:15","okno_h":"24","prog_procent":"100","segment":"NEUTRALNY"},{"coin":"LSKUSDT","czas_oslo":"2026-09-17 00:35","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"LSKUSDT","czas_oslo":"2026-09-17 01:20","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"ESPUSDT","czas_oslo":"2026-09-19 08:25","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"GUNUSDT","czas_oslo":"2026-09-20 11:05","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"MINAUSDT","czas_oslo":"2026-09-22 19:20","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"KATUSDT","czas_oslo":"2026-09-09 05:30","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"KATUSDT","czas_oslo":"2026-09-10 01:50","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"AGIUSDT","czas_oslo":"2026-09-17 17:05","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"BROCCOLIUSDT","czas_oslo":"2026-09-22 19:10","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"MUSDT","czas_oslo":"2026-09-20 06:05","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"SKLUSDT","czas_oslo":"2026-09-20 00:00","okno_h":"4","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"SKLUSDT","czas_oslo":"2026-09-20 00:00","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"CTSIUSDT","czas_oslo":"2026-09-20 06:50","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"FOLKSUSDT","czas_oslo":"2026-09-22 22:45","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"STARUSDT","czas_oslo":"2026-09-15 07:30","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"KOMAUSDT","czas_oslo":"2026-09-05 15:00","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"KOMAUSDT","czas_oslo":"2026-09-13 00:00","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"KOMAUSDT","czas_oslo":"2026-09-14 07:20","okno_h":"4","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"KOMAUSDT","czas_oslo":"2026-09-14 07:25","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"KOMAUSDT","czas_oslo":"2026-09-14 07:30","okno_h":"4","prog_procent":"40","segment":"KUPUJACY_SILNI"},{"coin":"KOMAUSDT","czas_oslo":"2026-09-14 07:35","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"KOMAUSDT","czas_oslo":"2026-09-15 01:20","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SILNI"},{"coin":"REALUSDT","czas_oslo":"2026-09-15 01:15","okno_h":"4","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"REALUSDT","czas_oslo":"2026-09-15 01:15","okno_h":"4","prog_procent":"40","segment":"KUPUJACY_SLABNA"},{"coin":"REALUSDT","czas_oslo":"2026-09-15 01:15","okno_h":"4","prog_procent":"50","segment":"KUPUJACY_SLABNA"},{"coin":"REALUSDT","czas_oslo":"2026-09-15 01:15","okno_h":"4","prog_procent":"80","segment":"KUPUJACY_SLABNA"},{"coin":"REALUSDT","czas_oslo":"2026-09-15 01:15","okno_h":"4","prog_procent":"100","segment":"KUPUJACY_SLABNA"},{"coin":"REALUSDT","czas_oslo":"2026-09-20 12:05","okno_h":"4","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"REALUSDT","czas_oslo":"2026-09-20 12:05","okno_h":"4","prog_procent":"40","segment":"KUPUJACY_SLABNA"},{"coin":"REALUSDT","czas_oslo":"2026-09-20 12:05","okno_h":"4","prog_procent":"50","segment":"KUPUJACY_SLABNA"},{"coin":"REALUSDT","czas_oslo":"2026-09-20 17:45","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SILNI"},{"coin":"REALUSDT","czas_oslo":"2026-09-21 00:05","okno_h":"4","prog_procent":"50","segment":"NEUTRALNY"},{"coin":"REALUSDT","czas_oslo":"2026-09-21 01:50","okno_h":"4","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"REALUSDT","czas_oslo":"2026-09-21 08:05","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"REALUSDT","czas_oslo":"2026-09-21 08:05","okno_h":"24","prog_procent":"40","segment":"KUPUJACY_SLABNA"},{"coin":"REALUSDT","czas_oslo":"2026-09-21 08:05","okno_h":"24","prog_procent":"50","segment":"KUPUJACY_SLABNA"},{"coin":"TFUELUSDT","czas_oslo":"2026-09-11 02:10","okno_h":"4","prog_procent":"30","segment":"KUPUJACY_SILNI"},{"coin":"TFUELUSDT","czas_oslo":"2026-09-11 02:10","okno_h":"4","prog_procent":"40","segment":"KUPUJACY_SILNI"},{"coin":"TFUELUSDT","czas_oslo":"2026-09-11 02:10","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SILNI"},{"coin":"TFUELUSDT","czas_oslo":"2026-09-11 03:40","okno_h":"24","prog_procent":"40","segment":"NEUTRALNY"},{"coin":"CROSSUSDT","czas_oslo":"2026-09-16 04:10","okno_h":"24","prog_procent":"30","segment":"NEUTRALNY"},{"coin":"CROSSUSDT","czas_oslo":"2026-09-17 19:45","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"CROSSUSDT","czas_oslo":"2026-09-17 19:50","okno_h":"24","prog_procent":"40","segment":"KUPUJACY_SLABNA"},{"coin":"CROSSUSDT","czas_oslo":"2026-09-18 00:40","okno_h":"24","prog_procent":"40","segment":"KUPUJACY_SLABNA"},{"coin":"CROSSUSDT","czas_oslo":"2026-09-18 05:15","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"KERNELUSDT","czas_oslo":"2026-09-22 03:15","okno_h":"24","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"KERNELUSDT","czas_oslo":"2026-09-22 03:20","okno_h":"4","prog_procent":"30","segment":"KUPUJACY_SLABNA"},{"coin":"KERNELUSDT","czas_oslo":"2026-09-22 03:20","okno_h":"24","prog_procent":"40","segment":"KUPUJACY_SLABNA"},{"coin":"KERNELUSDT","czas_oslo":"2026-09-22 03:25","okno_h":"4","prog_procent":"40","segment":"KUPUJACY_SLABNA"},{"coin":"KERNELUSDT","czas_oslo":"2026-09-22 03:25","okno_h":"24","prog_procent":"50","segment":"KUPUJACY_SLABNA"}]')
+          
+          def ms(s):return int(datetime.strptime(s,'%Y-%m-%d %H:%M').replace(tzinfo=TZ).timestamp()*1000)
+          def stamp(t):return datetime.fromtimestamp(t/1000,timezone.utc).astimezone(TZ).strftime('%Y-%m-%d %H:%M')
+          def get_json(url):
+              for attempt in range(5):
+                  try:
+                      req=urllib.request.Request(url,headers={'User-Agent':'PUMP-SHORT-TEST13/1.0','Accept':'application/json'})
+                      with urllib.request.urlopen(req,timeout=30) as r:return json.load(r)
+                  except Exception:
+                      if attempt==4:raise
+                      time.sleep(min(2**attempt,12))
+          
+          def candles_for_coin(symbol,events):
+              # 30 minut przed pierwszym crossingiem i 125 min po ostatnim, z przerwami pobierane osobno
+              intervals=sorted((ms(e['czas_oslo'])-30*MIN,ms(e['czas_oslo'])+125*MIN) for e in events)
+              merged=[]
+              for a,b in intervals:
+                  if merged and a<=merged[-1][1]+MIN:merged[-1]=(merged[-1][0],max(merged[-1][1],b))
+                  else:merged.append((a,b))
+              rows={};requests=0
+              for first,last in merged:
+                  for t in range(first,last+1,100*MIN):
+                      end=min(last,t+99*MIN)
+                      q=urllib.parse.urlencode({'symbol':symbol,'interval':'1m','startTime':t,'endTime':end,'limit':100,'priceType':'LAST'})
+                      data=get_json(API+'?'+q)
+                      if not isinstance(data,list):raise RuntimeError('WEEX format: '+str(data)[:80])
+                      requests+=1
+                      for x in data:
+                          if not isinstance(x,list) or len(x)<11:continue
+                          try:
+                              k=int(x[0]);o,h,l,c=map(float,x[1:5]);v=float(x[7]);buy=float(x[10])
+                              if not(first<=k<=last and all(map(math.isfinite,(o,h,l,c,v,buy)))):continue
+                              if min(o,h,l,c)<=0 or l>min(o,c) or h<max(o,c) or v<0 or buy<0 or buy>v*1.001:continue
+                              rows[k]=(k,o,h,l,c,v,buy)
+                          except (ValueError,TypeError,OverflowError):continue
+                      time.sleep(.12)
+              return rows,requests
+          
+          def buyer(seq):
+              tot=sum(r[5] for r in seq)
+              return 100*sum(r[6] for r in seq)/tot if tot>0 else None
+          
+          def signs_at(rows,close_time):
+              # Last completed 1m candle ends at close_time; only <=close_time is known
+              last=close_time-MIN
+              candles=[rows.get(last-i*MIN) for i in range(10)]
+              if any(r is None for r in candles):return None
+              candles.reverse()
+              before=candles[:5];now=candles[5:]
+              bp,bn=buyer(before),buyer(now)
+              if bp is None or bn is None:return None
+              old_r5=100*(before[-1][4]/before[0][1]-1)
+              new_r5=100*(now[-1][4]/now[0][1]-1)
+              b=now[-1]
+              wick=(b[2]-max(b[1],b[4]))/(b[2]-b[3]) if b[2]>b[3] else 0
+              wickpct=100*(b[2]/max(b[1],b[4])-1)
+              vprev=sum(x[5] for x in before);vnow=sum(x[5] for x in now)
+              flags=[]
+              if bp-bn>=10:flags.append('BUY_spada_10pp')
+              if old_r5>1 and old_r5-new_r5>=4:flags.append('momentum_hamuje_4pp')
+              if wick>=.50 and wickpct>=2:flags.append('gorny_knot')
+              if vprev>0 and vnow/vprev>=1.3 and old_r5>2 and new_r5<=old_r5*.4 and bn>=50:flags.append('absorpcja_testowa')
+              return {'sygnaly':flags,'buy_5m':round(bn,2),'buy_spadek_pp':round(bp-bn,2),
+                      'momentum_5m':round(new_r5,3),'momentum_poprz_5m':round(old_r5,3)}
+          
+          def netroi(side,entry,exitprice):
+              en=entry*(1+SLIP if side=='LONG' else 1-SLIP)
+              ex=exitprice*(1-SLIP if side=='LONG' else 1+SLIP)
+              gross=(ex/en-1) if side=='LONG' else (1-ex/en)
+              return 100*LEV*(gross-FEE*(1+ex/en))
+          
+          def adverse(side,entry,price):
+              return max(0,100*(1-price/entry)) if side=='LONG' else max(0,100*(price/entry-1))
+          
+          def evaluate(rows,signal_time,side,target):
+              # Next minute OPEN after signal is known (signal was at minute close)
+              block=[rows.get(signal_time+i*MIN) for i in range(HORIZON)]
+              if any(b is None for b in block):return {'wynik':'BRAK_DANYCH','minuta':'','min_ryzyko_pct':'','max_ryzyko_pct':'','ryzyko_10_przed_TP':'','max_ruch_przeciw_120m':'','max_ruch_korzystny_120m':''}
+              entry=block[0][1]
+              peak=entry
+              allbad=0;allgood=0
+              for b in block:
+                  bad=b[3] if side=='LONG' else b[2]
+                  good=b[2] if side=='LONG' else b[3]
+                  allbad=max(allbad,adverse(side,entry,bad))
+                  allgood=max(allgood,netroi(side,entry,good))
+              for minute,b in enumerate(block,1):
+                  bad=b[3] if side=='LONG' else b[2]
+                  good=b[2] if side=='LONG' else b[3]
+                  reach=netroi(side,entry,good)>=target
+                  earlier_risk=adverse(side,entry,peak)
+                  possible_risk=max(earlier_risk,adverse(side,entry,bad))
+                  if reach:
+                      risk_class=('TAK' if earlier_risk>=10 else ('NIE' if possible_risk<10 else 'NIEJEDNOZNACZNE'))
+                      return dict(wynik='TP',minuta=minute,min_ryzyko_pct=round(earlier_risk,3),
+                                  max_ryzyko_pct=round(possible_risk,3),ryzyko_10_przed_TP=risk_class,
+                                  max_ruch_przeciw_120m=round(allbad,3),max_ruch_korzystny_120m=round(allgood,3))
+                  peak=min(peak,bad) if side=='LONG' else max(peak,bad)
+              return dict(wynik='CZAS',minuta=HORIZON,min_ryzyko_pct=round(allbad,3),
+                          max_ryzyko_pct=round(allbad,3),ryzyko_10_przed_TP='BRAK_TP',
+                          max_ruch_przeciw_120m=round(allbad,3),max_ruch_korzystny_120m=round(allgood,3))
+          
+          def analyze_coin(item):
+              symbol,events=item
+              rows,calls=candles_for_coin(symbol,events)
+              decisions=[];results=[]
+              for ev in events:
+                  t=ms(ev['czas_oslo'])  # time 5m candle is available
+                  at=signs_at(rows,t)
+                  if at is None:
+                      decisions.append({**ev,'wariant':'BAZA','status':'BRAK_DANYCH_1M','czas_sygnalu':ev['czas_oslo']})
+                      continue
+                  choices=[('BAZA',t,at)]
+                  if len(at['sygnaly'])>=1:choices.append(('OSLABIENIE_W_CHWILI_PROGU',t,at))
+                  if len(at['sygnaly'])>=2:choices.append(('DWA_SYGNALY_W_CHWILI_PROGU',t,at))
+                  # Pierwszy moment oslabienia od czasu przekroczenia progu do 15 minut (nie przed)
+                  first=None
+                  for delay in range(0,16):
+                      sample=signs_at(rows,t+delay*MIN)
+                      if sample is None:break
+                      if len(sample['sygnaly'])>=1:
+                          first=(t+delay*MIN,sample);break
+                  if first:choices.append(('PIERWSZE_OSLABIENIE_DO_15M',*first))
+                  for name,signal_time,feat in choices:
+                      dec={**ev,'wariant':name,'status':'OK','czas_sygnalu':stamp(signal_time),
+                           'opoznienie_min':(signal_time-t)//MIN,'liczba_oznak':len(feat['sygnaly']),
+                           'oznaki':'+'.join(feat['sygnaly']),'buy_5m':feat['buy_5m'],
+                           'buy_spadek_pp':feat['buy_spadek_pp'],'momentum_5m':feat['momentum_5m']}
+                      decisions.append(dec)
+                      for side in ('LONG','SHORT'):
+                          for goal in ROI_TARGETS:
+                              results.append({**dec,'kierunek':side,'cel_roi_netto':goal,**evaluate(rows,signal_time,side,goal)})
+              return decisions,results,{'coin':symbol,'zdarzenia':len(events),'pobrane_swiece_1m':len(rows),'zapytania':calls}
+          
+          def write_csv(path,records):
+              fields=list(dict.fromkeys(k for r in records for k in r)) or ['brak']
+              with open(path,'w',encoding='utf-8-sig',newline='') as f:
+                  writer=csv.DictWriter(f,fieldnames=fields,extrasaction='ignore');writer.writeheader();writer.writerows(records)
+          
+          def main():
+              os.makedirs('test13_output',exist_ok=True)
+              grouped=defaultdict(list)
+              for e in EVENTS:grouped[e['coin']].append(e)
+              decisions=[];results=[];download=[];errors=[]
+              print(f'TEST 13: {len(EVENTS)} eventow, {len(grouped)} coinow z zamrozonej listy TEST 12. Swiece 1m.',flush=True)
+              with ThreadPoolExecutor(max_workers=3) as pool:
+                  tasks={pool.submit(analyze_coin,item):item[0] for item in grouped.items()}
+                  for i,f in enumerate(as_completed(tasks),1):
+                      coin=tasks[f]
+                      try:
+                          d,r,info=f.result();decisions.extend(d);results.extend(r);download.append(info)
+                          print(f'[{i}/{len(tasks)}] {coin}: {len(d)} ocen; {info["zapytania"]} zapytan',flush=True)
+                      except Exception as exc:
+                          errors.append({'coin':coin,'blad':str(exc)[:350]})
+                          print(f'[{i}/{len(tasks)}] {coin} ERROR: {exc}',flush=True)
+              for fn,data in [('eventy_test12_zamrozone.csv',EVENTS),('decyzje_test13.csv',decisions),('wyniki_test13.csv',results),('pobrania_test13.csv',download),('bledy_test13.csv',errors)]:write_csv('test13_output/'+fn,data)
+              lines=['# PUMP-SHORT TEST 13: minuta po minucie po duzych pompach','',
+                  f'Zamrozone zdarzenia z testu 12: {len(EVENTS)}, coinow: {len(grouped)}. Dane 1m dla {len(download)} coinow; bledy {len(errors)}.',
+                  'Zdarzenia sa zalezne (ten sam coin/epizod moze przekraczac wiele progow). Nie sa to niezalezne transakcje.',
+                  'Warianty: BAZA (wejscie po 5m progu), oslabenie w chwili progu, 2 oznaki w chwili progu, pierwsze oslabenie w kolejnych 15m.',
+                  'Wszystkie wskazniki tylko ze SWIEC ZAMKNIETYCH. Wejscie hipotetyczne na otwarciu nastepnej minuty.',
+                  'Bez SL, bez siatek i fundingu; 5x, prowizja taker 0,06% w obie strony + poslizg 0,05% w obie strony.',
+                  'TP10/15/20 to NETTO ROI; ruch +10% przeciw do TP dotyczy CENY coina, NIE ROI.',
+                  'W swiecy realizacji TP high i low maja nieznana kolejnosc. Pokazujemy dolna/gorna granice ryzyka przed TP.',
+                  'Obserwacja TP nie oznacza, ze mozna bylo bezpiecznie utrzymac pozycje Cross.',
+                  '', '| Wariant | Strona | TP netto | Zdarzenia | TP | Brak TP | TP po >=10% przeciwnym (pewne) | Nieznane przy progu 10% |',
+                  '|---|---|---:|---:|---:|---:|---:|---:|']
+              names=('BAZA','OSLABIENIE_W_CHWILI_PROGU','DWA_SYGNALY_W_CHWILI_PROGU','PIERWSZE_OSLABIENIE_DO_15M')
+              for name in names:
+                  for side in ('SHORT','LONG'):
+                      for goal in ROI_TARGETS:
+                          sub=[x for x in results if x['wariant']==name and x['kierunek']==side and x['cel_roi_netto']==goal]
+                          count=Counter(x['wynik'] for x in sub)
+                          risk=sum(x['ryzyko_10_przed_TP']=='TAK' for x in sub)
+                          amb=sum(x['ryzyko_10_przed_TP']=='NIEJEDNOZNACZNE' for x in sub)
+                          lines.append(f'| {name} | {side} | {goal}% | {len(sub)} | {count["TP"]} | {count["CZAS"]} | {risk} | {amb} |')
+              lines+=['','## Uwaga przed wdrozeniem',
+                 '- Bardzo duze pompy: dane o ich wyborze pochodza z TEST 12 (swiece 5m), nie wybieralismy ich po wynikach 1m.',
+                 '- To test historyczny na wczesniej badanym oknie, nie niezalezna walidacja poza proba.',
+                 '- Ceny/ROI podane dla pojedynczej pozycji; nie symulujemy drugiej siatki ani rachunku Cross.',
+                 '- OI/funding nie wystepuja w tych swiecach. Nie wolno dopisywac fikcyjnych wartosci.',
+                 '- Na tym etapie NIE MA potwierdzenia przewagi tradingowej. Przydatne jest porownanie BAZA kontra opoznione oslabienie.',
+                 '- scanner.py, Telegram, Netlify oraz backup NIE SA ZMIENIANE.']
+              report='\n'.join(lines)+'\n'
+              with open('test13_output/raport_test13.md','w',encoding='utf-8') as f:f.write(report)
+              print(report,flush=True)
+              if os.getenv('GITHUB_STEP_SUMMARY'):
+                  with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as f:f.write(report)
+              if len(download)<15:raise RuntimeError(f'Za malo coinow z pelnymi danymi 1m: {len(download)}')
+          
+          if __name__=='__main__':main()
+          PYCODE
+      - name: Zapisz raport TEST 13
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PUMP-SHORT-TEST-13-raport
+          path: test13_output/
+          if-no-files-found: warn
+          retention-days: 30
