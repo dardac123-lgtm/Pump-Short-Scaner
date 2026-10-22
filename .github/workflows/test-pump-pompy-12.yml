@@ -1,0 +1,244 @@
+name: PUMP-SHORT TEST 12 - pompy 30-100 LONG SHORT (bez alertow)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  research_12:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Pobierz dane WEEX i porownaj LONG SHORT
+        shell: bash
+        run: |
+          import csv, hashlib, json, math, os, time, urllib.parse, urllib.request
+          from collections import Counter
+          from concurrent.futures import ThreadPoolExecutor, as_completed
+          from datetime import datetime, timezone
+          from zoneinfo import ZoneInfo
+          
+          API='https://api-contract.weex.com/capi/v3/market/'
+          TZ=ZoneInfo('Europe/Oslo')
+          BAR=300000  # 5 minut
+          START='2026-09-01 00:00'
+          END='2026-09-23 03:00'  # zapas na rozliczenie sygnalow
+          EVAL_START='2026-09-02 00:00'
+          EVAL_END='2026-09-23 00:00'  # 21 dni, inny rozklad niz test 11
+          THRESHOLDS=(30,40,50,80,100)
+          WINDOWS=(48,288)  # 4h, 24h na swiecach 5m
+          TP_ROI=(10,15,20)
+          FUTURE_BARS=24  # 120 minut
+          LEVERAGE=5
+          FEE=.0006
+          SLIP=.0005
+          # Ta lista jest przyblizeniem wykluczenia duzych coinow i syntetycznych akcji
+          EXCLUDE={'BTCUSDT','ETHUSDT','SOLUSDT','BNBUSDT','XRPUSDT','ADAUSDT','DOGEUSDT','LINKUSDT','AVAXUSDT','DOTUSDT','LTCUSDT','TRXUSDT','BCHUSDT','TONUSDT','SUIUSDT','XLMUSDT','HBARUSDT','UNIUSDT','ETCUSDT','NEARUSDT','APTUSDT','ATOMUSDT','FILUSDT','AAVEUSDT','PAXGUSDT','XAUTUSDT','GOOGLUSDT','AAPLUSDT','TSLAUSDT','NVDAUSDT','MSFTUSDT','AMZNUSDT','METAUSDT','MSTRUSDT','SKHYNIXUSDT','MRVLUSDT','SNXXUSDT'}
+          ANCHORS=('CTUSDT','BRUSDT','JCTUSDT','RLCUSDT','AGTUSDT','ARIAUSDT','MAGMAUSDT','MYXUSDT','CVXUSDT','BZUSDT','1000PEPEUSDT','GRVTUSDT','XNYUSDT','PHAUSDT','ALTUSDT','ERAUSDT','CTRUSDT','BATUSDT','METISUSDT','NILUSDT')
+          
+          def ms(s): return int(datetime.strptime(s,'%Y-%m-%d %H:%M').replace(tzinfo=TZ).timestamp()*1000)
+          def dt(t): return datetime.fromtimestamp(t/1000, timezone.utc).astimezone(TZ).strftime('%Y-%m-%d %H:%M')
+          def pct(a,b): return 100*(a/b-1) if b and b>0 else None
+          
+          def get_json(url):
+              for attempt in range(5):
+                  try:
+                      req=urllib.request.Request(url,headers={'User-Agent':'PumpShort-Test12/1.0','Accept':'application/json'})
+                      with urllib.request.urlopen(req,timeout=30) as r:return json.load(r)
+                  except Exception:
+                      if attempt==4:raise
+                      time.sleep(min(2**attempt,10))
+          
+          def cohort():
+              info=get_json(API+'exchangeInfo?contractType=PERPETUAL')
+              names=set()
+              for x in info.get('symbols',[]):
+                  if not isinstance(x,dict):continue
+                  s=x.get('symbol')
+                  if isinstance(s,str) and s.endswith('USDT') and x.get('contractType')=='PERPETUAL' and x.get('quoteAsset')=='USDT' and s not in EXCLUDE:
+                      names.add(s)
+              if len(names)<100:raise RuntimeError('Za malo USDT perpetual po filtracji')
+              anchored=[s for s in ANCHORS if s in names]
+              remainder=sorted(names-set(anchored),key=lambda s:hashlib.sha256(('PUMP12-20261022:'+s).encode()).digest())
+              selected=anchored+remainder[:max(0,100-len(anchored))]
+              return [(s,'przyklad' if s in anchored else 'deterministyczny_dobor') for s in selected],len(names)
+          
+          def candles(symbol):
+              first,last=ms(START),ms(END)
+              rows={}; requests=0
+              for t in range(first,last+1,100*BAR):
+                  upper=min(last,t+99*BAR)
+                  q=urllib.parse.urlencode({'symbol':symbol,'interval':'5m','startTime':t,'endTime':upper,'limit':100,'priceType':'LAST'})
+                  resp=get_json(API+'historyKlines?'+q)
+                  if not isinstance(resp,list):raise RuntimeError('Niepoprawny format historii WEEX')
+                  for x in resp:
+                      if not isinstance(x,list) or len(x)<11:continue
+                      try:
+                          k=int(x[0]);o,h,l,c=map(float,x[1:5]);v=float(x[7]);b=float(x[10])
+                          if not(first<=k<=last and all(map(math.isfinite,(o,h,l,c,v,b)))):continue
+                          if min(o,h,l,c)<=0 or l>min(o,c) or h<max(o,c) or v<0 or b<0 or b>v*1.001:continue
+                          rows[k]=(k,o,h,l,c,v,b)
+                      except (TypeError,ValueError,OverflowError):continue
+                  requests+=1
+                  time.sleep(.12)
+              return [rows[k] for k in sorted(rows)],requests
+          
+          def net_roi(side,entry,exitprice):
+              # Kierunkowy poslizg na obu transakcjach, taker na wejsciu i wyjsciu
+              ent=entry*(1+SLIP if side=='LONG' else 1-SLIP)
+              ext=exitprice*(1-SLIP if side=='LONG' else 1+SLIP)
+              gross=(ext/ent-1) if side=='LONG' else (1-ext/ent)
+              return 100*LEVERAGE*(gross-FEE*(1+ext/ent))
+          
+          def evaluate(rows,index,side,target):
+              j=index+1
+              if j+FUTURE_BARS>len(rows):return ('BRAK_DANYCH','','','','')
+              entry=rows[j][1]
+              worst_before=entry
+              for k in range(j,j+FUTURE_BARS):
+                  if k>j and rows[k][0]-rows[k-1][0]!=BAR:return ('LUKA','','','','')
+                  b=rows[k]
+                  good=b[2] if side=='LONG' else b[3]
+                  bad=b[3] if side=='LONG' else b[2]
+                  if net_roi(side,entry,good)>=target:
+                      # Przebieg w swiecy TP nieznany: dwie granice ruchu przeciw przed TP
+                      risk_low=max(0,pct(entry,worst_before) if side=='LONG' else pct(worst_before,entry))
+                      possible_bad= min(worst_before,bad) if side=='LONG' else max(worst_before,bad)
+                      risk_high=max(0,pct(entry,possible_bad) if side=='LONG' else pct(possible_bad,entry))
+                      return ('TP',5*(k-j+1),round(risk_low,3),round(risk_high,3),'NIEZNANA_KOLEJNOSC_W_SWIECY_TP')
+                  worst_before=min(worst_before,bad) if side=='LONG' else max(worst_before,bad)
+              risk=max(0,pct(entry,worst_before) if side=='LONG' else pct(worst_before,entry))
+              return ('CZAS',120,round(risk,3),round(risk,3),'')
+          
+          def buyer_ratio(window):
+              volume=sum(r[5] for r in window)
+              return 100*sum(r[6] for r in window)/volume if volume>0 else None
+          
+          def analyze(item):
+              symbol,group=item
+              rows,requests=candles(symbol)
+              expected=(ms(END)-ms(START))//BAR+1
+              coverage=len(rows)/expected
+              if coverage<.85:raise RuntimeError(f'Za malo swiec: {coverage:.1%}')
+              gaps=set(i for i in range(1,len(rows)) if rows[i][0]-rows[i-1][0]!=BAR)
+              # prefix sums dla sprawdzania, czy wszystkie porownywane swiece sa ciagle
+              gap_prefix=[0]
+              for i in range(len(rows)):
+                  gap_prefix.append(gap_prefix[-1]+(1 if i in gaps else 0))
+              previous={(w,t):False for w in WINDOWS for t in THRESHOLDS}
+              last_day={(w,t):None for w in WINDOWS for t in THRESHOLDS}
+              events=[];outcomes=[]
+              for i in range(288,len(rows)-FUTURE_BARS):
+                  if gap_prefix[i+1]-gap_prefix[i-288]!=0:
+                      # po przerwie resetujemy stan przekroczenia
+                      for key in previous:previous[key]=False
+                      continue
+                  bar=rows[i];available=bar[0]+BAR
+                  if not(ms(EVAL_START)<=available<ms(EVAL_END)):continue
+                  day=dt(available)[:10]
+                  buy_now=buyer_ratio(rows[i-2:i+1]);buy_old=buyer_ratio(rows[i-5:i-2])
+                  buy_drop=buy_old-buy_now if buy_now is not None and buy_old is not None else None
+                  r5=pct(bar[4],rows[i-1][4]);r15=pct(bar[4],rows[i-3][4]);r15old=pct(rows[i-3][4],rows[i-6][4])
+                  if r5 is None or r15 is None or r15old is None:continue
+                  # Testowane opisowe segmenty, nie optymalizowane po wyniku
+                  if buy_now is None: regime='BRAK_DANYCH_BUY'
+                  elif buy_now>=55 and r15>=r15old and r15>0: regime='KUPUJACY_SILNI'
+                  elif (buy_drop is not None and buy_drop>=10) or (buy_now<45 and r15<r15old):regime='KUPUJACY_SLABNA'
+                  else:regime='NEUTRALNY'
+                  for w in WINDOWS:
+                      growth=pct(bar[4],rows[i-w][4])
+                      for threshold in THRESHOLDS:
+                          key=(w,threshold);high=growth is not None and growth>=threshold
+                          crossing=high and not previous[key] and last_day[key]!=day
+                          previous[key]=high
+                          if not crossing:continue
+                          last_day[key]=day
+                          e={'coin':symbol,'grupa':group,'czas_oslo':dt(available),'okno_h':w*5//60,
+                             'prog_procent':threshold,'wzrost_procent':round(growth,3),
+                             'cena_sygnalu':bar[4],'wzrost_5m':round(r5,3),'wzrost_15m':round(r15,3),
+                             'wzrost_wczesniejsze_15m':round(r15old,3),
+                             'taker_buy_15m':round(buy_now,2) if buy_now is not None else '',
+                             'spadek_taker_buy_pp':round(buy_drop,2) if buy_drop is not None else '',
+                             'segment':regime}
+                          events.append(e)
+                          for side in ('LONG','SHORT'):
+                              for target in TP_ROI:
+                                  state,minutes,low,high,flag=evaluate(rows,i,side,target)
+                                  outcomes.append({**e,'kierunek':side,'cel_roi':target,'wynik':state,'minuty':minutes,
+                                      'ryzyko_ceny_min':low,'ryzyko_ceny_max':high,'uwaga':flag})
+              return events,outcomes,{'coin':symbol,'grupa':group,'swiece':len(rows),'pokrycie':round(coverage,3),'luki':len(gaps),'zapytania':requests}
+          
+          def save(path,data,fields):
+              with open(path,'w',encoding='utf-8-sig',newline='') as f:
+                  writer=csv.DictWriter(f,fields,extrasaction='ignore');writer.writeheader();writer.writerows(data)
+          
+          def main():
+              os.makedirs('test12_output',exist_ok=True)
+              chosen,total=cohort()
+              save('test12_output/lista_coinow.csv',[dict(coin=s,grupa=g) for s,g in chosen],['coin','grupa'])
+              events=[];outcomes=[];processed=[];errors=[]
+              print(f'TEST 12: {len(chosen)} coinow z {total} obecnych kontraktow; 21 dni; 5m; +30-100%.',flush=True)
+              with ThreadPoolExecutor(max_workers=4) as pool:
+                  tasks={pool.submit(analyze,c):c for c in chosen}
+                  for n,f in enumerate(as_completed(tasks),1):
+                      s,_=tasks[f]
+                      try:
+                          a,b,info=f.result();events.extend(a);outcomes.extend(b);processed.append(info)
+                          print(f'[{n}/{len(chosen)}] {s}: {len(a)} przekroczen, pokrycie {info["pokrycie"]:.1%}',flush=True)
+                      except Exception as exc:
+                          errors.append({'coin':s,'blad':str(exc)[:300]})
+                          print(f'[{n}/{len(chosen)}] {s}: BLAD: {exc}',flush=True)
+              ec=['coin','grupa','czas_oslo','okno_h','prog_procent','wzrost_procent','cena_sygnalu','wzrost_5m','wzrost_15m','wzrost_wczesniejsze_15m','taker_buy_15m','spadek_taker_buy_pp','segment']
+              save('test12_output/przekroczenia_pomp.csv',events,ec)
+              save('test12_output/wyniki_long_short.csv',outcomes,ec+['kierunek','cel_roi','wynik','minuty','ryzyko_ceny_min','ryzyko_ceny_max','uwaga'])
+              save('test12_output/instrumenty.csv',processed,['coin','grupa','swiece','pokrycie','luki','zapytania'])
+              save('test12_output/bledy.csv',errors,['coin','blad'])
+              lines=['# PUMP-SHORT TEST 12: duze pompy na spekulacyjnych perpetual USDT',
+                     '',f'Okres: {EVAL_START} do {EVAL_END} (Oslo).',
+                     f'Pobrano {len(processed)}/{len(chosen)} coinow; bledy {len(errors)}.',
+                     f'Zdarzenia przekroczenia progow: {len(events)}; rozne coiny: {len(set(e["coin"] for e in events))}.',
+                     'Swiece **5-minutowe**, historia 24h/4h wedlug cen ZAMKNIECIA; sygnal po zamknieciu swiecy.',
+                     'Cel ROI netto (x5): 10%, 15%, 20%; prowizja 0.06% i poslizg 0.05% na kazda strone, brak fundingu.',
+                     'Bez SL, siatek, rzeczywistych filli, OI i danych order book. Wynik TP nie oznacza bezpiecznej transakcji.',
+                     'W swiecy TP ryzyko przeciwne podajemy w dwoch granicach; nie znamy kolejnosci high i low.',
+                     'Dobor na podstawie dzis notowanych coinow: **survivorship bias**; wykluczenie duzych nazw NIE gwarantuje, ze pozostale to shitcoiny.',
+                     'Te same eventy potrafia przekroczyc wiele progow: nie wolno sumowac ich jako niezaleznych transakcji.',
+                     '', '## Osiagniecie TP netto do 120 minut',
+                     '| Okno | Pompa | Zdarzenia | LONG TP10 | SHORT TP10 | LONG TP20 | SHORT TP20 |',
+                     '|---|---:|---:|---:|---:|---:|---:|']
+              for w in (4,24):
+                  for th in THRESHOLDS:
+                      base=[x for x in events if x['okno_h']==w and x['prog_procent']==th]
+                      def successes(side,target):return sum(1 for x in outcomes if x['okno_h']==w and x['prog_procent']==th and x['kierunek']==side and x['cel_roi']==target and x['wynik']=='TP')
+                      lines.append(f'| {w}h | {th}% | {len(base)} | {successes("LONG",10)} | {successes("SHORT",10)} | {successes("LONG",20)} | {successes("SHORT",20)} |')
+              lines.extend(['','## Segmenty kupujacych przy pompie >=30% w 24h (osobno LONG i SHORT)',
+                            '| Segment | Kierunek | Zdarzenia | TP10 | TP15 | TP20 |', '|---|---|---:|---:|---:|---:|'])
+              for segment in ('KUPUJACY_SILNI','KUPUJACY_SLABNA','NEUTRALNY','BRAK_DANYCH_BUY'):
+                  for side in ('LONG','SHORT'):
+                      subset=[x for x in events if x['okno_h']==24 and x['prog_procent']==30 and x['segment']==segment]
+                      def tpcount(t):return sum(1 for x in outcomes if x['okno_h']==24 and x['prog_procent']==30 and x['segment']==segment and x['kierunek']==side and x['cel_roi']==t and x['wynik']=='TP')
+                      lines.append(f'| {segment} | {side} | {len(subset)} | {tpcount(10)} | {tpcount(15)} | {tpcount(20)} |')
+              lines.extend(['','## Ograniczenia i kolejny krok',
+                            '- Porownanie segmentow jest opisowe, nie dowodzi przewagi ani rentownosci.',
+                            '- Czas TP ma dokladnosc 5 minut; cena mogla najpierw wykonac ruch przeciwko pozycji.',
+                            '- Gdyby wyniki byly obiecujace, odrebny test 1m powinien zbadac kolejnosc TP/SL i MAE.',
+                            '- Nie nadaje sie do automatycznego handlu, dzwignia x5/cross jest ryzykowna.',
+                            '- scanner.py, Netlify, Telegram, historia i backup nie sa zmieniane.'])
+              report='\n'.join(lines)+'\n'
+              with open('test12_output/raport_test12.md','w',encoding='utf-8') as f:f.write(report)
+              print(report,flush=True)
+              if os.getenv('GITHUB_STEP_SUMMARY'):
+                  with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as f:f.write(report)
+              if len(processed)<40:raise RuntimeError('Za malo coinow z danymi do analizy (min 40)')
+          
+          if __name__=='__main__':main()
+      - name: Zapisz wyniki i raport CSV
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PUMP-SHORT-TEST-12-raport
+          path: test12_output/
+          if-no-files-found: warn
+          retention-days: 30
