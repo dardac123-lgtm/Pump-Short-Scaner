@@ -1,0 +1,84 @@
+name: PUMP-SHORT TEST 14 - walidacja 1m bez alertow
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+jobs:
+  research_14:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+    - name: Walidacja WEEX 5m i 1m
+      shell: bash
+      run: "python3 - <<'PYCODE'\nimport csv, hashlib, json, math, os, time, urllib.parse, urllib.request\nfrom collections import Counter, defaultdict\nfrom concurrent.futures\
+        \ import ThreadPoolExecutor, as_completed\nfrom datetime import datetime, timedelta, timezone\nfrom zoneinfo import ZoneInfo\n\nTZ = ZoneInfo('Europe/Oslo')\n\
+        API = 'https://api-contract.weex.com/capi/v3/market/historyKlines'\nEXCHANGE = 'https://api-contract.weex.com/capi/v3/market/exchangeInfo?contractType=PERPETUAL'\n\
+        MIN = 60000\nFIVE = 5*MIN\nSTART = '2026-08-20 00:00'\nEND = '2026-09-01 00:00'\nTARGETS = (10, 15, 20)\nLEV = 5\nFEE = .0006\nSLIP = .0005\nANCHORS = ['AGTUSDT','BRUSDT','CTUSDT','JCTUSDT','MAGMAUSDT','PHAUSDT','LSKUSDT','NILUSDT','MYXUSDT','DOODUSDT','RLCUSDT','CROSSUSDT','KERNELUSDT','EDGEUSDT']\n\
+        os.makedirs('test14_output', exist_ok=True)\n\ndef ms(s): return int(datetime.strptime(s,'%Y-%m-%d %H:%M').replace(tzinfo=TZ).timestamp()*1000)\ndef oslo(t):\
+        \ return datetime.fromtimestamp(t/1000, timezone.utc).astimezone(TZ).strftime('%Y-%m-%d %H:%M')\ndef get_json(url):\n    for n in range(5):\n        try:\n\
+        \            req=urllib.request.Request(url,headers={'Accept':'application/json','User-Agent':'PUMP-SHORT-research14/1.0'})\n            with urllib.request.urlopen(req,timeout=30)\
+        \ as f: return json.load(f)\n        except Exception:\n            if n==4: raise\n            time.sleep(min(2**n,12))\n\ndef candles(sym, interval, a,\
+        \ b):\n    delta=FIVE if interval=='5m' else MIN\n    result={}; calls=0\n    for t in range(a,b,100*delta):\n        end=min(b-delta,t+99*delta)\n      \
+        \  query=urllib.parse.urlencode({'symbol':sym,'interval':interval,'startTime':t,'endTime':end,'limit':100,'priceType':'LAST'})\n        raw=get_json(API+'?'+query)\n\
+        \        if not isinstance(raw,list): raise ValueError('Unexpected WEEX payload '+str(raw)[:100])\n        calls+=1\n        for r in raw:\n            if\
+        \ not isinstance(r,list) or len(r)<11: continue\n            try:\n                stamp=int(r[0]); o,h,l,c=map(float,r[1:5]); vol=float(r[7]); buy=float(r[10])\n\
+        \                if stamp<a or stamp>=b or not all(map(math.isfinite,(o,h,l,c,vol,buy))):continue\n                if min(o,h,l,c)<=0 or l>min(o,c) or h<max(o,c)\
+        \ or vol<0 or buy<0 or buy>vol*1.001:continue\n                result[stamp]=(stamp,o,h,l,c,vol,buy)\n            except (ValueError,TypeError,OverflowError):\
+        \ pass\n        time.sleep(.12)\n    return result,calls\n\ndef choose():\n    raw=get_json(EXCHANGE)\n    ss=raw.get('symbols',[]) if isinstance(raw,dict)\
+        \ else []\n    active={x['symbol'] for x in ss if isinstance(x,dict) and isinstance(x.get('symbol'),str) and x['symbol'].endswith('USDT') and x.get('contractType')=='PERPETUAL'}\n\
+        \    if len(active)<80: raise RuntimeError('WEEX nie zwrocil listy kontraktow')\n    anchors=[s for s in ANCHORS if s in active]\n    others=sorted(active-set(anchors),key=lambda\
+        \ s:hashlib.sha256(('PUMP14-'+s).encode()).hexdigest())\n    return anchors+others[:max(0,50-len(anchors))]\n\ndef pump_events(sym):\n    a=ms(START)-24*60*MIN;\
+        \ b=ms(END)\n    data,calls=candles(sym,'5m',a,b)\n    ordered=sorted(data)\n    signals=[];last_event=0; since=ms(START)\n    for t in ordered:\n       \
+        \ if t<since or t>=b:continue\n        p=data[t]\n        # Crossing uses only CLOSED 5m candles: t labels 5m candle start; available at t+5m.\n        prev24=data.get(t-288*FIVE)\n\
+        \        prev4=data.get(t-48*FIVE)\n        if not prev24 or not prev4:continue\n        # 24h/4h growth measured from same candle close at historical offset\n\
+        \        gains=[100*(p[4]/prev24[4]-1), 100*(p[4]/prev4[4]-1)]\n        if max(gains)<30 or t-last_event<12*60*MIN:continue\n        # Before signal live:\
+        \ pump gets detected after current 5m close\n        signals.append({'symbol':sym,'t':t+FIVE,'change24':round(gains[0],2),'change4':round(gains[1],2)})\n\
+        \        last_event=t\n    return signals,len(data),calls\n\ndef share(rows):\n    v=sum(x[5] for x in rows)\n    return 100*sum(x[6] for x in rows)/v if\
+        \ v>0 else None\n\ndef weakness(data, moment):\n    # Current moment is a boundary, all 1m candles t < moment are closed.\n    seq=[data.get(moment-10*MIN+i*MIN)\
+        \ for i in range(10)]\n    if any(x is None for x in seq): return None\n    old,new=seq[:5],seq[5:]\n    bp,bn=share(old),share(new)\n    if bp is None or\
+        \ bn is None:return None\n    r_old=100*(old[-1][4]/old[0][1]-1)\n    r_new=100*(new[-1][4]/new[0][1]-1)\n    last=new[-1]\n    wick=(last[2]-max(last[1],last[4]))/(last[2]-last[3])\
+        \ if last[2]>last[3] else 0\n    wick_pct=100*(last[2]/max(last[1],last[4])-1)\n    signs=[]\n    if bp-bn>=10:signs.append('kupujacy_slabna')\n    if r_old>1\
+        \ and r_old-r_new>=4:signs.append('momentum_hamuje')\n    if wick>=.5 and wick_pct>=2:signs.append('gorny_knot')\n    return signs\n\ndef roi_short(entry,exit_price):\n\
+        \    buy=entry*(1-SLIP)\n    sell=exit_price*(1+SLIP)\n    return 100*LEV*((1-sell/buy)-FEE*(1+sell/buy))\n\ndef result(data, entry_t, target):\n    block=[data.get(entry_t+i*MIN)\
+        \ for i in range(120)]\n    if any(x is None for x in block):return {'wynik':'BRAK_DANYCH','minute':'','mae_cena_pct':'','mae_roi_pct':''}\n    entry=block[0][1]\n\
+        \    worst=entry\n    for idx,c in enumerate(block,1):\n        # high against short, low helps short. Sequence within candle unknown.\n        if roi_short(entry,c[3])>=target:\n\
+        \            before=max(0,100*(worst/entry-1))\n            upper=max(before,100*(c[2]/entry-1))\n            return {'wynik':'TP','minute':idx,'mae_cena_pct':round(before,3),'mae_roi_pct':round(-5*upper,2),\
+        \ 'max_potencjalny_ruch_w_swiecy_cena_pct':round(upper,3)}\n        worst=max(worst,c[2])\n    return {'wynik':'BRAK_TP','minute':120,'mae_cena_pct':round(max(0,100*(worst/entry-1)),3),'mae_roi_pct':round(-5*max(0,100*(worst/entry-1)),2)}\n\
+        \ndef process(ev):\n    t=ev['t'];sym=ev['symbol']\n    data,calls=candles(sym,'1m',t-15*MIN,t+140*MIN)\n    if len(data)<130:raise RuntimeError('Brak ciaglych\
+        \ swiec 1m')\n    base=result(data,t,10)\n    weak_t=None\n    for i in range(16):\n        boundary=t+i*MIN\n        sg=weakness(data,boundary)\n       \
+        \ if sg:\n            weak_t=boundary;break\n    rows=[]\n    for typ, entry_t in [('OD_RAZU',t),('PO_OSLABIENIU',weak_t)]:\n        if entry_t is None:\n\
+        \            for target in TARGETS:\n                rows.append({**ev,'wariant':typ,'tp_roi':target,'wejscie_oslo':'','wynik':'BRAK_OSLABIENIA'})\n     \
+        \       continue\n        for target in TARGETS:\n            rows.append({**ev,'wariant':typ,'tp_roi':target,'wejscie_oslo':oslo(entry_t),**result(data,entry_t,target)})\n\
+        \    return rows,calls\n\ndef csvsave(name,arr):\n    if not arr:return\n    cols=list(dict.fromkeys(k for a in arr for k in a))\n    with open('test14_output/'+name,'w',encoding='utf-8-sig',newline='')\
+        \ as f:\n        w=csv.DictWriter(f,fieldnames=cols);w.writeheader();w.writerows(arr)\n\ndef main():\n    co=choose(); a=[];err=[]; counts=[]\n    with ThreadPoolExecutor(max_workers=4)\
+        \ as pool:\n        futures={pool.submit(pump_events,s):s for s in co}\n        for i,fu in enumerate(as_completed(futures),1):\n            s=futures[fu]\n\
+        \            try:\n                ev,got,calls=fu.result();a.extend(ev);counts.append({'coin':s,'swiece_5m':got,'zapytania':calls,'epizody':len(ev)})\n \
+        \               print(f'5m {i}/{len(co)} {s}: {len(ev)} epizodow',flush=True)\n            except Exception as ex:err.append({'coin':s,'etap':'5m','blad':str(ex)})\n\
+        \    print('Wykryto',len(a),'epizodow, teraz dane 1m',flush=True)\n    a.sort(key=lambda r:(r['t'],r['symbol']))\n    results=[]\n    with ThreadPoolExecutor(max_workers=3)\
+        \ as pool:\n        futures={pool.submit(process,e):e for e in a}\n        for i,fu in enumerate(as_completed(futures),1):\n            e=futures[fu]\n  \
+        \          try:\n                rows,calls=fu.result();results.extend(rows)\n                print(f'1m {i}/{len(a)} {e[\"symbol\"]} OK',flush=True)\n  \
+        \          except Exception as ex:err.append({'coin':e['symbol'],'etap':'1m','blad':str(ex),'czas':oslo(e['t'])})\n    events=[{**e,'czas_oslo':oslo(e['t'])}\
+        \ for e in a]\n    csvsave('epizody.csv',events);csvsave('wyniki.csv',results);csvsave('instrumenty.csv',counts);csvsave('bledy.csv',err)\n    lines=['# PUMP-SHORT\
+        \ TEST 14 / walidacja poza proba','','Badany okres: '+START+' do '+END+' (Oslo).',\n           f'Instrumenty wybrane: {len(co)}; z danymi: {len(counts)};\
+        \ pompy >=30% w 4h lub 24h: {len(a)}; unikalne coiny: {len(set(e[\"symbol\"] for e in a))}.',\n           'Rozdzielamy zdarzenia na tym samym coinie przynajmniej\
+        \ o 12h, ale to nadal NIE gwarantuje statystycznej niezaleznosci.',\n           'Warianty SHORT: od razu po zamknietej swiecy 5m (OD_RAZU); na pierwszym oslabieniu\
+        \ 1m w ciagu 15 min (PO_OSLABIENIU).',\n           'Pierwsze oslabienie: spadek udzialu taker BUY >=10 pp lub spowolnienie momentum 5m >=4pp lub dlugi knot.',\n\
+        \           'Cel: ROI netto x5 +10/15/20%, prowizja taker 0.06% na wejscie i wyjscie oraz poslizg 0.05% na strone.',\n           'Brak stop-loss, likwidacji,\
+        \ fundingu i manualnych siatek w symulacji. OI nie jest dostepne historycznie.',\n           'Ryzyko wyliczone jedynie z wysokosci swiec. W swiecy TP kolejność\
+        \ high i low jest nieznana.',\n           'Ten test nie wprowadza zmian w skanerze, Telegramie ani Netlify.','',\n           '| Wariant | Cel ROI | Epizody\
+        \ z danymi | Osiagniety TP | Brak TP | Brak oslabienia |',\n           '|---|---:|---:|---:|---:|---:|']\n    for variant in ('OD_RAZU','PO_OSLABIENIU'):\n\
+        \        for target in TARGETS:\n            sample=[r for r in results if r['wariant']==variant and r['tp_roi']==target]\n            cc=Counter(r['wynik']\
+        \ for r in sample)\n            lines.append(f'| {variant} | {target}% | {len(sample)} | {cc[\"TP\"]} | {cc[\"BRAK_TP\"]} | {cc[\"BRAK_OSLABIENIA\"]} |')\n\
+        \    if len(a)<20:lines.append('\\n**UWAGA:** Mniej niz 20 epizodow. Wyniki wysoce niepewne, potrzebna szersza proba.')\n    if err:lines.append('\\nBledy\
+        \ danych: '+str(len(err))+'. Szczegoly w bledy.csv.')\n    summary='\\n'.join(lines)+'\\n'\n    with open('test14_output/raport.md','w',encoding='utf-8')\
+        \ as f:f.write(summary)\n    print(summary,flush=True)\n    if os.getenv('GITHUB_STEP_SUMMARY'):\n        with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8')\
+        \ as f:f.write(summary)\n\nif __name__=='__main__':main()\n\nPYCODE"
+    - name: Zapisz raport TEST 14
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: PUMP-SHORT-TEST-14-raport
+        path: test14_output/
+        if-no-files-found: warn
+        retention-days: 30
