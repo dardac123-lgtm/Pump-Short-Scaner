@@ -1,0 +1,204 @@
+name: PUMP-SHORT TEST 15 - powroty po pompach (bez alertow)
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  test15:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+    - name: Badanie WEEX 5m
+      shell: bash
+      run: |-
+        python3 - <<'PYCODE'
+        import csv, json, math, os, time, urllib.parse, urllib.request
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        from collections import Counter
+        from datetime import datetime, timezone
+        from zoneinfo import ZoneInfo
+
+        TZ=ZoneInfo('Europe/Oslo')
+        API='https://api-contract.weex.com/capi/v3/market/historyKlines'
+        FIVE=300000
+        START='2026-08-20 00:00'
+        END='2026-09-01 00:00'
+        FETCH_START='2026-08-19 00:00'
+        FETCH_END='2026-09-04 00:00'
+        OUT='test15_output'
+        SYMBOLS=['BRUSDT', 'CTUSDT', 'AGTUSDT', 'JCTUSDT', 'MAGMAUSDT', 'PHAUSDT', 'LSKUSDT', 'NILUSDT', 'DOODUSDT', 'MYXUSDT', 'RLCUSDT', 'CROSSUSDT', 'KERNELUSDT', 'EDGEUSDT', 'CATUSDT', 'ARKMUSDT', 'JUPUSDT', 'LIGHTUSDT', 'OUSDT', 'COREUSDT', 'LYNUSDT', 'ZETAUSDT', 'VANAUSDT', 'WOOUSDT', 'PHAROSUSDT', 'INJUSDT', 'REALUSDT', 'ATOMUSDT', 'SOLVUSDT', 'HYPERUSDT', 'DENTUSDT', 'BROCCOLIF3BUSDT', 'DASHUSDT', 'XRPUSDT', 'EDUUSDT', 'WAVESUSDT', 'MEWUSDT', 'AINUSDT', 'PEOPLEUSDT', 'MOODENGUSDT', 'SPORTFUNUSDT', 'BBUSDT', 'MEUSDT', 'CCUSDT', 'ALICEUSDT', 'TREEUSDT', 'DOLOUSDT', 'ZEREBROUSDT', 'AGLDUSDT', 'AVAUSDT']
+        THRESHOLDS=(30,40,50,80,100)
+        HORIZONS=(6,24,72)
+
+        def epoch(s):
+            return int(datetime.strptime(s,'%Y-%m-%d %H:%M').replace(tzinfo=TZ).timestamp()*1000)
+
+        def local(t):
+            return datetime.fromtimestamp(t/1000,timezone.utc).astimezone(TZ).strftime('%Y-%m-%d %H:%M')
+
+        def retrieve(symbol):
+            first,last=epoch(FETCH_START),epoch(FETCH_END)
+            rows={};calls=0
+            for t in range(first,last,100*FIVE):
+                e=min(last-FIVE,t+99*FIVE)
+                query=urllib.parse.urlencode({'symbol':symbol,'interval':'5m','startTime':t,'endTime':e,'limit':100,'priceType':'LAST'})
+                url=API+'?'+query
+                for attempt in range(5):
+                    try:
+                        req=urllib.request.Request(url,headers={'Accept':'application/json','User-Agent':'PUMP-SHORT-TEST15/1.0'})
+                        with urllib.request.urlopen(req,timeout=25) as f: payload=json.load(f)
+                        if not isinstance(payload,list): raise ValueError('WEEX unexpected format')
+                        break
+                    except Exception as ex:
+                        if attempt==4: raise RuntimeError(f'WEEX {symbol}: {ex}') from ex
+                        time.sleep(min(2**attempt,10))
+                calls+=1
+                for v in payload:
+                    try:
+                        if not isinstance(v,list) or len(v)<5: continue
+                        ts=int(v[0]); o,h,l,c=map(float,v[1:5])
+                        if (first<=ts<last and all(math.isfinite(x) for x in (o,h,l,c)) and min(o,h,l,c)>0 and l<=min(o,c) and h>=max(o,c)):
+                            rows[ts]=(o,h,l,c)
+                    except (TypeError,ValueError,OverflowError): continue
+                time.sleep(.10)
+            return rows,calls
+
+        def per_symbol(symbol):
+            prices,calls=retrieve(symbol)
+            sorted_times=sorted(prices)
+            first,last=epoch(FETCH_START),epoch(FETCH_END)
+            expected=(last-first)//FIVE
+            observed=len(prices)
+            events=[]
+            prior_event=None
+            # 24-hour lookback, and no forward-looking values at event detection.
+            for t in sorted_times:
+                if not (epoch(START)<=t+FIVE<epoch(END)): continue
+                if prior_event is not None and t-prior_event<72*3600000: continue
+                prev24=prices.get(t-288*FIVE)
+                prev4=prices.get(t-48*FIVE)
+                if prev24 is None or prev4 is None: continue
+                close=prices[t][3]
+                growth24=100*(close/prev24[3]-1)
+                growth4=100*(close/prev4[3]-1)
+                if max(growth24,growth4)<30: continue
+                prev_low=[prices.get(t-i*FIVE) for i in range(1,289)]
+                if any(x is None for x in prev_low): continue
+                anchor=min(x[2] for x in prev_low)
+                if anchor<=0 or close<=anchor: continue
+                signal_t=t+FIVE
+                event={'coin':symbol,'czas_oslo':local(signal_t),'czas_ms':signal_t,
+                       'cena_wykrycia':close,'baza_minimum_24h':anchor,
+                       'wzrost_24h_pct':round(growth24,2),'wzrost_4h_pct':round(growth4,2),
+                       'wzrost_od_bazy_pct':round(100*(close/anchor-1),2),
+                       'progi_24h':'+'.join(str(p) for p in THRESHOLDS if growth24>=p),
+                       'progi_4h':'+'.join(str(p) for p in THRESHOLDS if growth4>=p)}
+                events.append(event)
+                prior_event=t
+            outcomes=[]
+            for ev in events:
+                # Predetermined reference and targets use values known at detection time.
+                t=ev['czas_ms']; close=ev['cena_wykrycia']; anchor=ev['baza_minimum_24h']
+                for hours in HORIZONS:
+                    future=[prices.get(t+i*FIVE) for i in range(hours*12)]
+                    complete=all(c is not None for c in future)
+                    available=[]
+                    for candle in future:
+                        if candle is None: break
+                        available.append(candle)
+                    future=available
+                    max_high=max((x[1] for x in future),default=None)
+                    min_low=min((x[2] for x in future),default=None)
+                    # Returns 50%, 80%, 90%, 100% toward predetermined pre-pump minimum.
+                    for reduction in (50,80,90,100):
+                        target=close-(close-anchor)*reduction/100
+                        reached=None;peak_so_far=close
+                        adverse=None
+                        for minute,c in enumerate(future,1):
+                            peak_so_far=max(peak_so_far,c[1])
+                            if c[2]<=target:
+                                reached=minute*5
+                                adverse=100*(peak_so_far/close-1)
+                                break
+                        outcomes.append({**ev,'horyzont_godz':hours,'powrot_procent_ruchu':reduction,
+                            'cena_celu':round(target,10),'wynik':('TAK' if reached is not None else 'NIE' if complete else 'NIEPELNE'),
+                            'minuty_do_powrotu':reached or '',
+                            'max_wzrost_przed_powrotem_pct_gorna_granica':round(adverse,2) if adverse is not None else '',
+                            'max_wzrost_w_oknie_pct':round(100*(max_high/close-1),2) if max_high is not None else '',
+                            'najglebszy_spadek_w_oknie_pct':round(100*(1-min_low/close),2) if min_low is not None else '',
+                            'swiece_dostepne':len(future),'swiece_oczekiwane':hours*12})
+            return events,outcomes,{'coin':symbol,'pokrycie_pct':round(100*observed/expected,2),
+                                     'swiece':observed,'oczekiwane':expected,'zapytania':calls,'epizody':len(events)}
+
+        def save(filename,rows,keys):
+            with open(OUT+'/'+filename,'w',encoding='utf-8-sig',newline='') as f:
+                writer=csv.DictWriter(f,fieldnames=keys,extrasaction='ignore')
+                writer.writeheader();writer.writerows(rows)
+
+        def main():
+            os.makedirs(OUT,exist_ok=True)
+            events=[];outcomes=[];instruments=[];errors=[]
+            with ThreadPoolExecutor(max_workers=3) as pool:
+                futures={pool.submit(per_symbol,s):s for s in SYMBOLS}
+                for i,future in enumerate(as_completed(futures),1):
+                    symbol=futures[future]
+                    try:
+                        ev,rows,info=future.result()
+                        instruments.append(info);events+=ev;outcomes+=rows
+                        print(f'{i}/{len(SYMBOLS)} {symbol}: {len(ev)} pomp; pokrycie {info["pokrycie_pct"]}%',flush=True)
+                    except Exception as ex:
+                        errors.append({'coin':symbol,'problem':str(ex)})
+                        print(f'{i}/{len(SYMBOLS)} {symbol}: ERROR {ex}',flush=True)
+            events.sort(key=lambda e:(e['czas_ms'],e['coin']))
+            outcomes.sort(key=lambda e:(e['czas_ms'],e['coin'],e['horyzont_godz'],e['powrot_procent_ruchu']))
+            event_fields=list(events[0]) if events else ['coin','czas_oslo','czas_ms','cena_wykrycia','baza_minimum_24h','wzrost_24h_pct','wzrost_4h_pct','wzrost_od_bazy_pct','progi_24h','progi_4h']
+            outcome_fields=list(outcomes[0]) if outcomes else event_fields+['horyzont_godz','powrot_procent_ruchu','cena_celu','wynik','minuty_do_powrotu','max_wzrost_przed_powrotem_pct_gorna_granica','max_wzrost_w_oknie_pct','najglebszy_spadek_w_oknie_pct','swiece_dostepne','swiece_oczekiwane']
+            save('epizody.csv',events,event_fields)
+            save('powroty.csv',outcomes,outcome_fields)
+            save('instrumenty.csv',instruments,['coin','pokrycie_pct','swiece','oczekiwane','zapytania','epizody'])
+            save('bledy.csv',errors,['coin','problem'])
+            lines=['# PUMP-SHORT TEST 15 / powroty po pompach', '',
+              f'- Instrumenty: {len(instruments)}/{len(SYMBOLS)}; wykryte epizody: {len(events)}; unikalne coiny: {len({e["coin"] for e in events})}.',
+              f'- Okres sygnalow: {START} do {END} Oslo; odczyt do {FETCH_END}.',
+              '- Progi wzrostu 30%, 40%, 50%, 80%, 100% mierzone od ceny zamkniecia 4h lub 24h wstecz.',
+              '- 72h przerwy miedzy epizodami na jednym coinie. To NIE gwarantuje niezaleznosci.',
+              '- Baza sprzed pompy: minimum LOW z 24h PRZED swieca wykrycia (zawsze znane w chwili wykrycia).',
+              '- 100% powrotu = cena wraca do bazy, 90% = odrabia 90% odleglosci miedzy cena wykrycia a baza.',
+              '- To HEURYSTYKA. Baza moze pochodzic z wczesniejszego ruchu, nie musi oznaczac poczatku calej pompy.',
+              '- Przy braku swiec w oknie wynik NIEPELNE, nie liczymy jako porazki.',
+              '- Max wzrost przed powrotem zawiera HIGH swiecy dotkniecia celu, wiec jest GORNA granica (nie znamy kolejnosci HIGH/LOW).',
+              '- Brak stop loss, automatycznych transakcji, siatek, likwidacji i ROI; raport mierzy wyłącznie ruch ceny.',
+              '- Lista instrumentow pochodzi z testu 14: nie jest reprezentatywna dla wszystkich historycznie notowanych shitcoinow.',
+              '- Instrumenty nieobecne/delistowane dzisiaj moga byc pominięte: selection/survivorship bias.',
+              '', '| Horyzont | Powrot | TAK | NIE | NIEPELNE | Udzial TAK w pelnych |',
+              '|---|---:|---:|---:|---:|---:|']
+            for h in HORIZONS:
+                for r in (50,80,90,100):
+                    c=Counter(x['wynik'] for x in outcomes if x['horyzont_godz']==h and x['powrot_procent_ruchu']==r)
+                    denom=c['TAK']+c['NIE']
+                    share=round(100*c['TAK']/denom,1) if denom else 'brak danych'
+                    lines.append(f'| {h}h | {r}% | {c["TAK"]} | {c["NIE"]} | {c["NIEPELNE"]} | {share}% |')
+            lines+=['','## Liczba wykrytych epizodow wedlug progow','| Okno | Prog | Liczba epizodow (nakladaja sie) |','|---|---:|---:|']
+            for w in ('24h','4h'):
+                for p in THRESHOLDS:
+                    n=sum(float(ev['wzrost_'+w+'_pct'])>=p for ev in events)
+                    lines.append(f'| {w} | +{p}% | {n} |')
+            lines+=['',f'Bledy danych: {len(errors)}. Szczegoly w bledy.csv.',
+              'WYNIKI SA HISTORYCZNE I NIE DOWODZA, ZE CENA W PRZYSZLOSCI WROCI.']
+            report='\n'.join(lines)+'\n'
+            with open(OUT+'/raport.md','w',encoding='utf-8') as f:f.write(report)
+            print(report,flush=True)
+            if os.getenv('GITHUB_STEP_SUMMARY'):
+                with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as f:f.write(report)
+            if len(instruments)<20:raise SystemExit('Za malo instrumentow z danymi (minimum 20).')
+        if __name__=='__main__':main()
+
+        PYCODE
+    - name: Zapisz raport i CSV
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: PUMP-SHORT-TEST-15-raport
+        path: test15_output/
+        if-no-files-found: warn
+        retention-days: 30
