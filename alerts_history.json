@@ -342,5 +342,13 @@
     "price": 0.02774,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "BTRUSDT",
+    "detected_at": "2026-10-23T11:37:02.334455+00:00",
+    "change_percent": 40.46,
+    "price": 0.06166,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
