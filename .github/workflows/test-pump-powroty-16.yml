@@ -1,0 +1,201 @@
+name: PUMP-SHORT TEST 16 - duze pompy i powroty (bez alertow)
+'on':
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  research_16:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+    - name: WEEX 5m - historyczny test pomp +50%
+      shell: bash
+      run: |-
+        python3 - <<'PYCODE'
+        import csv,json,math,os,time,urllib.parse,urllib.request,hashlib
+        from datetime import datetime,timezone,timedelta
+        from zoneinfo import ZoneInfo
+        from concurrent.futures import ThreadPoolExecutor,as_completed
+        from collections import Counter
+
+        TZ=ZoneInfo('Europe/Oslo'); API='https://api-contract.weex.com/capi/v3/market/historyKlines'; M=300000
+        START='2026-09-01 00:00'; END='2026-09-22 00:00'; FETCH_START='2026-08-31 00:00'; FETCH_END='2026-09-25 00:00'
+        OUT='test16_output'; LEVELS=(50,80,100); HORIZONS=(6,24,72); REVERT=(50,80,90,100); GROSS_ROI=(10,15,20)
+        BASE=['BRUSDT','CTUSDT','AGTUSDT','JCTUSDT','MAGMAUSDT','PHAUSDT','LSKUSDT','NILUSDT','DOODUSDT','MYXUSDT','RLCUSDT','CROSSUSDT','KERNELUSDT','EDGEUSDT','CATUSDT','ARKMUSDT','JUPUSDT','LIGHTUSDT','OUSDT','COREUSDT','LYNUSDT','ZETAUSDT','VANAUSDT','WOOUSDT','PHAROSUSDT','INJUSDT','REALUSDT','ATOMUSDT','SOLVUSDT','HYPERUSDT','DENTUSDT','BROCCOLIF3BUSDT','DASHUSDT','EDUUSDT','WAVESUSDT','MEWUSDT','AINUSDT','PEOPLEUSDT','MOODENGUSDT','SPORTFUNUSDT','BBUSDT','MEUSDT','CCUSDT','ALICEUSDT','TREEUSDT','DOLOUSDT','ZEREBROUSDT','AGLDUSDT','AVAUSDT']
+
+        def ts(s):return int(datetime.strptime(s,'%Y-%m-%d %H:%M').replace(tzinfo=TZ).timestamp()*1000)
+        def date(t):return datetime.fromtimestamp(t/1000,timezone.utc).astimezone(TZ).strftime('%Y-%m-%d %H:%M')
+        def pct(a,b):return 100*(a/b-1) if b>0 else None
+
+        def pick_symbols():
+            url='https://api-contract.weex.com/capi/v3/market/exchangeInfo?contractType=PERPETUAL'
+            for attempt in range(4):
+                try:
+                    with urllib.request.urlopen(urllib.request.Request(url,headers={'Accept':'application/json','User-Agent':'PUMP-SHORT-test16/1.0'}),timeout=30) as resp: info=json.load(resp)
+                    break
+                except Exception:
+                    if attempt==3:raise
+                    time.sleep(2**attempt)
+            eligible=set()
+            for item in info.get('symbols',[]):
+                if not isinstance(item,dict):continue
+                s=item.get('symbol')
+                if isinstance(s,str) and s.endswith('USDT') and item.get('contractType')=='PERPETUAL' and item.get('quoteAsset')=='USDT':eligible.add(s)
+            if len(eligible)<100:raise RuntimeError('Brak dostatecznej liczby aktywnych instrumentow WEEX')
+            base=[s for s in BASE if s in eligible]
+            avoid={'BTCUSDT','ETHUSDT','SOLUSDT','BNBUSDT','XRPUSDT','DOGEUSDT','ADAUSDT','LINKUSDT','TRXUSDT','LTCUSDT','BCHUSDT','AVAXUSDT'}
+            extras=sorted(eligible-set(base)-avoid,key=lambda s:hashlib.sha256(('test16-fixed-seed:'+s).encode()).hexdigest())[:max(0,110-len(base))]
+            return [(s,'lista_bazowa') for s in base]+[(s,'rozszerzona_proba') for s in extras],len(eligible)
+
+        def fetch(symbol):
+            first,last=ts(FETCH_START),ts(FETCH_END); records={};calls=0
+            for t in range(first,last,100*M):
+                end=min(last-M,t+99*M)
+                query=urllib.parse.urlencode({'symbol':symbol,'interval':'5m','startTime':t,'endTime':end,'limit':100,'priceType':'LAST'})
+                url=API+'?'+query
+                for attempt in range(6):
+                    try:
+                        req=urllib.request.Request(url,headers={'Accept':'application/json','User-Agent':'PUMP-SHORT-test16/1.0'})
+                        with urllib.request.urlopen(req,timeout=30) as f: payload=json.load(f)
+                        if not isinstance(payload,list):raise ValueError('Nieznany format odpowiedzi WEEX')
+                        break
+                    except Exception as e:
+                        if attempt==5:raise RuntimeError(f'WEEX {symbol} odpowiedz: {e}') from e
+                        time.sleep(min(2**attempt,16))
+                calls+=1
+                for item in payload:
+                    try:
+                        if not isinstance(item,list) or len(item)<5:continue
+                        key=int(item[0]);o,h,l,c=map(float,item[1:5]); vals=(o,h,l,c)
+                        if first<=key<last and all(math.isfinite(v) for v in vals) and min(vals)>0 and l<=min(o,c) and h>=max(o,c):records[key]=vals
+                    except (ValueError,TypeError,OverflowError):continue
+                time.sleep(.13)
+            return records,calls
+
+        def scan(symbol,group):
+            prices,calls=fetch(symbol);start,end=ts(START),ts(END);allts=sorted(prices)
+            expected=(ts(FETCH_END)-ts(FETCH_START))//M
+            if len(prices)<.80*expected:raise ValueError(f'Niepelne notowania {len(prices)}/{expected} ({len(prices)/expected:.0%})')
+            events=[];stats=[];prev_event=None
+            for candle_t in allts:
+                signal_t=candle_t+M
+                if signal_t<start or signal_t>=end:continue
+                if prev_event is not None and signal_t-prev_event<72*3600000:continue
+                cur=prices[candle_t]
+                back24=prices.get(candle_t-288*M);back4=prices.get(candle_t-48*M)
+                if back24 is None or back4 is None:continue
+                p24=pct(cur[3],back24[3]);p4=pct(cur[3],back4[3])
+                if max(p24,p4)<50:continue
+                prior=[prices.get(candle_t-j*M) for j in range(1,289)]
+                if any(v is None for v in prior):continue
+                anchor=min(v[2] for v in prior)
+                if cur[3]<=anchor:continue
+                e={'coin':symbol,'grupa':group,'czas_sygnalu':date(signal_t),'cena_wykrycia':cur[3],
+                   'min_24h_przed_sygnalem':anchor,'wzrost_24h':round(p24,3),'wzrost_4h':round(p4,3),
+                   'przekroczony_prog':'50%','czas_ms':signal_t}
+                # Czasy osiagniecia 80/100 na znanych juz close, tylko informacyjnie w trakcie 72h.
+                for lev in (80,100):
+                    first_stage=''
+                    for offset in range(72*12):
+                        t=signal_t+offset*M;v=prices.get(t)
+                        a=prices.get(t-288*M);b=prices.get(t-48*M)
+                        if v is None or a is None or b is None:break
+                        if max(pct(v[3],a[3]),pct(v[3],b[3]))>=lev:
+                            first_stage=date(t+M);break
+                    e[f'osiagniecie_{lev}_po_syg']=first_stage
+                events.append(e);prev_event=signal_t
+                for horizon in HORIZONS:
+                    candles=[prices.get(signal_t+j*M) for j in range(horizon*12)]
+                    complete=all(c is not None for c in candles)
+                    length=next((k for k,v in enumerate(candles) if v is None),len(candles))
+                    candles=candles[:length]
+                    for target_type,target_pct in [('ROI_brutto',r) for r in GROSS_ROI]+[('powrot_pompy',v) for v in REVERT]:
+                        level=cur[3]*(1-target_pct/(5*100)) if target_type=='ROI_brutto' else cur[3]-(cur[3]-anchor)*target_pct/100
+                        reached=None;high_before=cur[3];peak_on_hit=None
+                        for k,c in enumerate(candles,1):
+                            high_before=max(high_before,c[1])
+                            if c[2]<=level:
+                                reached=k*5;peak_on_hit=high_before;break
+                        max_high=max([cur[3]]+[v[1] for v in candles]);min_low=min([cur[3]]+[v[2] for v in candles])
+                        stats.append({'coin':symbol,'grupa':group,'czas_sygnalu':e['czas_sygnalu'],
+                          'wzrost_24h':e['wzrost_24h'],'wzrost_4h':e['wzrost_4h'],'horyzont_h':horizon,
+                          'rodzaj':target_type,'cel_pct':target_pct,'poziom_ceny':round(level,12),
+                          'wynik':'TAK' if reached else 'NIE' if complete else 'NIEPELNE','czas_do_celu_min':reached or '',
+                          'wzrost_przed_celem_gorna_granica_pct':round(max(0,pct(peak_on_hit,cur[3])),3) if reached else '',
+                          'najwiekszy_wzrost_w_oknie_pct':round(max(0,pct(max_high,cur[3])),3),
+                          'najwiekszy_spadek_w_oknie_pct':round(max(0,-pct(min_low,cur[3])),3),
+                          'swiece':len(candles),'oczekiwane':horizon*12})
+            return events,stats,{'coin':symbol,'grupa':group,'pokrycie_pct':round(100*len(prices)/expected,2),'zapytania':calls,'epizody':len(events)}
+
+        def csvsave(p,rows,cols):
+            with open(p,'w',newline='',encoding='utf-8-sig') as f:
+                w=csv.DictWriter(f,fieldnames=cols,extrasaction='ignore');w.writeheader();w.writerows(rows)
+
+        def main():
+            os.makedirs(OUT,exist_ok=True)
+            cohort,n=pick_symbols()
+            csvsave(f'{OUT}/wybrane_instrumenty.csv',[{'coin':s,'grupa':g} for s,g in cohort],['coin','grupa'])
+            print(f'TEST 16: {len(cohort)} instrumentow z {n} aktywnych na WEEX. Okres: {START} do {END} Oslo.',flush=True)
+            events=[];records=[];info=[];errors=[]
+            with ThreadPoolExecutor(max_workers=4) as pool:
+                jobs={pool.submit(scan,s,g):s for s,g in cohort}
+                for k,f in enumerate(as_completed(jobs),1):
+                    symbol=jobs[f]
+                    try:
+                        ee,rr,ii=f.result();events.extend(ee);records.extend(rr);info.append(ii)
+                        print(f'[{k}/{len(cohort)}] {symbol}: OK, {len(ee)} pomp +50%',flush=True)
+                    except Exception as exc:
+                        errors.append({'coin':symbol,'problem':str(exc)[:350]})
+                        print(f'[{k}/{len(cohort)}] {symbol}: brak danych/błąd: {exc}',flush=True)
+            event_cols=['coin','grupa','czas_sygnalu','cena_wykrycia','min_24h_przed_sygnalem','wzrost_24h','wzrost_4h','przekroczony_prog','osiagniecie_80_po_syg','osiagniecie_100_po_syg']
+            rec_cols=['coin','grupa','czas_sygnalu','wzrost_24h','wzrost_4h','horyzont_h','rodzaj','cel_pct','poziom_ceny','wynik','czas_do_celu_min','wzrost_przed_celem_gorna_granica_pct','najwiekszy_wzrost_w_oknie_pct','najwiekszy_spadek_w_oknie_pct','swiece','oczekiwane']
+            csvsave(f'{OUT}/pompy_50plus.csv',events,event_cols)
+            csvsave(f'{OUT}/wyniki_cofniec.csv',records,rec_cols)
+            csvsave(f'{OUT}/pokrycie.csv',info,['coin','grupa','pokrycie_pct','zapytania','epizody'])
+            csvsave(f'{OUT}/bledy.csv',errors,['coin','problem'])
+            lines=['# PUMP-SHORT / TEST 16: pompy co najmniej +50%, powroty i krotkie cofki','',
+                f'- Testowany okres: **{START} – {END} (Oslo)**, z historia do {FETCH_END}.',
+                f'- Instrumenty: **{len(info)}/{len(cohort)}** przebadanych; **{len(errors)}** brakujacych/blednych.',
+                f'- Epizody +50% w 4h LUB 24h: **{len(events)}**; niezalezne coiny: **{len(set(x["coin"] for x in events))}**.',
+                '- Jeden epizod na coin na 72h; etap +80/+100 rejestrowany w tym samym epizodzie, bez uruchamiania nowego sygnalu.',
+                '- Baza powrotu: minimum LOW z 24h bezposrednio przed swieca +50%, znane w momencie sygnalu.',
+                '- ROI 10/15/20% przy x5 = 2/3/4% spadku ceny coina **BRUTTO** (bez kosztow i funding).',
+                '- Wynik TAK gdy LOW swiecy 5m osiagnie poziom celu; przy HIGH i LOW w tej samej swiecy kolejnosc jest nieznana.',
+                '- Wzrost przed celem zawiera HIGH swiecy dotkniecia celu, jest tylko GORNA GRANICA ryzyka.',
+                '- Osiagniecie celu nie dowodzi mozliwosci bezpiecznego utrzymania pozycji Cross ani zysku netto.',
+                '- Dzisiejsza lista kontraktow nie reprezentuje wszystkich historycznie notowanych shitcoinow (survivorship bias).',
+                '', '## Wyniki: jeden sygnal na epizod przy pierwszym przekroczeniu +50%',
+                '| Horyzont | Cel | TAK | NIE | NIEPELNE |', '|---|---|---:|---:|---:|']
+            for h in HORIZONS:
+                for typ,vals in [('ROI_brutto',GROSS_ROI),('powrot_pompy',REVERT)]:
+                    for v in vals:
+                        c=Counter(r['wynik'] for r in records if r['horyzont_h']==h and r['rodzaj']==typ and r['cel_pct']==v)
+                        lines.append(f'| {h}h | {typ} {v}% | {c["TAK"]} | {c["NIE"]} | {c["NIEPELNE"]} |')
+            lines+=['','## Etapy +80% i +100% w ciagu kolejnych 72h',
+               f'- Epizody, ktore osiagnely +80%: **{sum(bool(e["osiagniecie_80_po_syg"]) for e in events)}**.',
+               f'- Epizody, ktore osiagnely +100%: **{sum(bool(e["osiagniecie_100_po_syg"]) for e in events)}**.',
+               '', '## Ograniczenia',
+               '- Test historyczny. Niewykryte historycznie delistowane coiny powoduja wybor przezywajacych instrumentow.',
+               '- 5-minutowe swiece nie ustalaja dokladnej kolejnosci intra-candle ani realnego wypelnienia zlecen.',
+               '- Pompy +80/+100 osiagane pozniej w tym samym epizodzie sa oznaczone retrospektywnie, nie uzywane jako warunek sygnalu.',
+               '- Nie symulujemy siatek, Stop Loss, likwidacji, fundingu ani automatycznych zlecen.',
+               '- Nie wprowadzamy zmian w dzialajacym skanerze, Telegramie, Netlify czy backupie.', '']
+            if errors:lines+=['## Braki danych',*[f'- {x["coin"]}: {x["problem"]}' for x in errors[:30]]]
+            report='\n'.join(lines)+'\n'
+            with open(f'{OUT}/raport.md','w',encoding='utf-8') as f:f.write(report)
+            if os.environ.get('GITHUB_STEP_SUMMARY'):
+                with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as f:f.write(report)
+            print(report,flush=True)
+            if len(info)<30:raise RuntimeError('Zbyt malo prawidlowych instrumentow: raport zachowany jako artifact')
+
+        if __name__=='__main__':main()
+
+        PYCODE
+    - name: Zapisz raport i CSV
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: PUMP-SHORT-TEST-16-raport
+        path: test16_output/
+        if-no-files-found: warn
+        retention-days: 30
