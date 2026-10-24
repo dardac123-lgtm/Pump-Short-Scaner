@@ -406,5 +406,21 @@
     "price": 0.04915,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "BMTUSDT",
+    "detected_at": "2026-10-24T03:28:34.196670+00:00",
+    "change_percent": 62.24,
+    "price": 0.04752,
+    "threshold": 40.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "INUSDT",
+    "detected_at": "2026-10-24T03:28:34.196670+00:00",
+    "change_percent": 44.97,
+    "price": 0.03991,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
