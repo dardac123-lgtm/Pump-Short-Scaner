@@ -454,5 +454,13 @@
     "price": 0.04871,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "TREEUSDT",
+    "detected_at": "2026-10-24T10:13:53.497624+00:00",
+    "change_percent": 53.54,
+    "price": 0.05899,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
