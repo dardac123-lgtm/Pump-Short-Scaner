@@ -390,5 +390,13 @@
     "price": 0.09437,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "INUSDT",
+    "detected_at": "2026-10-24T00:57:39.023998+00:00",
+    "change_percent": 42.29,
+    "price": 0.03839,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
