@@ -462,5 +462,13 @@
     "price": 0.05899,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "WETUSDT",
+    "detected_at": "2026-10-24T10:40:57.098436+00:00",
+    "change_percent": 41.34,
+    "price": 0.07443,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
