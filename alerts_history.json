@@ -446,5 +446,13 @@
     "price": 0.04272,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "ORDERUSDT",
+    "detected_at": "2026-10-24T08:08:26.909918+00:00",
+    "change_percent": 56.47,
+    "price": 0.04871,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
