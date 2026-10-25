@@ -526,5 +526,13 @@
     "price": 0.03693,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "TAGUSDT",
+    "detected_at": "2026-10-25T08:35:32.667506+00:00",
+    "change_percent": 44.58,
+    "price": 0.0006561,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
