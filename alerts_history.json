@@ -550,5 +550,13 @@
     "price": 0.03841,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "MAGMAUSDT",
+    "detected_at": "2026-10-25T12:40:39.601873+00:00",
+    "change_percent": 47.86,
+    "price": 0.33469,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
