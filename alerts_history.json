@@ -558,5 +558,13 @@
     "price": 0.33469,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "CAPUSDT",
+    "detected_at": "2026-10-25T14:54:04.482099+00:00",
+    "change_percent": 45.22,
+    "price": 0.10732,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
