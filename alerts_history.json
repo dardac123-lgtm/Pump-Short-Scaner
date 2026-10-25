@@ -534,5 +534,13 @@
     "price": 0.0006561,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "APRUSDT",
+    "detected_at": "2026-10-25T09:54:50.986776+00:00",
+    "change_percent": 40.23,
+    "price": 0.03583,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
