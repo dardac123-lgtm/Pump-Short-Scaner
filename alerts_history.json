@@ -630,5 +630,13 @@
     "price": 0.002367,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "BULLAUSDT",
+    "detected_at": "2026-10-26T10:41:01.996879+00:00",
+    "change_percent": 50.13,
+    "price": 0.13842,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
