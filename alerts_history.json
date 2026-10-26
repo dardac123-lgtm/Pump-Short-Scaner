@@ -662,5 +662,13 @@
     "price": 0.00943,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "DOODUSDT",
+    "detected_at": "2026-10-26T19:57:33.850575+00:00",
+    "change_percent": 41.53,
+    "price": 0.002004,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
