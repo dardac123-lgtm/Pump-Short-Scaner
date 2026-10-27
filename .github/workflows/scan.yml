@@ -32,12 +32,18 @@ jobs:
           PUMP_HOURS: '24'
         run: python scanner.py
 
+      - name: Quiet early analysis (no additional Telegram alerts)
+        continue-on-error: true
+        timeout-minutes: 3
+        run: python pump_analysis.py
+
       - name: Save alert and OI history
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
           git add alerts_state.json alerts_history.json oi_history.json
+          if [ -f pump_analysis.json ]; then git add pump_analysis.json; fi
 
           if ! git diff --cached --quiet; then
             git commit -m 'Update pump alert history'
