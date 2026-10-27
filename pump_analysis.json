@@ -1,127 +1,106 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-10-27T20:17:17.644522+00:00",
-  "minutes_since_previous_analysis": 34.6,
+  "updated_at_utc": "2026-10-27T20:51:02.451067+00:00",
+  "minutes_since_previous_analysis": 33.7,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "AINUSDT",
-      "change_24h_percent": 165.06,
-      "ticker_price": 0.15437,
-      "observed_at_utc": "2026-10-27T20:17:17.644522+00:00",
-      "state": "POMPA_TRWA",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [],
-      "near_30m_high": true,
-      "change_5m_percent": -0.38,
-      "change_15m_percent": -0.36,
-      "taker_buy_last_5m_percent": 45.94,
-      "taker_buy_prev_5m_percent": 53.52,
-      "rsi_14_1m": 48.4,
-      "from_30m_high_percent": -1.14,
-      "last_closed_candle_utc": "2026-10-27T20:15:00+00:00",
-      "oi": {
-        "value_contracts": 288205100.0,
-        "change_15m_percent": null,
-        "change_1h_percent": -0.79
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "EVAAUSDT",
-      "change_24h_percent": 77.46,
-      "ticker_price": 0.8985,
-      "observed_at_utc": "2026-10-27T20:17:17.644522+00:00",
-      "state": "POMPA_SLABNIE",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "hamowanie_5m"
-      ],
-      "near_30m_high": true,
-      "change_5m_percent": -2.01,
-      "change_15m_percent": -1.29,
-      "taker_buy_last_5m_percent": 22.43,
-      "taker_buy_prev_5m_percent": 12.0,
-      "rsi_14_1m": 54.8,
-      "from_30m_high_percent": -3.91,
-      "last_closed_candle_utc": "2026-10-27T20:15:00+00:00",
-      "oi": {
-        "value_contracts": 52995436.0,
-        "change_15m_percent": null,
-        "change_1h_percent": 0.03
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "APRUSDT",
-      "change_24h_percent": 46.19,
-      "ticker_price": 0.04741,
-      "observed_at_utc": "2026-10-27T20:17:17.644522+00:00",
+      "change_24h_percent": 124.65,
+      "ticker_price": 0.15339,
+      "observed_at_utc": "2026-10-27T20:51:02.451067+00:00",
       "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
       "signals": [
         "malejaca_przewaga_agresywnych_zakupow"
       ],
       "near_30m_high": true,
-      "change_5m_percent": -0.77,
-      "change_15m_percent": 0.38,
-      "taker_buy_last_5m_percent": 6.24,
-      "taker_buy_prev_5m_percent": 54.39,
-      "rsi_14_1m": 50.4,
-      "from_30m_high_percent": -2.14,
-      "last_closed_candle_utc": "2026-10-27T20:15:00+00:00",
+      "change_5m_percent": 0.11,
+      "change_15m_percent": 0.18,
+      "taker_buy_last_5m_percent": 41.45,
+      "taker_buy_prev_5m_percent": 52.98,
+      "rsi_14_1m": 56.1,
+      "from_30m_high_percent": -1.15,
+      "last_closed_candle_utc": "2026-10-27T20:49:00+00:00",
       "oi": {
-        "value_contracts": 63275554.0,
+        "value_contracts": 287013500.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.48
+        "change_1h_percent": -0.78
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "EVAAUSDT",
+      "change_24h_percent": 86.61,
+      "ticker_price": 0.9394,
+      "observed_at_utc": "2026-10-27T20:51:02.451067+00:00",
+      "state": "POMPA_SLABNIE",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
+      "near_30m_high": true,
+      "change_5m_percent": 0.9,
+      "change_15m_percent": 1.27,
+      "taker_buy_last_5m_percent": 26.87,
+      "taker_buy_prev_5m_percent": 43.92,
+      "rsi_14_1m": 69.8,
+      "from_30m_high_percent": -0.61,
+      "last_closed_candle_utc": "2026-10-27T20:49:00+00:00",
+      "oi": {
+        "value_contracts": 52823030.0,
+        "change_15m_percent": null,
+        "change_1h_percent": -0.01
       },
       "data_status": "OK"
     },
     {
       "symbol": "BTWUSDT",
-      "change_24h_percent": 43.07,
-      "ticker_price": 1.6196,
-      "observed_at_utc": "2026-10-27T20:17:17.644522+00:00",
+      "change_24h_percent": 45.08,
+      "ticker_price": 1.6349,
+      "observed_at_utc": "2026-10-27T20:51:02.451067+00:00",
       "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
       "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": -0.27,
-      "change_15m_percent": 0.23,
-      "taker_buy_last_5m_percent": 48.69,
-      "taker_buy_prev_5m_percent": 46.22,
-      "rsi_14_1m": 57.2,
-      "from_30m_high_percent": -0.6,
-      "last_closed_candle_utc": "2026-10-27T20:15:00+00:00",
+      "change_5m_percent": 0.3,
+      "change_15m_percent": 0.7,
+      "taker_buy_last_5m_percent": 49.71,
+      "taker_buy_prev_5m_percent": 49.79,
+      "rsi_14_1m": 60.8,
+      "from_30m_high_percent": -0.58,
+      "last_closed_candle_utc": "2026-10-27T20:49:00+00:00",
       "oi": {
-        "value_contracts": 230600.0,
+        "value_contracts": 239400.0,
         "change_15m_percent": null,
-        "change_1h_percent": 1.59
+        "change_1h_percent": 6.02
       },
       "data_status": "OK"
     },
     {
-      "symbol": "HAEDALUSDT",
-      "change_24h_percent": 32.24,
-      "ticker_price": 0.02863,
-      "observed_at_utc": "2026-10-27T20:17:17.644522+00:00",
-      "state": "POMPA_TRWA",
+      "symbol": "APRUSDT",
+      "change_24h_percent": 41.92,
+      "ticker_price": 0.04655,
+      "observed_at_utc": "2026-10-27T20:51:02.451067+00:00",
+      "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [],
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
       "near_30m_high": true,
-      "change_5m_percent": 0.31,
-      "change_15m_percent": 2.47,
-      "taker_buy_last_5m_percent": 25.1,
-      "taker_buy_prev_5m_percent": 4.48,
-      "rsi_14_1m": 76.4,
-      "from_30m_high_percent": -0.69,
-      "last_closed_candle_utc": "2026-10-27T20:15:00+00:00",
+      "change_5m_percent": 2.94,
+      "change_15m_percent": 2.99,
+      "taker_buy_last_5m_percent": 12.56,
+      "taker_buy_prev_5m_percent": 27.15,
+      "rsi_14_1m": 65.5,
+      "from_30m_high_percent": -2.12,
+      "last_closed_candle_utc": "2026-10-27T20:49:00+00:00",
       "oi": {
-        "value_contracts": 900234080.0,
+        "value_contracts": 63726300.0,
         "change_15m_percent": null,
-        "change_1h_percent": -0.04
+        "change_1h_percent": 0.88
       },
       "data_status": "OK"
     }
