@@ -742,5 +742,13 @@
     "price": 0.000684,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "HUMAUSDT",
+    "detected_at": "2026-10-27T09:57:01.932780+00:00",
+    "change_percent": 40.32,
+    "price": 0.026472,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
