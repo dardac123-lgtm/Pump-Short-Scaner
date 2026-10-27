@@ -774,5 +774,21 @@
     "price": 0.04923,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "EVAAUSDT",
+    "detected_at": "2026-10-27T16:29:47.509539+00:00",
+    "change_percent": 43.81,
+    "price": 0.7301,
+    "threshold": 40.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "BTWUSDT",
+    "detected_at": "2026-10-27T16:29:47.509539+00:00",
+    "change_percent": 40.82,
+    "price": 1.5265,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
