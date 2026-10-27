@@ -758,5 +758,13 @@
     "price": 0.000753,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "HAEDALUSDT",
+    "detected_at": "2026-10-27T15:08:37.265303+00:00",
+    "change_percent": 53.35,
+    "price": 0.03231,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
