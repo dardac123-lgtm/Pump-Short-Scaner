@@ -1,102 +1,104 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-10-28T17:50:31.769853+00:00",
-  "minutes_since_previous_analysis": 39.2,
+  "updated_at_utc": "2026-10-28T18:23:50.075687+00:00",
+  "minutes_since_previous_analysis": 33.3,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "EVAAUSDT",
-      "change_24h_percent": 84.29,
-      "ticker_price": 1.4367,
-      "observed_at_utc": "2026-10-28T17:50:31.769853+00:00",
-      "state": "POMPA_TRWA",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [],
-      "near_30m_high": true,
-      "change_5m_percent": -0.44,
-      "change_15m_percent": 1.49,
-      "taker_buy_last_5m_percent": 33.38,
-      "taker_buy_prev_5m_percent": 40.63,
-      "rsi_14_1m": 58.8,
-      "from_30m_high_percent": -1.2,
-      "last_closed_candle_utc": "2026-10-28T17:48:00+00:00",
-      "oi": {
-        "value_contracts": 53295960.0,
-        "change_15m_percent": null,
-        "change_1h_percent": 0.07
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "XANUSDT",
-      "change_24h_percent": 34.93,
-      "ticker_price": 0.011175,
-      "observed_at_utc": "2026-10-28T17:50:31.769853+00:00",
-      "state": "POMPA_TRWA",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [],
-      "near_30m_high": true,
-      "change_5m_percent": 1.83,
-      "change_15m_percent": 1.76,
-      "taker_buy_last_5m_percent": 43.54,
-      "taker_buy_prev_5m_percent": 53.41,
-      "rsi_14_1m": 64.0,
-      "from_30m_high_percent": -0.47,
-      "last_closed_candle_utc": "2026-10-28T17:48:00+00:00",
-      "oi": {
-        "value_contracts": 2461623000.0,
-        "change_15m_percent": null,
-        "change_1h_percent": -0.12
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "BLESSUSDT",
-      "change_24h_percent": 32.4,
-      "ticker_price": 0.010972,
-      "observed_at_utc": "2026-10-28T17:50:31.769853+00:00",
-      "state": "POMPA_TRWA",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [],
-      "near_30m_high": true,
-      "change_5m_percent": -0.39,
-      "change_15m_percent": -1.81,
-      "taker_buy_last_5m_percent": 54.26,
-      "taker_buy_prev_5m_percent": 44.27,
-      "rsi_14_1m": 33.3,
-      "from_30m_high_percent": -2.28,
-      "last_closed_candle_utc": "2026-10-28T17:48:00+00:00",
-      "oi": {
-        "value_contracts": 178082440.0,
-        "change_15m_percent": null,
-        "change_1h_percent": 0.43
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "DOSUSDT",
-      "change_24h_percent": 30.74,
-      "ticker_price": 0.3309,
-      "observed_at_utc": "2026-10-28T17:50:31.769853+00:00",
+      "change_24h_percent": 81.07,
+      "ticker_price": 1.423,
+      "observed_at_utc": "2026-10-28T18:23:50.075687+00:00",
       "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
       "signals": [
         "malejaca_przewaga_agresywnych_zakupow"
       ],
       "near_30m_high": true,
-      "change_5m_percent": 0.81,
-      "change_15m_percent": -0.36,
-      "taker_buy_last_5m_percent": 58.79,
-      "taker_buy_prev_5m_percent": 69.01,
-      "rsi_14_1m": 48.9,
-      "from_30m_high_percent": -1.12,
-      "last_closed_candle_utc": "2026-10-28T17:48:00+00:00",
+      "change_5m_percent": 0.63,
+      "change_15m_percent": -3.02,
+      "taker_buy_last_5m_percent": 35.11,
+      "taker_buy_prev_5m_percent": 50.98,
+      "rsi_14_1m": 36.0,
+      "from_30m_high_percent": -4.12,
+      "last_closed_candle_utc": "2026-10-28T18:21:00+00:00",
       "oi": {
-        "value_contracts": 153040.0,
+        "value_contracts": 53241496.0,
         "change_15m_percent": null,
-        "change_1h_percent": 29.26
+        "change_1h_percent": -0.04
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "BLESSUSDT",
+      "change_24h_percent": 31.72,
+      "ticker_price": 0.010872,
+      "observed_at_utc": "2026-10-28T18:23:50.075687+00:00",
+      "state": "POMPA_SLABNIE",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
+      "near_30m_high": true,
+      "change_5m_percent": 0.01,
+      "change_15m_percent": 0.38,
+      "taker_buy_last_5m_percent": 16.45,
+      "taker_buy_prev_5m_percent": 59.17,
+      "rsi_14_1m": 69.6,
+      "from_30m_high_percent": -1.29,
+      "last_closed_candle_utc": "2026-10-28T18:21:00+00:00",
+      "oi": {
+        "value_contracts": 175808180.0,
+        "change_15m_percent": null,
+        "change_1h_percent": -0.85
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "XANUSDT",
+      "change_24h_percent": 31.33,
+      "ticker_price": 0.011078,
+      "observed_at_utc": "2026-10-28T18:23:50.075687+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": 1.41,
+      "change_15m_percent": 0.49,
+      "taker_buy_last_5m_percent": 45.75,
+      "taker_buy_prev_5m_percent": 49.37,
+      "rsi_14_1m": 50.3,
+      "from_30m_high_percent": -1.45,
+      "last_closed_candle_utc": "2026-10-28T18:21:00+00:00",
+      "oi": {
+        "value_contracts": 2460004200.0,
+        "change_15m_percent": null,
+        "change_1h_percent": -0.19
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "DOSUSDT",
+      "change_24h_percent": 30.32,
+      "ticker_price": 0.3275,
+      "observed_at_utc": "2026-10-28T18:23:50.075687+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": 0.46,
+      "change_15m_percent": -0.72,
+      "taker_buy_last_5m_percent": 52.03,
+      "taker_buy_prev_5m_percent": 48.16,
+      "rsi_14_1m": 38.5,
+      "from_30m_high_percent": -1.59,
+      "last_closed_candle_utc": "2026-10-28T18:21:00+00:00",
+      "oi": {
+        "value_contracts": 154900.0,
+        "change_15m_percent": null,
+        "change_1h_percent": 30.83
       },
       "data_status": "OK"
     }
