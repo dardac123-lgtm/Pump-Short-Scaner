@@ -1,54 +1,81 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-10-28T19:57:11.025797+00:00",
-  "minutes_since_previous_analysis": 41.2,
+  "updated_at_utc": "2026-10-28T20:28:52.584928+00:00",
+  "minutes_since_previous_analysis": 31.7,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "EVAAUSDT",
-      "change_24h_percent": 65.11,
-      "ticker_price": 1.4703,
-      "observed_at_utc": "2026-10-28T19:57:11.025797+00:00",
+      "change_24h_percent": 58.62,
+      "ticker_price": 1.445,
+      "observed_at_utc": "2026-10-28T20:28:52.584928+00:00",
       "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
       "signals": [],
-      "near_30m_high": true,
-      "change_5m_percent": 0.71,
-      "change_15m_percent": 0.41,
-      "taker_buy_last_5m_percent": 92.16,
-      "taker_buy_prev_5m_percent": 61.44,
-      "rsi_14_1m": 57.4,
-      "from_30m_high_percent": -0.85,
-      "last_closed_candle_utc": "2026-10-28T19:55:00+00:00",
+      "near_30m_high": false,
+      "change_5m_percent": 0.37,
+      "change_15m_percent": -0.15,
+      "taker_buy_last_5m_percent": 86.54,
+      "taker_buy_prev_5m_percent": 58.25,
+      "rsi_14_1m": 51.4,
+      "from_30m_high_percent": -7.02,
+      "last_closed_candle_utc": "2026-10-28T20:26:00+00:00",
       "oi": {
-        "value_contracts": 53272622.0,
+        "value_contracts": 53211956.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.17
+        "change_1h_percent": 0.05
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "XPINUSDT",
+      "change_24h_percent": 35.16,
+      "ticker_price": 0.0009971,
+      "observed_at_utc": "2026-10-28T20:28:52.584928+00:00",
+      "state": "POMPA_SLABNIE",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [
+        "hamowanie_5m"
+      ],
+      "near_30m_high": true,
+      "change_5m_percent": -3.15,
+      "change_15m_percent": -0.88,
+      "taker_buy_last_5m_percent": 49.94,
+      "taker_buy_prev_5m_percent": 49.47,
+      "rsi_14_1m": 45.9,
+      "from_30m_high_percent": -4.34,
+      "last_closed_candle_utc": "2026-10-28T20:26:00+00:00",
+      "oi": {
+        "value_contracts": 14267682000.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
       },
       "data_status": "OK"
     },
     {
       "symbol": "BLESSUSDT",
-      "change_24h_percent": 34.66,
-      "ticker_price": 0.011146,
-      "observed_at_utc": "2026-10-28T19:57:11.025797+00:00",
-      "state": "POMPA_TRWA",
+      "change_24h_percent": 32.83,
+      "ticker_price": 0.011033,
+      "observed_at_utc": "2026-10-28T20:28:52.584928+00:00",
+      "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [],
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
       "near_30m_high": true,
-      "change_5m_percent": -2.02,
-      "change_15m_percent": -1.97,
-      "taker_buy_last_5m_percent": 71.5,
-      "taker_buy_prev_5m_percent": 21.07,
-      "rsi_14_1m": 26.0,
-      "from_30m_high_percent": -2.72,
-      "last_closed_candle_utc": "2026-10-28T19:55:00+00:00",
+      "change_5m_percent": -0.16,
+      "change_15m_percent": -0.73,
+      "taker_buy_last_5m_percent": 40.33,
+      "taker_buy_prev_5m_percent": 64.73,
+      "rsi_14_1m": 49.1,
+      "from_30m_high_percent": -2.34,
+      "last_closed_candle_utc": "2026-10-28T20:26:00+00:00",
       "oi": {
-        "value_contracts": 173122440.0,
+        "value_contracts": 172205300.0,
         "change_15m_percent": null,
-        "change_1h_percent": -1.0
+        "change_1h_percent": -1.52
       },
       "data_status": "OK"
     }
