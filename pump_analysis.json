@@ -1,54 +1,58 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-10-28T21:45:03.691734+00:00",
-  "minutes_since_previous_analysis": 34.5,
+  "updated_at_utc": "2026-10-28T22:19:11.924763+00:00",
+  "minutes_since_previous_analysis": 34.1,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
-      "symbol": "EVAAUSDT",
-      "change_24h_percent": 51.22,
-      "ticker_price": 1.4334,
-      "observed_at_utc": "2026-10-28T21:45:03.691734+00:00",
-      "state": "POMPA_TRWA",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [],
+      "symbol": "IDOLUSDT",
+      "change_24h_percent": 58.36,
+      "ticker_price": 0.013454,
+      "observed_at_utc": "2026-10-28T22:19:11.924763+00:00",
+      "state": "POMPA_SLABNIE",
+      "continuation_risk": "OBECNE",
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
       "near_30m_high": true,
-      "change_5m_percent": -0.1,
-      "change_15m_percent": 1.64,
-      "taker_buy_last_5m_percent": 56.88,
-      "taker_buy_prev_5m_percent": 48.37,
-      "rsi_14_1m": 62.4,
-      "from_30m_high_percent": -1.66,
-      "last_closed_candle_utc": "2026-10-28T21:43:00+00:00",
+      "change_5m_percent": 2.72,
+      "change_15m_percent": 7.67,
+      "taker_buy_last_5m_percent": 32.4,
+      "taker_buy_prev_5m_percent": 44.1,
+      "rsi_14_1m": 95.4,
+      "from_30m_high_percent": -1.56,
+      "last_closed_candle_utc": "2026-10-28T22:17:00+00:00",
       "oi": {
-        "value_contracts": 53299230.0,
+        "value_contracts": 595370400.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.16
+        "change_1h_percent": null
       },
       "data_status": "OK"
     },
     {
-      "symbol": "IDOLUSDT",
-      "change_24h_percent": 46.65,
-      "ticker_price": 0.01244,
-      "observed_at_utc": "2026-10-28T21:45:03.691734+00:00",
-      "state": "POMPA_TRWA",
-      "continuation_risk": "OBECNE",
-      "signals": [],
+      "symbol": "EVAAUSDT",
+      "change_24h_percent": 49.7,
+      "ticker_price": 1.4253,
+      "observed_at_utc": "2026-10-28T22:19:11.924763+00:00",
+      "state": "POMPA_SLABNIE",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
       "near_30m_high": true,
-      "change_5m_percent": 2.61,
-      "change_15m_percent": 5.91,
-      "taker_buy_last_5m_percent": 32.35,
-      "taker_buy_prev_5m_percent": 41.45,
-      "rsi_14_1m": 70.9,
-      "from_30m_high_percent": 0.0,
-      "last_closed_candle_utc": "2026-10-28T21:43:00+00:00",
+      "change_5m_percent": -2.41,
+      "change_15m_percent": -2.05,
+      "taker_buy_last_5m_percent": 49.98,
+      "taker_buy_prev_5m_percent": 64.07,
+      "rsi_14_1m": 32.7,
+      "from_30m_high_percent": -2.48,
+      "last_closed_candle_utc": "2026-10-28T22:17:00+00:00",
       "oi": {
-        "value_contracts": 493905000.0,
+        "value_contracts": 53323220.0,
         "change_15m_percent": null,
-        "change_1h_percent": null
+        "change_1h_percent": 0.15
       },
       "data_status": "OK"
     }
