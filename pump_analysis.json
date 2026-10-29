@@ -1,31 +1,31 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-10-29T04:12:47.911790+00:00",
-  "minutes_since_previous_analysis": 44.9,
+  "updated_at_utc": "2026-10-29T04:53:35.699395+00:00",
+  "minutes_since_previous_analysis": 40.8,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "IDOLUSDT",
-      "change_24h_percent": 57.15,
-      "ticker_price": 0.013287,
-      "observed_at_utc": "2026-10-29T04:12:47.911790+00:00",
+      "change_24h_percent": 60.33,
+      "ticker_price": 0.013543,
+      "observed_at_utc": "2026-10-29T04:53:35.699395+00:00",
       "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
       "signals": [],
-      "near_30m_high": false,
-      "change_5m_percent": -8.45,
-      "change_15m_percent": -10.05,
-      "taker_buy_last_5m_percent": 63.37,
-      "taker_buy_prev_5m_percent": 52.99,
-      "rsi_14_1m": 10.5,
-      "from_30m_high_percent": -15.71,
-      "last_closed_candle_utc": "2026-10-29T04:10:00+00:00",
+      "near_30m_high": true,
+      "change_5m_percent": 0.26,
+      "change_15m_percent": 0.66,
+      "taker_buy_last_5m_percent": 52.2,
+      "taker_buy_prev_5m_percent": 32.62,
+      "rsi_14_1m": 51.6,
+      "from_30m_high_percent": -2.93,
+      "last_closed_candle_utc": "2026-10-29T04:51:00+00:00",
       "oi": {
-        "value_contracts": 449443400.0,
+        "value_contracts": 494314000.0,
         "change_15m_percent": null,
-        "change_1h_percent": -1.05
+        "change_1h_percent": 9.98
       },
       "data_status": "OK"
     }
