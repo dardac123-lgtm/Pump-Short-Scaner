@@ -1,31 +1,33 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-10-29T22:30:22.382730+00:00",
-  "minutes_since_previous_analysis": 31.3,
+  "updated_at_utc": "2026-10-29T23:08:43.047212+00:00",
+  "minutes_since_previous_analysis": 38.3,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "PARTIUSDT",
-      "change_24h_percent": 51.27,
-      "ticker_price": 0.06013,
-      "observed_at_utc": "2026-10-29T22:30:22.382730+00:00",
-      "state": "POMPA_TRWA",
+      "change_24h_percent": 55.33,
+      "ticker_price": 0.0605,
+      "observed_at_utc": "2026-10-29T23:08:43.047212+00:00",
+      "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [],
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
       "near_30m_high": true,
-      "change_5m_percent": -1.37,
-      "change_15m_percent": -0.73,
-      "taker_buy_last_5m_percent": 49.38,
-      "taker_buy_prev_5m_percent": 40.38,
-      "rsi_14_1m": 50.7,
-      "from_30m_high_percent": -2.03,
-      "last_closed_candle_utc": "2026-10-29T22:28:00+00:00",
+      "change_5m_percent": 0.72,
+      "change_15m_percent": 1.43,
+      "taker_buy_last_5m_percent": 40.61,
+      "taker_buy_prev_5m_percent": 67.36,
+      "rsi_14_1m": 63.1,
+      "from_30m_high_percent": -1.41,
+      "last_closed_candle_utc": "2026-10-29T23:06:00+00:00",
       "oi": {
-        "value_contracts": 477159140.0,
+        "value_contracts": 477534620.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.17
+        "change_1h_percent": -0.05
       },
       "data_status": "OK"
     }
