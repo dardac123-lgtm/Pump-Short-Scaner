@@ -1,31 +1,31 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-10-29T20:41:54.900048+00:00",
-  "minutes_since_previous_analysis": 37.8,
+  "updated_at_utc": "2026-10-29T21:19:17.330647+00:00",
+  "minutes_since_previous_analysis": 37.4,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "PARTIUSDT",
-      "change_24h_percent": 49.27,
-      "ticker_price": 0.0589,
-      "observed_at_utc": "2026-10-29T20:41:54.900048+00:00",
+      "change_24h_percent": 44.7,
+      "ticker_price": 0.05717,
+      "observed_at_utc": "2026-10-29T21:19:17.330647+00:00",
       "state": "POMPA_TRWA",
-      "continuation_risk": "OBECNE",
+      "continuation_risk": "NIEUSTALONE",
       "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": 1.54,
-      "change_15m_percent": 4.17,
-      "taker_buy_last_5m_percent": 51.6,
-      "taker_buy_prev_5m_percent": 47.42,
-      "rsi_14_1m": 72.4,
-      "from_30m_high_percent": -0.65,
-      "last_closed_candle_utc": "2026-10-29T20:39:00+00:00",
+      "change_5m_percent": -0.3,
+      "change_15m_percent": 1.81,
+      "taker_buy_last_5m_percent": 46.26,
+      "taker_buy_prev_5m_percent": 40.29,
+      "rsi_14_1m": 60.7,
+      "from_30m_high_percent": -2.69,
+      "last_closed_candle_utc": "2026-10-29T21:17:00+00:00",
       "oi": {
-        "value_contracts": 477552460.0,
+        "value_contracts": 476361420.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.5
+        "change_1h_percent": 0.18
       },
       "data_status": "OK"
     }
