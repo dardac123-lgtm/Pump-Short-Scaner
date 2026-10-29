@@ -1,31 +1,58 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-10-29T14:34:52.784225+00:00",
-  "minutes_since_previous_analysis": 49.9,
+  "updated_at_utc": "2026-10-29T15:25:15.165823+00:00",
+  "minutes_since_previous_analysis": 50.4,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "IDOLUSDT",
-      "change_24h_percent": 73.83,
-      "ticker_price": 0.014866,
-      "observed_at_utc": "2026-10-29T14:34:52.784225+00:00",
-      "state": "POMPA_TRWA",
+      "change_24h_percent": 79.02,
+      "ticker_price": 0.01551,
+      "observed_at_utc": "2026-10-29T15:25:15.165823+00:00",
+      "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [],
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
       "near_30m_high": true,
-      "change_5m_percent": 0.15,
-      "change_15m_percent": 0.4,
-      "taker_buy_last_5m_percent": 52.67,
-      "taker_buy_prev_5m_percent": 52.13,
-      "rsi_14_1m": 51.5,
-      "from_30m_high_percent": -0.39,
-      "last_closed_candle_utc": "2026-10-29T14:32:00+00:00",
+      "change_5m_percent": 3.05,
+      "change_15m_percent": 1.43,
+      "taker_buy_last_5m_percent": 33.42,
+      "taker_buy_prev_5m_percent": 57.13,
+      "rsi_14_1m": 69.3,
+      "from_30m_high_percent": -0.64,
+      "last_closed_candle_utc": "2026-10-29T15:23:00+00:00",
       "oi": {
-        "value_contracts": 485748400.0,
+        "value_contracts": 486435000.0,
         "change_15m_percent": null,
-        "change_1h_percent": -4.11
+        "change_1h_percent": 0.14
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "BEATUSDT",
+      "change_24h_percent": 40.76,
+      "ticker_price": 0.11248,
+      "observed_at_utc": "2026-10-29T15:25:15.165823+00:00",
+      "state": "POMPA_SLABNIE",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
+      "near_30m_high": true,
+      "change_5m_percent": 0.13,
+      "change_15m_percent": 1.4,
+      "taker_buy_last_5m_percent": 41.42,
+      "taker_buy_prev_5m_percent": 56.56,
+      "rsi_14_1m": 53.7,
+      "from_30m_high_percent": -1.13,
+      "last_closed_candle_utc": "2026-10-29T15:23:00+00:00",
+      "oi": {
+        "value_contracts": 16826628.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
       },
       "data_status": "OK"
     }

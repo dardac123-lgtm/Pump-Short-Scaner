@@ -878,5 +878,13 @@
     "price": 1.4134,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "BEATUSDT",
+    "detected_at": "2026-10-29T15:25:14.280740+00:00",
+    "change_percent": 40.65,
+    "price": 0.11239,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
