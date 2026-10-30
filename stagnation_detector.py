@@ -37,10 +37,10 @@ def ratio_pct(new, old):
 
 def load_hourly(symbol, now):
     # Konserwatywnie odcinamy najnowsza, potencjalnie niedomknieta swiece.
-    end_ms = int((now - timedelta(hours=1)).timestamp() * 1000)
-    start_ms = end_ms - 112 * 3_600_000
+    end_ms = int(now.timestamp() // 3600) * 3_600_000 - 3_600_000
+    start_ms = end_ms - 99 * 3_600_000
     q = urllib.parse.urlencode({'symbol': symbol, 'interval': '1h',
-        'startTime': start_ms, 'endTime': end_ms, 'limit': 150,
+        'startTime': start_ms, 'endTime': end_ms, 'limit': 100,
         'priceType': 'LAST'})
     data = get_json(API + '/capi/v3/market/historyKlines?' + q, timeout=20)
     if not isinstance(data, list):
