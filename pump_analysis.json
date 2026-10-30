@@ -1,54 +1,56 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-10-30T05:18:37.999457+00:00",
-  "minutes_since_previous_analysis": 42.7,
+  "updated_at_utc": "2026-10-30T05:59:30.172689+00:00",
+  "minutes_since_previous_analysis": 40.9,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "PARTIUSDT",
-      "change_24h_percent": 45.71,
-      "ticker_price": 0.05668,
-      "observed_at_utc": "2026-10-30T05:18:37.999457+00:00",
-      "state": "POMPA_TRWA",
-      "continuation_risk": "OBECNE",
-      "signals": [],
-      "near_30m_high": true,
-      "change_5m_percent": -0.3,
-      "change_15m_percent": 3.59,
-      "taker_buy_last_5m_percent": 52.48,
-      "taker_buy_prev_5m_percent": 51.25,
-      "rsi_14_1m": 56.9,
-      "from_30m_high_percent": -3.56,
-      "last_closed_candle_utc": "2026-10-30T05:16:00+00:00",
-      "oi": {
-        "value_contracts": 478071840.0,
-        "change_15m_percent": null,
-        "change_1h_percent": -0.13
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "BLESSUSDT",
-      "change_24h_percent": 30.7,
-      "ticker_price": 0.012833,
-      "observed_at_utc": "2026-10-30T05:18:37.999457+00:00",
+      "change_24h_percent": 40.36,
+      "ticker_price": 0.0547,
+      "observed_at_utc": "2026-10-30T05:59:30.172689+00:00",
       "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
       "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": -0.95,
-      "change_15m_percent": 0.99,
-      "taker_buy_last_5m_percent": 94.56,
-      "taker_buy_prev_5m_percent": 70.11,
-      "rsi_14_1m": 52.8,
-      "from_30m_high_percent": -2.07,
-      "last_closed_candle_utc": "2026-10-30T05:16:00+00:00",
+      "change_5m_percent": -1.45,
+      "change_15m_percent": 0.17,
+      "taker_buy_last_5m_percent": 60.93,
+      "taker_buy_prev_5m_percent": 29.08,
+      "rsi_14_1m": 48.3,
+      "from_30m_high_percent": -2.21,
+      "last_closed_candle_utc": "2026-10-30T05:57:00+00:00",
       "oi": {
-        "value_contracts": 207479280.0,
+        "value_contracts": 477944900.0,
         "change_15m_percent": null,
-        "change_1h_percent": -0.53
+        "change_1h_percent": -0.03
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "MAGMAUSDT",
+      "change_24h_percent": 34.56,
+      "ticker_price": 0.35305,
+      "observed_at_utc": "2026-10-30T05:59:30.172689+00:00",
+      "state": "POMPA_SLABNIE",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
+      "near_30m_high": true,
+      "change_5m_percent": -0.16,
+      "change_15m_percent": -1.41,
+      "taker_buy_last_5m_percent": 38.31,
+      "taker_buy_prev_5m_percent": 65.44,
+      "rsi_14_1m": 42.7,
+      "from_30m_high_percent": -3.11,
+      "last_closed_candle_utc": "2026-10-30T05:57:00+00:00",
+      "oi": {
+        "value_contracts": 417000.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
       },
       "data_status": "OK"
     }
