@@ -926,5 +926,13 @@
     "price": 0.013751,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "PARTIUSDT",
+    "detected_at": "2026-10-30T14:29:16.943107+00:00",
+    "change_percent": 64.15,
+    "price": 0.05225,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
