@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "updated_at_utc": "2026-10-30T13:02:17.378570+00:00",
+  "mode": "OBSERWACJA_BEZ_ALERTOW",
+  "rules": {
+    "calm_hours": 72,
+    "recent_hours": 24,
+    "calm_range_max_percent": 25.0,
+    "candidate_24h_min_percent": 10.0,
+    "early_rise_from_base_percent": 15.0,
+    "strong_rise_from_base_percent": 40.0,
+    "hour_volume_ratio_min": 3.0
+  },
+  "limitations": "Zalezy od 24h preselekcji i harmonogramu GitHuba. To nie jest ciagle sledzenie epizodow ani sygnal inwestycyjny.",
+  "total_candidates": 15,
+  "checked": 15,
+  "coins": [
+    {
+      "symbol": "BLESSUSDT",
+      "change_24h_percent": 44.17,
+      "ticker_price": 0.01376,
+      "status": "BRAK_DANYCH",
+      "data_status": "BRAK_DANYCH",
+      "problem": "HTTP Error 400: "
+    },
+    {
+      "symbol": "BEAMXUSDT",
+      "change_24h_percent": 38.09,
+      "ticker_price": 0.004677,
+      "status": "BRAK_DANYCH",
+      "data_status": "BRAK_DANYCH",
+      "problem": "HTTP Error 400: "
+    },
+    {
+      "symbol": "PARTIUSDT",
+      "change_24h_percent": 33.77,
+      "ticker_price": 0.05209,
+      "status": "BRAK_DANYCH",
+      "data_status": "BRAK_DANYCH",
+      "problem": "HTTP Error 400: "
+    },
+    {
+      "symbol": "MAGMAUSDT",
+      "change_24h_percent": 32.1,
+      "ticker_price": 0.37707,
+      "status": "BRAK_DANYCH",
+      "data_status": "BRAK_DANYCH",
+      "problem": "HTTP Error 400: "
+    },
+    {
+      "symbol": "IDOLUSDT",
+      "change_24h_percent": 24.86,
+      "ticker_price": 0.017051,
+      "status": "BRAK_DANYCH",
+      "data_status": "BRAK_DANYCH",
+      "problem": "HTTP Error 400: "
+    },
+    {
+      "symbol": "AINUSDT",
+      "change_24h_percent": 23.29,
+      "ticker_price": 0.1745,
+      "status": "BRAK_DANYCH",
+      "data_status": "BRAK_DANYCH",
+      "problem": "HTTP Error 400: "
+    },
+    {
+      "symbol": "LSKUSDT",
+      "change_24h_percent": 20.42,
+      "ticker_price": 0.20643,
+      "status": "BRAK_DANYCH",
+      "data_status": "BRAK_DANYCH",
+      "problem": "HTTP Error 400: "
+    },
+    {
+      "symbol": "SOPHUSDT",
+      "change_24h_percent": 18.59,
+      "ticker_price": 0.001748,
+      "status": "BRAK_DANYCH",
+      "data_status": "BRAK_DANYCH",
+      "problem": "HTTP Error 400: "
+    },
+    {
+      "symbol": "SOXSUSDT",
+      "change_24h_percent": 18.11,
+      "ticker_price": 50.057,
+      "status": "BRAK_DANYCH",
+      "data_status": "BRAK_DANYCH",
+      "problem": "HTTP Error 400: "
+    },
+    {
+      "symbol": "SOLVUSDT",
+      "change_24h_percent": 15.61,
+      "ticker_price": 0.00523,
+      "status": "BRAK_DANYCH",
+      "data_status": "BRAK_DANYCH",
+      "problem": "HTTP Error 400: "
+    },
+    {
+      "symbol": "SKDDUSDT",
+      "change_24h_percent": 14.66,
+      "ticker_price": 8.906,
+      "status": "BRAK_DANYCH",
+      "data_status": "BRAK_DANYCH",
+      "problem": "HTTP Error 400: "
+    },
+    {
+      "symbol": "ONUSDT",
+      "change_24h_percent": 12.58,
+      "ticker_price": 0.2183,
+      "status": "BRAK_DANYCH",
+      "data_status": "BRAK_DANYCH",
+      "problem": "HTTP Error 400: "
+    },
+    {
+      "symbol": "JCTUSDT",
+      "change_24h_percent": 10.68,
+      "ticker_price": 0.005957,
+      "status": "BRAK_DANYCH",
+      "data_status": "BRAK_DANYCH",
+      "problem": "HTTP Error 400: "
+    },
+    {
+      "symbol": "DOODUSDT",
+      "change_24h_percent": 10.09,
+      "ticker_price": 0.001975,
+      "status": "BRAK_DANYCH",
+      "data_status": "BRAK_DANYCH",
+      "problem": "HTTP Error 400: "
+    },
+    {
+      "symbol": "CAPUSDT",
+      "change_24h_percent": 10.01,
+      "ticker_price": 0.08114,
+      "status": "BRAK_DANYCH",
+      "data_status": "BRAK_DANYCH",
+      "problem": "HTTP Error 400: "
+    }
+  ]
+}
