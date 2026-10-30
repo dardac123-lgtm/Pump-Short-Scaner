@@ -1,106 +1,104 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-10-30T19:25:13.767713+00:00",
-  "minutes_since_previous_analysis": 46.9,
+  "updated_at_utc": "2026-10-30T20:02:18.651544+00:00",
+  "minutes_since_previous_analysis": 37.1,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "IDOLUSDT",
-      "change_24h_percent": 46.61,
-      "ticker_price": 0.019607,
-      "observed_at_utc": "2026-10-30T19:25:13.767713+00:00",
+      "change_24h_percent": 64.2,
+      "ticker_price": 0.021472,
+      "observed_at_utc": "2026-10-30T20:02:18.651544+00:00",
       "state": "POMPA_TRWA",
-      "continuation_risk": "NIEUSTALONE",
+      "continuation_risk": "OBECNE",
       "signals": [],
-      "near_30m_high": false,
-      "change_5m_percent": 3.25,
-      "change_15m_percent": -11.99,
-      "taker_buy_last_5m_percent": 46.66,
-      "taker_buy_prev_5m_percent": 48.21,
-      "rsi_14_1m": 35.1,
-      "from_30m_high_percent": -26.24,
-      "last_closed_candle_utc": "2026-10-30T19:23:00+00:00",
+      "near_30m_high": true,
+      "change_5m_percent": 3.47,
+      "change_15m_percent": 4.81,
+      "taker_buy_last_5m_percent": 43.77,
+      "taker_buy_prev_5m_percent": 49.09,
+      "rsi_14_1m": 69.1,
+      "from_30m_high_percent": -2.96,
+      "last_closed_candle_utc": "2026-10-30T20:00:00+00:00",
       "oi": {
-        "value_contracts": 491559600.0,
+        "value_contracts": 448461200.0,
         "change_15m_percent": null,
-        "change_1h_percent": -34.24
+        "change_1h_percent": null
       },
       "data_status": "OK"
     },
     {
       "symbol": "SOPHUSDT",
-      "change_24h_percent": 42.41,
-      "ticker_price": 0.002119,
-      "observed_at_utc": "2026-10-30T19:25:13.767713+00:00",
-      "state": "POMPA_SLABNIE",
+      "change_24h_percent": 47.07,
+      "ticker_price": 0.002187,
+      "observed_at_utc": "2026-10-30T20:02:18.651544+00:00",
+      "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
-      "near_30m_high": false,
-      "change_5m_percent": -1.85,
-      "change_15m_percent": -4.8,
-      "taker_buy_last_5m_percent": 31.44,
-      "taker_buy_prev_5m_percent": 60.72,
-      "rsi_14_1m": 25.8,
-      "from_30m_high_percent": -6.65,
-      "last_closed_candle_utc": "2026-10-30T19:23:00+00:00",
-      "oi": {
-        "value_contracts": 2093805400.0,
-        "change_15m_percent": null,
-        "change_1h_percent": -0.09
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "BEAMXUSDT",
-      "change_24h_percent": 36.8,
-      "ticker_price": 0.004632,
-      "observed_at_utc": "2026-10-30T19:25:13.767713+00:00",
-      "state": "POMPA_SLABNIE",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
+      "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": 0.52,
-      "change_15m_percent": 1.7,
-      "taker_buy_last_5m_percent": 32.37,
-      "taker_buy_prev_5m_percent": 50.7,
-      "rsi_14_1m": 57.8,
-      "from_30m_high_percent": -0.88,
-      "last_closed_candle_utc": "2026-10-30T19:23:00+00:00",
+      "change_5m_percent": 0.45,
+      "change_15m_percent": 0.68,
+      "taker_buy_last_5m_percent": 50.68,
+      "taker_buy_prev_5m_percent": 14.1,
+      "rsi_14_1m": 56.0,
+      "from_30m_high_percent": -1.82,
+      "last_closed_candle_utc": "2026-10-30T20:00:00+00:00",
       "oi": {
-        "value_contracts": 91157868200.0,
+        "value_contracts": 2105668400.0,
         "change_15m_percent": null,
-        "change_1h_percent": -0.0
+        "change_1h_percent": null
       },
       "data_status": "OK"
     },
     {
       "symbol": "BIRBUSDT",
-      "change_24h_percent": 32.97,
-      "ticker_price": 0.09029,
-      "observed_at_utc": "2026-10-30T19:25:13.767713+00:00",
+      "change_24h_percent": 38.46,
+      "ticker_price": 0.09429,
+      "observed_at_utc": "2026-10-30T20:02:18.651544+00:00",
       "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
       "signals": [
         "malejaca_przewaga_agresywnych_zakupow"
       ],
       "near_30m_high": true,
-      "change_5m_percent": 0.12,
-      "change_15m_percent": 0.3,
-      "taker_buy_last_5m_percent": 34.16,
-      "taker_buy_prev_5m_percent": 65.13,
-      "rsi_14_1m": 41.7,
-      "from_30m_high_percent": -1.74,
-      "last_closed_candle_utc": "2026-10-30T19:23:00+00:00",
+      "change_5m_percent": 1.31,
+      "change_15m_percent": -0.84,
+      "taker_buy_last_5m_percent": 6.93,
+      "taker_buy_prev_5m_percent": 85.67,
+      "rsi_14_1m": 53.6,
+      "from_30m_high_percent": -2.53,
+      "last_closed_candle_utc": "2026-10-30T20:00:00+00:00",
       "oi": {
-        "value_contracts": 50928940.0,
+        "value_contracts": 54083180.0,
         "change_15m_percent": null,
-        "change_1h_percent": -0.13
+        "change_1h_percent": null
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "BEAMXUSDT",
+      "change_24h_percent": 35.59,
+      "ticker_price": 0.004617,
+      "observed_at_utc": "2026-10-30T20:02:18.651544+00:00",
+      "state": "POMPA_SLABNIE",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
+      "near_30m_high": true,
+      "change_5m_percent": -1.03,
+      "change_15m_percent": -0.8,
+      "taker_buy_last_5m_percent": 30.45,
+      "taker_buy_prev_5m_percent": 51.33,
+      "rsi_14_1m": 41.4,
+      "from_30m_high_percent": -1.77,
+      "last_closed_candle_utc": "2026-10-30T20:00:00+00:00",
+      "oi": {
+        "value_contracts": 91158124000.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
       },
       "data_status": "OK"
     }
