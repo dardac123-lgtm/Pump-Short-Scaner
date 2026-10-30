@@ -910,5 +910,13 @@
     "price": 0.05748,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "BEAMXUSDT",
+    "detected_at": "2026-10-30T11:58:17.653870+00:00",
+    "change_percent": 40.17,
+    "price": 0.004725,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
