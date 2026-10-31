@@ -1,31 +1,31 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-10-31T09:25:10.177955+00:00",
-  "minutes_since_previous_analysis": 33.3,
+  "updated_at_utc": "2026-10-31T10:00:09.161216+00:00",
+  "minutes_since_previous_analysis": 35.0,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "AINUSDT",
-      "change_24h_percent": 64.58,
-      "ticker_price": 0.27962,
-      "observed_at_utc": "2026-10-31T09:25:10.177955+00:00",
+      "change_24h_percent": 61.65,
+      "ticker_price": 0.27656,
+      "observed_at_utc": "2026-10-31T10:00:09.161216+00:00",
       "state": "POMPA_TRWA",
-      "continuation_risk": "OBECNE",
+      "continuation_risk": "NIEUSTALONE",
       "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": 1.07,
-      "change_15m_percent": 3.51,
-      "taker_buy_last_5m_percent": 59.26,
-      "taker_buy_prev_5m_percent": 40.05,
-      "rsi_14_1m": 75.3,
-      "from_30m_high_percent": -0.82,
-      "last_closed_candle_utc": "2026-10-31T09:23:00+00:00",
+      "change_5m_percent": 0.04,
+      "change_15m_percent": -0.32,
+      "taker_buy_last_5m_percent": 43.99,
+      "taker_buy_prev_5m_percent": 46.13,
+      "rsi_14_1m": 47.3,
+      "from_30m_high_percent": -2.35,
+      "last_closed_candle_utc": "2026-10-31T09:58:00+00:00",
       "oi": {
-        "value_contracts": 286033500.0,
+        "value_contracts": 286433700.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.17
+        "change_1h_percent": 0.37
       },
       "data_status": "OK"
     }
