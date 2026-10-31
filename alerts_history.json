@@ -1014,5 +1014,13 @@
     "price": 0.23483,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "ESPORTSUSDT",
+    "detected_at": "2026-10-31T20:38:13.754265+00:00",
+    "change_percent": 40.04,
+    "price": 0.009747,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
