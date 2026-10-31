@@ -1,58 +1,77 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-10-31T17:25:20.261270+00:00",
-  "minutes_since_previous_analysis": 25.9,
+  "updated_at_utc": "2026-10-31T17:54:13.316545+00:00",
+  "minutes_since_previous_analysis": 28.9,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
-      "symbol": "LSKUSDT",
-      "change_24h_percent": 37.9,
-      "ticker_price": 0.28323,
-      "observed_at_utc": "2026-10-31T17:25:20.261270+00:00",
-      "state": "POMPA_SLABNIE",
+      "symbol": "AINUSDT",
+      "change_24h_percent": 32.44,
+      "ticker_price": 0.23044,
+      "observed_at_utc": "2026-10-31T17:54:13.316545+00:00",
+      "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
+      "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": 2.81,
-      "change_15m_percent": 1.7,
-      "taker_buy_last_5m_percent": 21.88,
-      "taker_buy_prev_5m_percent": 56.31,
-      "rsi_14_1m": 69.8,
-      "from_30m_high_percent": -0.01,
-      "last_closed_candle_utc": "2026-10-31T17:23:00+00:00",
+      "change_5m_percent": 0.02,
+      "change_15m_percent": -1.27,
+      "taker_buy_last_5m_percent": 50.76,
+      "taker_buy_prev_5m_percent": 53.48,
+      "rsi_14_1m": 33.7,
+      "from_30m_high_percent": -1.37,
+      "last_closed_candle_utc": "2026-10-31T17:52:00+00:00",
       "oi": {
-        "value_contracts": 512116910.0,
+        "value_contracts": 289189900.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.18
+        "change_1h_percent": -0.31
       },
       "data_status": "OK"
     },
     {
-      "symbol": "AINUSDT",
-      "change_24h_percent": 34.36,
-      "ticker_price": 0.23022,
-      "observed_at_utc": "2026-10-31T17:25:20.261270+00:00",
-      "state": "POMPA_SLABNIE",
+      "symbol": "LSKUSDT",
+      "change_24h_percent": 31.73,
+      "ticker_price": 0.27681,
+      "observed_at_utc": "2026-10-31T17:54:13.316545+00:00",
+      "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
+      "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": 0.39,
-      "change_15m_percent": -1.54,
-      "taker_buy_last_5m_percent": 44.28,
-      "taker_buy_prev_5m_percent": 58.3,
-      "rsi_14_1m": 27.3,
-      "from_30m_high_percent": -2.29,
-      "last_closed_candle_utc": "2026-10-31T17:23:00+00:00",
+      "change_5m_percent": -1.14,
+      "change_15m_percent": -1.85,
+      "taker_buy_last_5m_percent": 55.09,
+      "taker_buy_prev_5m_percent": 53.86,
+      "rsi_14_1m": 28.7,
+      "from_30m_high_percent": -3.98,
+      "last_closed_candle_utc": "2026-10-31T17:52:00+00:00",
       "oi": {
-        "value_contracts": 289783100.0,
+        "value_contracts": 512368726.0,
         "change_15m_percent": null,
-        "change_1h_percent": -0.38
+        "change_1h_percent": 0.11
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "ESPORTSUSDT",
+      "change_24h_percent": 30.51,
+      "ticker_price": 0.009098,
+      "observed_at_utc": "2026-10-31T17:54:13.316545+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": 0.57,
+      "change_15m_percent": 0.82,
+      "taker_buy_last_5m_percent": 33.29,
+      "taker_buy_prev_5m_percent": 33.03,
+      "rsi_14_1m": 50.4,
+      "from_30m_high_percent": -0.33,
+      "last_closed_candle_utc": "2026-10-31T17:52:00+00:00",
+      "oi": {
+        "value_contracts": 50398940.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
       },
       "data_status": "OK"
     }
