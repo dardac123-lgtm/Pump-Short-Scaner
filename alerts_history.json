@@ -1006,5 +1006,13 @@
     "price": 0.29868,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "AINUSDT",
+    "detected_at": "2026-10-31T15:26:44.071929+00:00",
+    "change_percent": 40.85,
+    "price": 0.23483,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
