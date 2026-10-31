@@ -1,56 +1,58 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-10-31T16:59:25.014167+00:00",
-  "minutes_since_previous_analysis": 33.7,
+  "updated_at_utc": "2026-10-31T17:25:20.261270+00:00",
+  "minutes_since_previous_analysis": 25.9,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
-      "symbol": "AINUSDT",
-      "change_24h_percent": 36.87,
-      "ticker_price": 0.23276,
-      "observed_at_utc": "2026-10-31T16:59:25.014167+00:00",
-      "state": "POMPA_TRWA",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [],
-      "near_30m_high": true,
-      "change_5m_percent": 0.57,
-      "change_15m_percent": 0.51,
-      "taker_buy_last_5m_percent": 50.61,
-      "taker_buy_prev_5m_percent": 53.47,
-      "rsi_14_1m": 65.8,
-      "from_30m_high_percent": -0.35,
-      "last_closed_candle_utc": "2026-10-31T16:57:00+00:00",
-      "oi": {
-        "value_contracts": 290095900.0,
-        "change_15m_percent": null,
-        "change_1h_percent": -0.38
-      },
-      "data_status": "OK"
-    },
-    {
       "symbol": "LSKUSDT",
-      "change_24h_percent": 35.25,
-      "ticker_price": 0.28096,
-      "observed_at_utc": "2026-10-31T16:59:25.014167+00:00",
+      "change_24h_percent": 37.9,
+      "ticker_price": 0.28323,
+      "observed_at_utc": "2026-10-31T17:25:20.261270+00:00",
       "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
       "signals": [
         "malejaca_przewaga_agresywnych_zakupow"
       ],
       "near_30m_high": true,
-      "change_5m_percent": 0.32,
-      "change_15m_percent": -1.92,
-      "taker_buy_last_5m_percent": 25.01,
-      "taker_buy_prev_5m_percent": 49.53,
-      "rsi_14_1m": 79.2,
-      "from_30m_high_percent": -4.43,
-      "last_closed_candle_utc": "2026-10-31T16:57:00+00:00",
+      "change_5m_percent": 2.81,
+      "change_15m_percent": 1.7,
+      "taker_buy_last_5m_percent": 21.88,
+      "taker_buy_prev_5m_percent": 56.31,
+      "rsi_14_1m": 69.8,
+      "from_30m_high_percent": -0.01,
+      "last_closed_candle_utc": "2026-10-31T17:23:00+00:00",
       "oi": {
-        "value_contracts": 511828080.0,
+        "value_contracts": 512116910.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.2
+        "change_1h_percent": 0.18
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "AINUSDT",
+      "change_24h_percent": 34.36,
+      "ticker_price": 0.23022,
+      "observed_at_utc": "2026-10-31T17:25:20.261270+00:00",
+      "state": "POMPA_SLABNIE",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
+      "near_30m_high": true,
+      "change_5m_percent": 0.39,
+      "change_15m_percent": -1.54,
+      "taker_buy_last_5m_percent": 44.28,
+      "taker_buy_prev_5m_percent": 58.3,
+      "rsi_14_1m": 27.3,
+      "from_30m_high_percent": -2.29,
+      "last_closed_candle_utc": "2026-10-31T17:23:00+00:00",
+      "oi": {
+        "value_contracts": 289783100.0,
+        "change_15m_percent": null,
+        "change_1h_percent": -0.38
       },
       "data_status": "OK"
     }
