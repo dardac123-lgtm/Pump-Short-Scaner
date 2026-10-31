@@ -990,5 +990,13 @@
     "price": 0.20539,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "LSKUSDT",
+    "detected_at": "2026-10-31T13:59:15.215530+00:00",
+    "change_percent": 44.13,
+    "price": 0.29942,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
