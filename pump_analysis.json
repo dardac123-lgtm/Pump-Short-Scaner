@@ -1,9 +1,33 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-01T02:38:02.704123+00:00",
-  "minutes_since_previous_analysis": 40.1,
+  "updated_at_utc": "2026-11-01T03:23:51.142450+00:00",
+  "minutes_since_previous_analysis": 45.8,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
-  "coins": []
+  "coins": [
+    {
+      "symbol": "ESPORTSUSDT",
+      "change_24h_percent": 36.42,
+      "ticker_price": 0.009709,
+      "observed_at_utc": "2026-11-01T03:23:51.142450+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "OBECNE",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": 2.49,
+      "change_15m_percent": 3.08,
+      "taker_buy_last_5m_percent": 67.52,
+      "taker_buy_prev_5m_percent": 43.73,
+      "rsi_14_1m": 72.2,
+      "from_30m_high_percent": -0.27,
+      "last_closed_candle_utc": "2026-11-01T03:21:00+00:00",
+      "oi": {
+        "value_contracts": 92920480.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
+      },
+      "data_status": "OK"
+    }
+  ]
 }
