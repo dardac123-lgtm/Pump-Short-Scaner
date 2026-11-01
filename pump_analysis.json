@@ -1,83 +1,56 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-01T21:35:22.629303+00:00",
-  "minutes_since_previous_analysis": 32.0,
+  "updated_at_utc": "2026-11-01T22:09:19.928673+00:00",
+  "minutes_since_previous_analysis": 34.0,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "ESPORTSUSDT",
-      "change_24h_percent": 89.98,
-      "ticker_price": 0.018795,
-      "observed_at_utc": "2026-11-01T21:35:22.629303+00:00",
-      "state": "POMPA_SLABNIE",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
-      "near_30m_high": false,
-      "change_5m_percent": -1.09,
-      "change_15m_percent": 1.2,
-      "taker_buy_last_5m_percent": 32.83,
-      "taker_buy_prev_5m_percent": 67.64,
-      "rsi_14_1m": 57.1,
-      "from_30m_high_percent": -11.44,
-      "last_closed_candle_utc": "2026-11-01T21:33:00+00:00",
-      "oi": {
-        "value_contracts": 205192280.0,
-        "change_15m_percent": null,
-        "change_1h_percent": -4.2
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "IDOLUSDT",
-      "change_24h_percent": 40.64,
-      "ticker_price": 0.023947,
-      "observed_at_utc": "2026-11-01T21:35:22.629303+00:00",
-      "state": "POMPA_SLABNIE",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
-      "near_30m_high": true,
-      "change_5m_percent": 0.47,
-      "change_15m_percent": 1.56,
-      "taker_buy_last_5m_percent": 42.12,
-      "taker_buy_prev_5m_percent": 66.48,
-      "rsi_14_1m": 55.1,
-      "from_30m_high_percent": -2.47,
-      "last_closed_candle_utc": "2026-11-01T21:33:00+00:00",
-      "oi": {
-        "value_contracts": 503334600.0,
-        "change_15m_percent": null,
-        "change_1h_percent": 27.55
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "LYNUSDT",
-      "change_24h_percent": 31.79,
-      "ticker_price": 0.01878,
-      "observed_at_utc": "2026-11-01T21:35:22.629303+00:00",
+      "change_24h_percent": 82.43,
+      "ticker_price": 0.018006,
+      "observed_at_utc": "2026-11-01T22:09:19.928673+00:00",
       "state": "POMPA_SLABNIE",
       "continuation_risk": "OBECNE",
       "signals": [
         "malejaca_przewaga_agresywnych_zakupow"
       ],
-      "near_30m_high": true,
-      "change_5m_percent": 1.18,
-      "change_15m_percent": 3.18,
-      "taker_buy_last_5m_percent": 5.83,
-      "taker_buy_prev_5m_percent": 17.96,
-      "rsi_14_1m": 77.0,
-      "from_30m_high_percent": -1.0,
-      "last_closed_candle_utc": "2026-11-01T21:33:00+00:00",
+      "near_30m_high": false,
+      "change_5m_percent": 2.71,
+      "change_15m_percent": 5.87,
+      "taker_buy_last_5m_percent": 29.05,
+      "taker_buy_prev_5m_percent": 64.69,
+      "rsi_14_1m": 63.0,
+      "from_30m_high_percent": -13.5,
+      "last_closed_candle_utc": "2026-11-01T22:07:00+00:00",
       "oi": {
-        "value_contracts": 116863500.0,
+        "value_contracts": 309820380.0,
         "change_15m_percent": null,
-        "change_1h_percent": null
+        "change_1h_percent": 47.46
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "IDOLUSDT",
+      "change_24h_percent": 41.93,
+      "ticker_price": 0.02408,
+      "observed_at_utc": "2026-11-01T22:09:19.928673+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": -1.77,
+      "change_15m_percent": -2.29,
+      "taker_buy_last_5m_percent": 64.41,
+      "taker_buy_prev_5m_percent": 67.0,
+      "rsi_14_1m": 30.9,
+      "from_30m_high_percent": -3.32,
+      "last_closed_candle_utc": "2026-11-01T22:07:00+00:00",
+      "oi": {
+        "value_contracts": 504472800.0,
+        "change_15m_percent": null,
+        "change_1h_percent": 1.39
       },
       "data_status": "OK"
     }
