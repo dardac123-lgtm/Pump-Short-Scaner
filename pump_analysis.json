@@ -1,31 +1,79 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-01T12:14:52.529963+00:00",
-  "minutes_since_previous_analysis": 32.0,
+  "updated_at_utc": "2026-11-01T12:58:41.744069+00:00",
+  "minutes_since_previous_analysis": 43.8,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "ESPORTSUSDT",
-      "change_24h_percent": 60.34,
-      "ticker_price": 0.01284,
-      "observed_at_utc": "2026-11-01T12:14:52.529963+00:00",
+      "change_24h_percent": 70.5,
+      "ticker_price": 0.013978,
+      "observed_at_utc": "2026-11-01T12:58:41.744069+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "OBECNE",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": 0.24,
+      "change_15m_percent": 3.97,
+      "taker_buy_last_5m_percent": 41.42,
+      "taker_buy_prev_5m_percent": 46.21,
+      "rsi_14_1m": 71.5,
+      "from_30m_high_percent": -2.52,
+      "last_closed_candle_utc": "2026-11-01T12:56:00+00:00",
+      "oi": {
+        "value_contracts": 99646120.0,
+        "change_15m_percent": null,
+        "change_1h_percent": 1.84
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "APRUSDT",
+      "change_24h_percent": 38.52,
+      "ticker_price": 0.07415,
+      "observed_at_utc": "2026-11-01T12:58:41.744069+00:00",
+      "state": "POMPA_SLABNIE",
+      "continuation_risk": "OBECNE",
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
+      "near_30m_high": true,
+      "change_5m_percent": -0.6,
+      "change_15m_percent": 3.8,
+      "taker_buy_last_5m_percent": 25.03,
+      "taker_buy_prev_5m_percent": 87.93,
+      "rsi_14_1m": 60.3,
+      "from_30m_high_percent": -3.3,
+      "last_closed_candle_utc": "2026-11-01T12:56:00+00:00",
+      "oi": {
+        "value_contracts": 74985488.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "AINUSDT",
+      "change_24h_percent": 37.45,
+      "ticker_price": 0.2732,
+      "observed_at_utc": "2026-11-01T12:58:41.744069+00:00",
       "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
       "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": 0.02,
-      "change_15m_percent": 0.23,
-      "taker_buy_last_5m_percent": 54.83,
-      "taker_buy_prev_5m_percent": 52.68,
-      "rsi_14_1m": 53.4,
-      "from_30m_high_percent": -1.79,
-      "last_closed_candle_utc": "2026-11-01T12:12:00+00:00",
+      "change_5m_percent": -0.14,
+      "change_15m_percent": 1.77,
+      "taker_buy_last_5m_percent": 57.76,
+      "taker_buy_prev_5m_percent": 50.65,
+      "rsi_14_1m": 62.3,
+      "from_30m_high_percent": -1.74,
+      "last_closed_candle_utc": "2026-11-01T12:56:00+00:00",
       "oi": {
-        "value_contracts": 96867540.0,
+        "value_contracts": 272923100.0,
         "change_15m_percent": null,
-        "change_1h_percent": -5.02
+        "change_1h_percent": null
       },
       "data_status": "OK"
     }
