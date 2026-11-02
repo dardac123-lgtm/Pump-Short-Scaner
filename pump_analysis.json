@@ -1,33 +1,31 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-02T20:22:14.342760+00:00",
-  "minutes_since_previous_analysis": 43.3,
+  "updated_at_utc": "2026-11-02T21:02:05.928893+00:00",
+  "minutes_since_previous_analysis": 39.9,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "ARIAUSDT",
-      "change_24h_percent": 30.9,
-      "ticker_price": 0.11509,
-      "observed_at_utc": "2026-11-02T20:22:14.342760+00:00",
-      "state": "POMPA_SLABNIE",
+      "change_24h_percent": 32.62,
+      "ticker_price": 0.11484,
+      "observed_at_utc": "2026-11-02T21:02:05.928893+00:00",
+      "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
+      "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": -0.09,
-      "change_15m_percent": 0.57,
-      "taker_buy_last_5m_percent": 28.64,
-      "taker_buy_prev_5m_percent": 53.37,
-      "rsi_14_1m": 60.0,
-      "from_30m_high_percent": -1.94,
-      "last_closed_candle_utc": "2026-11-02T20:20:00+00:00",
+      "change_5m_percent": -0.63,
+      "change_15m_percent": -0.15,
+      "taker_buy_last_5m_percent": 51.53,
+      "taker_buy_prev_5m_percent": 47.33,
+      "rsi_14_1m": 35.8,
+      "from_30m_high_percent": -1.11,
+      "last_closed_candle_utc": "2026-11-02T21:00:00+00:00",
       "oi": {
-        "value_contracts": 440602780.0,
+        "value_contracts": 440471140.0,
         "change_15m_percent": null,
-        "change_1h_percent": -0.11
+        "change_1h_percent": -0.03
       },
       "data_status": "OK"
     }
