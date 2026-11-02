@@ -1,56 +1,79 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-02T01:04:07.882965+00:00",
-  "minutes_since_previous_analysis": 55.3,
+  "updated_at_utc": "2026-11-02T02:00:10.563926+00:00",
+  "minutes_since_previous_analysis": 56.0,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "ESPORTSUSDT",
-      "change_24h_percent": 106.46,
-      "ticker_price": 0.017968,
-      "observed_at_utc": "2026-11-02T01:04:07.882965+00:00",
-      "state": "POMPA_TRWA",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [],
-      "near_30m_high": true,
-      "change_5m_percent": 0.11,
-      "change_15m_percent": -1.49,
-      "taker_buy_last_5m_percent": 20.81,
-      "taker_buy_prev_5m_percent": 26.7,
-      "rsi_14_1m": 30.4,
-      "from_30m_high_percent": -2.07,
-      "last_closed_candle_utc": "2026-11-02T01:02:00+00:00",
-      "oi": {
-        "value_contracts": 357662200.0,
-        "change_15m_percent": null,
-        "change_1h_percent": -0.19
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "IDOLUSDT",
-      "change_24h_percent": 34.35,
-      "ticker_price": 0.024705,
-      "observed_at_utc": "2026-11-02T01:04:07.882965+00:00",
+      "change_24h_percent": 86.05,
+      "ticker_price": 0.016873,
+      "observed_at_utc": "2026-11-02T02:00:10.563926+00:00",
       "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
       "signals": [
         "malejaca_przewaga_agresywnych_zakupow"
       ],
       "near_30m_high": true,
-      "change_5m_percent": 0.68,
-      "change_15m_percent": 0.74,
-      "taker_buy_last_5m_percent": 44.4,
-      "taker_buy_prev_5m_percent": 76.5,
-      "rsi_14_1m": 54.4,
-      "from_30m_high_percent": -1.43,
-      "last_closed_candle_utc": "2026-11-02T01:02:00+00:00",
+      "change_5m_percent": -0.31,
+      "change_15m_percent": -1.43,
+      "taker_buy_last_5m_percent": 54.3,
+      "taker_buy_prev_5m_percent": 70.87,
+      "rsi_14_1m": 30.4,
+      "from_30m_high_percent": -3.21,
+      "last_closed_candle_utc": "2026-11-02T01:58:00+00:00",
       "oi": {
-        "value_contracts": 493258600.0,
+        "value_contracts": 359200320.0,
         "change_15m_percent": null,
-        "change_1h_percent": 69.11
+        "change_1h_percent": 0.43
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "IDOLUSDT",
+      "change_24h_percent": 43.03,
+      "ticker_price": 0.025523,
+      "observed_at_utc": "2026-11-02T02:00:10.563926+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": 0.68,
+      "change_15m_percent": 1.22,
+      "taker_buy_last_5m_percent": 52.29,
+      "taker_buy_prev_5m_percent": 60.36,
+      "rsi_14_1m": 65.0,
+      "from_30m_high_percent": -1.85,
+      "last_closed_candle_utc": "2026-11-02T01:58:00+00:00",
+      "oi": {
+        "value_contracts": 499397000.0,
+        "change_15m_percent": null,
+        "change_1h_percent": 1.24
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "LYNUSDT",
+      "change_24h_percent": 34.09,
+      "ticker_price": 0.01884,
+      "observed_at_utc": "2026-11-02T02:00:10.563926+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": 0.21,
+      "change_15m_percent": 1.13,
+      "taker_buy_last_5m_percent": 56.47,
+      "taker_buy_prev_5m_percent": 55.11,
+      "rsi_14_1m": 62.6,
+      "from_30m_high_percent": -0.74,
+      "last_closed_candle_utc": "2026-11-02T01:58:00+00:00",
+      "oi": {
+        "value_contracts": 116527340.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
       },
       "data_status": "OK"
     }
