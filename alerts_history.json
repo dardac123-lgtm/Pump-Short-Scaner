@@ -1118,5 +1118,13 @@
     "price": 0.11746,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "HOTUSDT",
+    "detected_at": "2026-11-03T11:52:36.189209+00:00",
+    "change_percent": 40.69,
+    "price": 0.0005363,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
