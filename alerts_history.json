@@ -1094,5 +1094,13 @@
     "price": 0.04339,
     "threshold": 40.0,
     "telegram_sent": false
+  },
+  {
+    "symbol": "AGTUSDT",
+    "detected_at": "2026-11-03T04:52:08.004317+00:00",
+    "change_percent": 49.34,
+    "price": 0.04286,
+    "threshold": 40.0,
+    "telegram_sent": false
   }
 ]
