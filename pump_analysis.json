@@ -1,31 +1,31 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-04T16:58:15.821032+00:00",
-  "minutes_since_previous_analysis": 49.0,
+  "updated_at_utc": "2026-11-04T17:43:29.346689+00:00",
+  "minutes_since_previous_analysis": 45.2,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "CLANKERUSDT",
-      "change_24h_percent": 62.98,
-      "ticker_price": 18.84,
-      "observed_at_utc": "2026-11-04T16:58:15.821032+00:00",
+      "change_24h_percent": 68.65,
+      "ticker_price": 19.58,
+      "observed_at_utc": "2026-11-04T17:43:29.346689+00:00",
       "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
       "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": 0.21,
-      "change_15m_percent": 2.99,
-      "taker_buy_last_5m_percent": 64.65,
-      "taker_buy_prev_5m_percent": 29.32,
-      "rsi_14_1m": 81.6,
-      "from_30m_high_percent": -0.94,
-      "last_closed_candle_utc": "2026-11-04T16:56:00+00:00",
+      "change_5m_percent": -1.02,
+      "change_15m_percent": -3.33,
+      "taker_buy_last_5m_percent": 73.14,
+      "taker_buy_prev_5m_percent": 58.89,
+      "rsi_14_1m": 18.9,
+      "from_30m_high_percent": -3.8,
+      "last_closed_candle_utc": "2026-11-04T17:41:00+00:00",
       "oi": {
-        "value_contracts": 184650.6,
+        "value_contracts": 187125.4,
         "change_15m_percent": null,
-        "change_1h_percent": -0.31
+        "change_1h_percent": 1.34
       },
       "data_status": "OK"
     }
