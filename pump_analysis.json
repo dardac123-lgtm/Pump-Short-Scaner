@@ -1,58 +1,54 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-04T02:24:49.088391+00:00",
-  "minutes_since_previous_analysis": 45.0,
+  "updated_at_utc": "2026-11-04T03:12:50.067717+00:00",
+  "minutes_since_previous_analysis": 48.0,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
-      "symbol": "BMTUSDT",
-      "change_24h_percent": 42.28,
-      "ticker_price": 0.03015,
-      "observed_at_utc": "2026-11-04T02:24:49.088391+00:00",
-      "state": "POMPA_SLABNIE",
+      "symbol": "CLANKERUSDT",
+      "change_24h_percent": 38.87,
+      "ticker_price": 15.72,
+      "observed_at_utc": "2026-11-04T03:12:50.067717+00:00",
+      "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
-      "near_30m_high": true,
-      "change_5m_percent": 1.4,
-      "change_15m_percent": 1.54,
-      "taker_buy_last_5m_percent": 22.08,
-      "taker_buy_prev_5m_percent": 57.77,
-      "rsi_14_1m": 68.0,
-      "from_30m_high_percent": -2.03,
-      "last_closed_candle_utc": "2026-11-04T02:22:00+00:00",
+      "signals": [],
+      "near_30m_high": false,
+      "change_5m_percent": -1.52,
+      "change_15m_percent": -4.9,
+      "taker_buy_last_5m_percent": 60.0,
+      "taker_buy_prev_5m_percent": 37.48,
+      "rsi_14_1m": 37.2,
+      "from_30m_high_percent": -6.16,
+      "last_closed_candle_utc": "2026-11-04T03:10:00+00:00",
       "oi": {
-        "value_contracts": 4421570.0,
+        "value_contracts": 181937.4,
         "change_15m_percent": null,
-        "change_1h_percent": -4.02
+        "change_1h_percent": 0.33
       },
       "data_status": "OK"
     },
     {
-      "symbol": "CLANKERUSDT",
-      "change_24h_percent": 36.3,
-      "ticker_price": 15.47,
-      "observed_at_utc": "2026-11-04T02:24:49.088391+00:00",
-      "state": "POMPA_SLABNIE",
+      "symbol": "BMTUSDT",
+      "change_24h_percent": 34.52,
+      "ticker_price": 0.02899,
+      "observed_at_utc": "2026-11-04T03:12:50.067717+00:00",
+      "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
-      "near_30m_high": false,
-      "change_5m_percent": -4.33,
-      "change_15m_percent": -5.33,
-      "taker_buy_last_5m_percent": 37.85,
-      "taker_buy_prev_5m_percent": 53.25,
-      "rsi_14_1m": 22.2,
-      "from_30m_high_percent": -7.37,
-      "last_closed_candle_utc": "2026-11-04T02:22:00+00:00",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": -0.07,
+      "change_15m_percent": -0.31,
+      "taker_buy_last_5m_percent": 48.67,
+      "taker_buy_prev_5m_percent": 37.93,
+      "rsi_14_1m": 46.3,
+      "from_30m_high_percent": -3.31,
+      "last_closed_candle_utc": "2026-11-04T03:10:00+00:00",
       "oi": {
-        "value_contracts": 181340.8,
+        "value_contracts": 3685050.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.41
+        "change_1h_percent": -16.66
       },
       "data_status": "OK"
     }
