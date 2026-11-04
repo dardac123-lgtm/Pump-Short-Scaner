@@ -1,58 +1,58 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-04T01:39:47.133154+00:00",
-  "minutes_since_previous_analysis": 65.3,
+  "updated_at_utc": "2026-11-04T02:24:49.088391+00:00",
+  "minutes_since_previous_analysis": 45.0,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "BMTUSDT",
-      "change_24h_percent": 41.87,
-      "ticker_price": 0.03009,
-      "observed_at_utc": "2026-11-04T01:39:47.133154+00:00",
+      "change_24h_percent": 42.28,
+      "ticker_price": 0.03015,
+      "observed_at_utc": "2026-11-04T02:24:49.088391+00:00",
       "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
       "signals": [
         "malejaca_przewaga_agresywnych_zakupow"
       ],
       "near_30m_high": true,
-      "change_5m_percent": -0.66,
-      "change_15m_percent": 2.89,
-      "taker_buy_last_5m_percent": 44.72,
-      "taker_buy_prev_5m_percent": 57.39,
-      "rsi_14_1m": 62.1,
-      "from_30m_high_percent": -2.19,
-      "last_closed_candle_utc": "2026-11-04T01:37:00+00:00",
+      "change_5m_percent": 1.4,
+      "change_15m_percent": 1.54,
+      "taker_buy_last_5m_percent": 22.08,
+      "taker_buy_prev_5m_percent": 57.77,
+      "rsi_14_1m": 68.0,
+      "from_30m_high_percent": -2.03,
+      "last_closed_candle_utc": "2026-11-04T02:22:00+00:00",
       "oi": {
-        "value_contracts": 4606770.0,
+        "value_contracts": 4421570.0,
         "change_15m_percent": null,
-        "change_1h_percent": null
+        "change_1h_percent": -4.02
       },
       "data_status": "OK"
     },
     {
       "symbol": "CLANKERUSDT",
-      "change_24h_percent": 34.8,
-      "ticker_price": 15.3,
-      "observed_at_utc": "2026-11-04T01:39:47.133154+00:00",
+      "change_24h_percent": 36.3,
+      "ticker_price": 15.47,
+      "observed_at_utc": "2026-11-04T02:24:49.088391+00:00",
       "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
       "signals": [
         "malejaca_przewaga_agresywnych_zakupow"
       ],
-      "near_30m_high": true,
-      "change_5m_percent": 2.68,
-      "change_15m_percent": 0.26,
-      "taker_buy_last_5m_percent": 0.8,
-      "taker_buy_prev_5m_percent": 51.92,
-      "rsi_14_1m": 52.6,
-      "from_30m_high_percent": -1.67,
-      "last_closed_candle_utc": "2026-11-04T01:37:00+00:00",
+      "near_30m_high": false,
+      "change_5m_percent": -4.33,
+      "change_15m_percent": -5.33,
+      "taker_buy_last_5m_percent": 37.85,
+      "taker_buy_prev_5m_percent": 53.25,
+      "rsi_14_1m": 22.2,
+      "from_30m_high_percent": -7.37,
+      "last_closed_candle_utc": "2026-11-04T02:22:00+00:00",
       "oi": {
-        "value_contracts": 180608.0,
+        "value_contracts": 181340.8,
         "change_15m_percent": null,
-        "change_1h_percent": 0.79
+        "change_1h_percent": 0.41
       },
       "data_status": "OK"
     }
