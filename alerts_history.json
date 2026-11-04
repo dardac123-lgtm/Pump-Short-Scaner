@@ -1158,5 +1158,13 @@
     "price": 0.03007,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "CLANKERUSDT",
+    "detected_at": "2026-11-04T03:58:47.752598+00:00",
+    "change_percent": 40.95,
+    "price": 15.66,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
