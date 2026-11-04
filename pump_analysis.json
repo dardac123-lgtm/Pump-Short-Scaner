@@ -1,9 +1,33 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-04T11:34:33.891266+00:00",
-  "minutes_since_previous_analysis": 120.1,
+  "updated_at_utc": "2026-11-04T12:17:47.925720+00:00",
+  "minutes_since_previous_analysis": 43.2,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
-  "coins": []
+  "coins": [
+    {
+      "symbol": "BMTUSDT",
+      "change_24h_percent": 30.45,
+      "ticker_price": 0.03042,
+      "observed_at_utc": "2026-11-04T12:17:47.925720+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": 0.46,
+      "change_15m_percent": 2.04,
+      "taker_buy_last_5m_percent": 47.49,
+      "taker_buy_prev_5m_percent": 30.28,
+      "rsi_14_1m": 65.2,
+      "from_30m_high_percent": -1.07,
+      "last_closed_candle_utc": "2026-11-04T12:15:00+00:00",
+      "oi": {
+        "value_contracts": 6261310.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
+      },
+      "data_status": "OK"
+    }
+  ]
 }
