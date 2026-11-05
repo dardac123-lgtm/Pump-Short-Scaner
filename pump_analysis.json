@@ -1,31 +1,79 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-05T16:26:09.944921+00:00",
-  "minutes_since_previous_analysis": 62.6,
+  "updated_at_utc": "2026-11-05T17:29:28.452934+00:00",
+  "minutes_since_previous_analysis": 63.3,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
-      "symbol": "APPUSDT",
-      "change_24h_percent": 30.12,
-      "ticker_price": 352.31,
-      "observed_at_utc": "2026-11-05T16:26:09.944921+00:00",
+      "symbol": "UVXYUSDT",
+      "change_24h_percent": 32.03,
+      "ticker_price": 21.717,
+      "observed_at_utc": "2026-11-05T17:29:28.452934+00:00",
       "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
       "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": -0.32,
-      "change_15m_percent": -1.29,
-      "taker_buy_last_5m_percent": 49.11,
-      "taker_buy_prev_5m_percent": 12.47,
-      "rsi_14_1m": 27.7,
-      "from_30m_high_percent": -2.3,
-      "last_closed_candle_utc": "2026-11-05T16:24:00+00:00",
+      "change_5m_percent": 0.21,
+      "change_15m_percent": 1.35,
+      "taker_buy_last_5m_percent": 49.34,
+      "taker_buy_prev_5m_percent": 48.09,
+      "rsi_14_1m": 60.7,
+      "from_30m_high_percent": -0.78,
+      "last_closed_candle_utc": "2026-11-05T17:27:00+00:00",
       "oi": {
-        "value_contracts": 48335.8,
+        "value_contracts": 270643.94,
         "change_15m_percent": null,
-        "change_1h_percent": 0.37
+        "change_1h_percent": null
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "SOXSUSDT",
+      "change_24h_percent": 31.15,
+      "ticker_price": 76.96,
+      "observed_at_utc": "2026-11-05T17:29:28.452934+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": 0.62,
+      "change_15m_percent": -0.34,
+      "taker_buy_last_5m_percent": 47.69,
+      "taker_buy_prev_5m_percent": 47.4,
+      "rsi_14_1m": 50.5,
+      "from_30m_high_percent": -0.91,
+      "last_closed_candle_utc": "2026-11-05T17:27:00+00:00",
+      "oi": {
+        "value_contracts": 30042.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "LYNUSDT",
+      "change_24h_percent": 30.92,
+      "ticker_price": 0.02244,
+      "observed_at_utc": "2026-11-05T17:29:28.452934+00:00",
+      "state": "POMPA_SLABNIE",
+      "continuation_risk": "OBECNE",
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
+      "near_30m_high": true,
+      "change_5m_percent": 1.43,
+      "change_15m_percent": 3.76,
+      "taker_buy_last_5m_percent": 25.37,
+      "taker_buy_prev_5m_percent": 43.46,
+      "rsi_14_1m": 80.4,
+      "from_30m_high_percent": -0.79,
+      "last_closed_candle_utc": "2026-11-05T17:27:00+00:00",
+      "oi": {
+        "value_contracts": 126670240.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
       },
       "data_status": "OK"
     }
