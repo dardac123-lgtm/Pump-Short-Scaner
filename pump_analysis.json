@@ -1,31 +1,31 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-05T19:42:24.053078+00:00",
-  "minutes_since_previous_analysis": 45.7,
+  "updated_at_utc": "2026-11-05T20:27:29.393114+00:00",
+  "minutes_since_previous_analysis": 45.1,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "UVXYUSDT",
-      "change_24h_percent": 33.2,
-      "ticker_price": 21.478,
-      "observed_at_utc": "2026-11-05T19:42:24.053078+00:00",
+      "change_24h_percent": 35.19,
+      "ticker_price": 21.942,
+      "observed_at_utc": "2026-11-05T20:27:29.393114+00:00",
       "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
       "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": -1.38,
-      "change_15m_percent": -1.75,
-      "taker_buy_last_5m_percent": 49.77,
-      "taker_buy_prev_5m_percent": 47.97,
-      "rsi_14_1m": 25.5,
-      "from_30m_high_percent": -2.6,
-      "last_closed_candle_utc": "2026-11-05T19:40:00+00:00",
+      "change_5m_percent": 1.31,
+      "change_15m_percent": -0.44,
+      "taker_buy_last_5m_percent": 51.29,
+      "taker_buy_prev_5m_percent": 46.97,
+      "rsi_14_1m": 43.8,
+      "from_30m_high_percent": -0.99,
+      "last_closed_candle_utc": "2026-11-05T20:25:00+00:00",
       "oi": {
-        "value_contracts": 270010.76,
+        "value_contracts": 269857.1,
         "change_15m_percent": null,
-        "change_1h_percent": -0.07
+        "change_1h_percent": -0.06
       },
       "data_status": "OK"
     }
