@@ -1214,5 +1214,13 @@
     "price": 0.05093,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "UVXYUSDT",
+    "detected_at": "2026-11-05T18:07:47.633554+00:00",
+    "change_percent": 41.37,
+    "price": 22.85,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
