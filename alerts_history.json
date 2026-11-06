@@ -1262,5 +1262,13 @@
     "price": 0.004288,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "CYBERUSDT",
+    "detected_at": "2026-11-06T06:11:44.129302+00:00",
+    "change_percent": 47.64,
+    "price": 0.3719,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
