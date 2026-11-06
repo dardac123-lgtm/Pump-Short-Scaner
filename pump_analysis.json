@@ -1,131 +1,125 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-06T10:20:40.760510+00:00",
-  "minutes_since_previous_analysis": 61.1,
+  "updated_at_utc": "2026-11-06T11:16:30.052607+00:00",
+  "minutes_since_previous_analysis": 55.8,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "AKEUSDT",
-      "change_24h_percent": 119.35,
-      "ticker_price": 0.004964,
-      "observed_at_utc": "2026-11-06T10:20:40.760510+00:00",
+      "change_24h_percent": 94.84,
+      "ticker_price": 0.00514,
+      "observed_at_utc": "2026-11-06T11:16:30.052607+00:00",
       "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
       "signals": [
         "malejaca_przewaga_agresywnych_zakupow"
       ],
       "near_30m_high": true,
-      "change_5m_percent": 0.26,
-      "change_15m_percent": 0.16,
-      "taker_buy_last_5m_percent": 42.87,
-      "taker_buy_prev_5m_percent": 55.34,
-      "rsi_14_1m": 48.9,
-      "from_30m_high_percent": -2.21,
-      "last_closed_candle_utc": "2026-11-06T10:18:00+00:00",
+      "change_5m_percent": 2.01,
+      "change_15m_percent": 0.95,
+      "taker_buy_last_5m_percent": 30.18,
+      "taker_buy_prev_5m_percent": 55.77,
+      "rsi_14_1m": 66.8,
+      "from_30m_high_percent": -2.04,
+      "last_closed_candle_utc": "2026-11-06T11:14:00+00:00",
       "oi": {
-        "value_contracts": 5879256000.0,
+        "value_contracts": 5916620000.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.55
+        "change_1h_percent": 0.64
       },
       "data_status": "OK"
     },
     {
       "symbol": "UAIUSDT",
-      "change_24h_percent": 74.98,
-      "ticker_price": 0.1783,
-      "observed_at_utc": "2026-11-06T10:20:40.760510+00:00",
+      "change_24h_percent": 64.04,
+      "ticker_price": 0.1706,
+      "observed_at_utc": "2026-11-06T11:16:30.052607+00:00",
       "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
       "signals": [],
-      "near_30m_high": true,
-      "change_5m_percent": 0.85,
-      "change_15m_percent": -1.81,
-      "taker_buy_last_5m_percent": 48.34,
-      "taker_buy_prev_5m_percent": 54.84,
-      "rsi_14_1m": 52.3,
-      "from_30m_high_percent": -3.25,
-      "last_closed_candle_utc": "2026-11-06T10:18:00+00:00",
+      "near_30m_high": false,
+      "change_5m_percent": 2.1,
+      "change_15m_percent": -4.97,
+      "taker_buy_last_5m_percent": 45.92,
+      "taker_buy_prev_5m_percent": 48.4,
+      "rsi_14_1m": 32.8,
+      "from_30m_high_percent": -5.55,
+      "last_closed_candle_utc": "2026-11-06T11:14:00+00:00",
       "oi": {
-        "value_contracts": 1589280.0,
+        "value_contracts": 1762460.0,
         "change_15m_percent": null,
-        "change_1h_percent": 2.13
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "BIRBUSDT",
-      "change_24h_percent": 46.73,
-      "ticker_price": 0.11954,
-      "observed_at_utc": "2026-11-06T10:20:40.760510+00:00",
-      "state": "POMPA_SLABNIE",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
-      "near_30m_high": true,
-      "change_5m_percent": 0.27,
-      "change_15m_percent": 1.5,
-      "taker_buy_last_5m_percent": 51.52,
-      "taker_buy_prev_5m_percent": 80.72,
-      "rsi_14_1m": 62.7,
-      "from_30m_high_percent": -1.37,
-      "last_closed_candle_utc": "2026-11-06T10:18:00+00:00",
-      "oi": {
-        "value_contracts": 51184300.0,
-        "change_15m_percent": null,
-        "change_1h_percent": 0.08
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "CYBERUSDT",
-      "change_24h_percent": 40.31,
-      "ticker_price": 0.3547,
-      "observed_at_utc": "2026-11-06T10:20:40.760510+00:00",
-      "state": "POMPA_SLABNIE",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
-      "near_30m_high": true,
-      "change_5m_percent": 0.76,
-      "change_15m_percent": 0.56,
-      "taker_buy_last_5m_percent": 34.66,
-      "taker_buy_prev_5m_percent": 68.54,
-      "rsi_14_1m": 57.3,
-      "from_30m_high_percent": -0.94,
-      "last_closed_candle_utc": "2026-11-06T10:18:00+00:00",
-      "oi": {
-        "value_contracts": 240081306.0,
-        "change_15m_percent": null,
-        "change_1h_percent": -0.04
+        "change_1h_percent": 10.9
       },
       "data_status": "OK"
     },
     {
       "symbol": "UVXYUSDT",
-      "change_24h_percent": 37.72,
-      "ticker_price": 22.456,
-      "observed_at_utc": "2026-11-06T10:20:40.760510+00:00",
-      "state": "POMPA_SLABNIE",
+      "change_24h_percent": 38.8,
+      "ticker_price": 22.659,
+      "observed_at_utc": "2026-11-06T11:16:30.052607+00:00",
+      "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
+      "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": 0.54,
-      "change_15m_percent": 1.15,
-      "taker_buy_last_5m_percent": 49.85,
-      "taker_buy_prev_5m_percent": 88.84,
-      "rsi_14_1m": 61.6,
-      "from_30m_high_percent": -0.27,
-      "last_closed_candle_utc": "2026-11-06T10:18:00+00:00",
+      "change_5m_percent": -1.49,
+      "change_15m_percent": -1.25,
+      "taker_buy_last_5m_percent": 53.06,
+      "taker_buy_prev_5m_percent": 46.47,
+      "rsi_14_1m": 29.7,
+      "from_30m_high_percent": -1.57,
+      "last_closed_candle_utc": "2026-11-06T11:14:00+00:00",
       "oi": {
-        "value_contracts": 468388.06,
+        "value_contracts": 467696.96,
         "change_15m_percent": null,
-        "change_1h_percent": -0.27
+        "change_1h_percent": -0.15
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "CYBERUSDT",
+      "change_24h_percent": 31.79,
+      "ticker_price": 0.3321,
+      "observed_at_utc": "2026-11-06T11:16:30.052607+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": -0.59,
+      "change_15m_percent": -0.62,
+      "taker_buy_last_5m_percent": 34.38,
+      "taker_buy_prev_5m_percent": 35.89,
+      "rsi_14_1m": 51.9,
+      "from_30m_high_percent": -4.39,
+      "last_closed_candle_utc": "2026-11-06T11:14:00+00:00",
+      "oi": {
+        "value_contracts": 239949828.0,
+        "change_15m_percent": null,
+        "change_1h_percent": -0.05
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "BIRBUSDT",
+      "change_24h_percent": 30.77,
+      "ticker_price": 0.10859,
+      "observed_at_utc": "2026-11-06T11:16:30.052607+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": 0.37,
+      "change_15m_percent": -0.74,
+      "taker_buy_last_5m_percent": 11.55,
+      "taker_buy_prev_5m_percent": 15.28,
+      "rsi_14_1m": 46.6,
+      "from_30m_high_percent": -1.97,
+      "last_closed_candle_utc": "2026-11-06T11:14:00+00:00",
+      "oi": {
+        "value_contracts": 51049560.0,
+        "change_15m_percent": null,
+        "change_1h_percent": -0.26
       },
       "data_status": "OK"
     }
