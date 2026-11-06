@@ -1278,5 +1278,13 @@
     "price": 22.989,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "BIRBUSDT",
+    "detected_at": "2026-11-06T10:20:39.943791+00:00",
+    "change_percent": 46.73,
+    "price": 0.11954,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
