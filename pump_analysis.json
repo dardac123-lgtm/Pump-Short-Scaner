@@ -1,56 +1,81 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-07T22:14:24.109323+00:00",
-  "minutes_since_previous_analysis": 35.0,
+  "updated_at_utc": "2026-11-07T22:46:10.688434+00:00",
+  "minutes_since_previous_analysis": 31.8,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "AKEUSDT",
-      "change_24h_percent": 42.78,
-      "ticker_price": 0.005647,
-      "observed_at_utc": "2026-11-07T22:14:24.109323+00:00",
+      "change_24h_percent": 39.26,
+      "ticker_price": 0.005523,
+      "observed_at_utc": "2026-11-07T22:46:10.688434+00:00",
       "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
       "signals": [
         "malejaca_przewaga_agresywnych_zakupow"
       ],
       "near_30m_high": true,
-      "change_5m_percent": 1.14,
-      "change_15m_percent": -0.33,
-      "taker_buy_last_5m_percent": 52.29,
-      "taker_buy_prev_5m_percent": 68.31,
-      "rsi_14_1m": 50.8,
-      "from_30m_high_percent": -1.42,
-      "last_closed_candle_utc": "2026-11-07T22:12:00+00:00",
+      "change_5m_percent": 0.83,
+      "change_15m_percent": -1.81,
+      "taker_buy_last_5m_percent": 46.34,
+      "taker_buy_prev_5m_percent": 72.1,
+      "rsi_14_1m": 40.3,
+      "from_30m_high_percent": -2.72,
+      "last_closed_candle_utc": "2026-11-07T22:44:00+00:00",
       "oi": {
-        "value_contracts": 6045258000.0,
+        "value_contracts": 6033928000.0,
         "change_15m_percent": null,
-        "change_1h_percent": -0.43
+        "change_1h_percent": -0.28
       },
       "data_status": "OK"
     },
     {
       "symbol": "AINUSDT",
-      "change_24h_percent": 37.73,
-      "ticker_price": 0.14557,
-      "observed_at_utc": "2026-11-07T22:14:24.109323+00:00",
+      "change_24h_percent": 38.7,
+      "ticker_price": 0.14561,
+      "observed_at_utc": "2026-11-07T22:46:10.688434+00:00",
       "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
       "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": -0.57,
-      "change_15m_percent": 0.05,
-      "taker_buy_last_5m_percent": 56.11,
-      "taker_buy_prev_5m_percent": 47.75,
-      "rsi_14_1m": 45.5,
-      "from_30m_high_percent": -0.95,
-      "last_closed_candle_utc": "2026-11-07T22:12:00+00:00",
+      "change_5m_percent": -0.01,
+      "change_15m_percent": -0.03,
+      "taker_buy_last_5m_percent": 47.73,
+      "taker_buy_prev_5m_percent": 43.57,
+      "rsi_14_1m": 54.4,
+      "from_30m_high_percent": -0.45,
+      "last_closed_candle_utc": "2026-11-07T22:44:00+00:00",
       "oi": {
-        "value_contracts": 116772100.0,
+        "value_contracts": 116773500.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.03
+        "change_1h_percent": 0.01
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "KOMAUSDT",
+      "change_24h_percent": 31.12,
+      "ticker_price": 0.016933,
+      "observed_at_utc": "2026-11-07T22:46:10.688434+00:00",
+      "state": "POMPA_SLABNIE",
+      "continuation_risk": "OBECNE",
+      "signals": [
+        "hamowanie_5m"
+      ],
+      "near_30m_high": true,
+      "change_5m_percent": -0.45,
+      "change_15m_percent": 3.78,
+      "taker_buy_last_5m_percent": 44.88,
+      "taker_buy_prev_5m_percent": 49.04,
+      "rsi_14_1m": 80.3,
+      "from_30m_high_percent": -2.26,
+      "last_closed_candle_utc": "2026-11-07T22:44:00+00:00",
+      "oi": {
+        "value_contracts": 1896677940.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
       },
       "data_status": "OK"
     }
