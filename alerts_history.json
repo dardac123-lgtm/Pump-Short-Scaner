@@ -1358,5 +1358,13 @@
     "price": 0.15045,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "LYNUSDT",
+    "detected_at": "2026-11-07T12:13:02.834193+00:00",
+    "change_percent": 40.23,
+    "price": 0.02855,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
