@@ -1406,5 +1406,13 @@
     "price": 0.005562,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "ONEUSDT",
+    "detected_at": "2026-11-07T18:53:43.036965+00:00",
+    "change_percent": 41.44,
+    "price": 0.002222,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
