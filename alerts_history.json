@@ -1438,5 +1438,21 @@
     "price": 0.005659,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "AKEUSDT",
+    "detected_at": "2026-11-07T23:16:19.062110+00:00",
+    "change_percent": 42.61,
+    "price": 0.005636,
+    "threshold": 40.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "AINUSDT",
+    "detected_at": "2026-11-07T23:16:19.062110+00:00",
+    "change_percent": 41.46,
+    "price": 0.14568,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
