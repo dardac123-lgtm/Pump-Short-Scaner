@@ -1,56 +1,56 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-08T21:55:51.798778+00:00",
-  "minutes_since_previous_analysis": 34.7,
+  "updated_at_utc": "2026-11-08T22:23:34.569391+00:00",
+  "minutes_since_previous_analysis": 27.7,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "JCTUSDT",
-      "change_24h_percent": 446.44,
-      "ticker_price": 0.015508,
-      "observed_at_utc": "2026-11-08T21:55:51.798778+00:00",
-      "state": "POMPA_TRWA",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [],
-      "near_30m_high": false,
-      "change_5m_percent": 0.49,
-      "change_15m_percent": -1.59,
-      "taker_buy_last_5m_percent": 48.53,
-      "taker_buy_prev_5m_percent": 25.42,
-      "rsi_14_1m": 51.0,
-      "from_30m_high_percent": -12.26,
-      "last_closed_candle_utc": "2026-11-08T21:53:00+00:00",
-      "oi": {
-        "value_contracts": 1143620400.0,
-        "change_15m_percent": null,
-        "change_1h_percent": 0.84
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "AIOTUSDT",
-      "change_24h_percent": 39.93,
-      "ticker_price": 0.16103,
-      "observed_at_utc": "2026-11-08T21:55:51.798778+00:00",
+      "change_24h_percent": 392.71,
+      "ticker_price": 0.014121,
+      "observed_at_utc": "2026-11-08T22:23:34.569391+00:00",
       "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
       "signals": [
         "malejaca_przewaga_agresywnych_zakupow"
       ],
-      "near_30m_high": true,
-      "change_5m_percent": 3.5,
-      "change_15m_percent": 2.99,
-      "taker_buy_last_5m_percent": 22.36,
-      "taker_buy_prev_5m_percent": 53.23,
-      "rsi_14_1m": 71.8,
-      "from_30m_high_percent": -0.06,
-      "last_closed_candle_utc": "2026-11-08T21:53:00+00:00",
+      "near_30m_high": false,
+      "change_5m_percent": -0.4,
+      "change_15m_percent": -2.53,
+      "taker_buy_last_5m_percent": 60.84,
+      "taker_buy_prev_5m_percent": 98.99,
+      "rsi_14_1m": 44.3,
+      "from_30m_high_percent": -14.38,
+      "last_closed_candle_utc": "2026-11-08T22:21:00+00:00",
       "oi": {
-        "value_contracts": 161459440.0,
+        "value_contracts": 1147438800.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.23
+        "change_1h_percent": 0.28
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "AIOTUSDT",
+      "change_24h_percent": 40.98,
+      "ticker_price": 0.1634,
+      "observed_at_utc": "2026-11-08T22:23:34.569391+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": 0.12,
+      "change_15m_percent": 0.3,
+      "taker_buy_last_5m_percent": 43.39,
+      "taker_buy_prev_5m_percent": 20.21,
+      "rsi_14_1m": 50.7,
+      "from_30m_high_percent": -1.37,
+      "last_closed_candle_utc": "2026-11-08T22:21:00+00:00",
+      "oi": {
+        "value_contracts": 161423960.0,
+        "change_15m_percent": null,
+        "change_1h_percent": -0.08
       },
       "data_status": "OK"
     }
