@@ -1462,5 +1462,13 @@
     "price": 0.019478,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "JCTUSDT",
+    "detected_at": "2026-11-08T10:06:13.359965+00:00",
+    "change_percent": 61.44,
+    "price": 0.004685,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
