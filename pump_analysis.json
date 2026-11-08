@@ -1,31 +1,33 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-08T13:19:00.731754+00:00",
-  "minutes_since_previous_analysis": 53.7,
+  "updated_at_utc": "2026-11-08T14:01:40.087486+00:00",
+  "minutes_since_previous_analysis": 42.7,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "JCTUSDT",
-      "change_24h_percent": 344.19,
-      "ticker_price": 0.012224,
-      "observed_at_utc": "2026-11-08T13:19:00.731754+00:00",
-      "state": "POMPA_TRWA",
+      "change_24h_percent": 323.43,
+      "ticker_price": 0.011276,
+      "observed_at_utc": "2026-11-08T14:01:40.087486+00:00",
+      "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [],
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
       "near_30m_high": false,
-      "change_5m_percent": -9.61,
-      "change_15m_percent": -17.89,
-      "taker_buy_last_5m_percent": 55.06,
-      "taker_buy_prev_5m_percent": 56.63,
-      "rsi_14_1m": 31.3,
-      "from_30m_high_percent": -19.14,
-      "last_closed_candle_utc": "2026-11-08T13:17:00+00:00",
+      "change_5m_percent": 4.2,
+      "change_15m_percent": 1.43,
+      "taker_buy_last_5m_percent": 44.81,
+      "taker_buy_prev_5m_percent": 62.34,
+      "rsi_14_1m": 58.3,
+      "from_30m_high_percent": -8.37,
+      "last_closed_candle_utc": "2026-11-08T13:59:00+00:00",
       "oi": {
-        "value_contracts": 732011600.0,
+        "value_contracts": 755310600.0,
         "change_15m_percent": null,
-        "change_1h_percent": 8.2
+        "change_1h_percent": 3.18
       },
       "data_status": "OK"
     }
