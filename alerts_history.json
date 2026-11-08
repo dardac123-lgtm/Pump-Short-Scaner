@@ -1470,5 +1470,13 @@
     "price": 0.004685,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "AIOTUSDT",
+    "detected_at": "2026-11-08T17:21:22.658506+00:00",
+    "change_percent": 41.83,
+    "price": 0.16553,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
