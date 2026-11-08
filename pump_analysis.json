@@ -1,58 +1,56 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-08T17:21:23.286269+00:00",
-  "minutes_since_previous_analysis": 28.7,
+  "updated_at_utc": "2026-11-08T17:52:32.405688+00:00",
+  "minutes_since_previous_analysis": 31.2,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "JCTUSDT",
-      "change_24h_percent": 282.47,
-      "ticker_price": 0.01139,
-      "observed_at_utc": "2026-11-08T17:21:23.286269+00:00",
-      "state": "POMPA_SLABNIE",
+      "change_24h_percent": 312.84,
+      "ticker_price": 0.012059,
+      "observed_at_utc": "2026-11-08T17:52:32.405688+00:00",
+      "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "mozliwa_absorpcja"
-      ],
-      "near_30m_high": true,
-      "change_5m_percent": 0.67,
-      "change_15m_percent": 1.27,
-      "taker_buy_last_5m_percent": 56.3,
-      "taker_buy_prev_5m_percent": 50.57,
-      "rsi_14_1m": 51.2,
-      "from_30m_high_percent": -1.7,
-      "last_closed_candle_utc": "2026-11-08T17:19:00+00:00",
+      "signals": [],
+      "near_30m_high": false,
+      "change_5m_percent": -2.41,
+      "change_15m_percent": -3.54,
+      "taker_buy_last_5m_percent": 74.47,
+      "taker_buy_prev_5m_percent": 27.68,
+      "rsi_14_1m": 47.7,
+      "from_30m_high_percent": -6.6,
+      "last_closed_candle_utc": "2026-11-08T17:50:00+00:00",
       "oi": {
-        "value_contracts": 1059846800.0,
+        "value_contracts": 1085518000.0,
         "change_15m_percent": null,
-        "change_1h_percent": 3.58
+        "change_1h_percent": 3.27
       },
       "data_status": "OK"
     },
     {
       "symbol": "AIOTUSDT",
-      "change_24h_percent": 41.64,
-      "ticker_price": 0.16531,
-      "observed_at_utc": "2026-11-08T17:21:23.286269+00:00",
+      "change_24h_percent": 47.88,
+      "ticker_price": 0.16991,
+      "observed_at_utc": "2026-11-08T17:52:32.405688+00:00",
       "state": "POMPA_SLABNIE",
-      "continuation_risk": "NIEUSTALONE",
+      "continuation_risk": "OBECNE",
       "signals": [
         "malejaca_przewaga_agresywnych_zakupow"
       ],
       "near_30m_high": true,
-      "change_5m_percent": 0.12,
-      "change_15m_percent": -1.93,
-      "taker_buy_last_5m_percent": 53.39,
-      "taker_buy_prev_5m_percent": 74.44,
-      "rsi_14_1m": 33.8,
-      "from_30m_high_percent": -3.47,
-      "last_closed_candle_utc": "2026-11-08T17:19:00+00:00",
+      "change_5m_percent": 3.05,
+      "change_15m_percent": 6.35,
+      "taker_buy_last_5m_percent": 25.6,
+      "taker_buy_prev_5m_percent": 42.09,
+      "rsi_14_1m": 76.1,
+      "from_30m_high_percent": -0.08,
+      "last_closed_candle_utc": "2026-11-08T17:50:00+00:00",
       "oi": {
-        "value_contracts": 161382660.0,
+        "value_contracts": 161632880.0,
         "change_15m_percent": null,
-        "change_1h_percent": null
+        "change_1h_percent": 0.1
       },
       "data_status": "OK"
     }
