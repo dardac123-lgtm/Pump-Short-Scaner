@@ -1454,5 +1454,13 @@
     "price": 0.14568,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "KOMAUSDT",
+    "detected_at": "2026-11-08T03:52:27.682804+00:00",
+    "change_percent": 52.27,
+    "price": 0.019478,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
