@@ -1,56 +1,56 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-09T08:52:16.891350+00:00",
-  "minutes_since_previous_analysis": 60.8,
+  "updated_at_utc": "2026-11-09T09:44:14.374480+00:00",
+  "minutes_since_previous_analysis": 52.0,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "JCTUSDT",
-      "change_24h_percent": 129.41,
-      "ticker_price": 0.008424,
-      "observed_at_utc": "2026-11-09T08:52:16.891350+00:00",
+      "change_24h_percent": 158.43,
+      "ticker_price": 0.009487,
+      "observed_at_utc": "2026-11-09T09:44:14.374480+00:00",
       "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
       "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
+        "hamowanie_5m"
       ],
       "near_30m_high": true,
-      "change_5m_percent": -0.46,
-      "change_15m_percent": -1.51,
-      "taker_buy_last_5m_percent": 33.19,
-      "taker_buy_prev_5m_percent": 53.8,
-      "rsi_14_1m": 38.1,
-      "from_30m_high_percent": -2.72,
-      "last_closed_candle_utc": "2026-11-09T08:50:00+00:00",
+      "change_5m_percent": -2.09,
+      "change_15m_percent": 0.48,
+      "taker_buy_last_5m_percent": 70.7,
+      "taker_buy_prev_5m_percent": 37.09,
+      "rsi_14_1m": 51.4,
+      "from_30m_high_percent": -3.56,
+      "last_closed_candle_utc": "2026-11-09T09:42:00+00:00",
       "oi": {
-        "value_contracts": 1323743200.0,
+        "value_contracts": 1346795200.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.95
+        "change_1h_percent": 1.74
       },
       "data_status": "OK"
     },
     {
       "symbol": "ONUSDT",
-      "change_24h_percent": 33.29,
-      "ticker_price": 0.213,
-      "observed_at_utc": "2026-11-09T08:52:16.891350+00:00",
+      "change_24h_percent": 49.33,
+      "ticker_price": 0.2349,
+      "observed_at_utc": "2026-11-09T09:44:14.374480+00:00",
       "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
       "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": 0.61,
-      "change_15m_percent": 1.29,
-      "taker_buy_last_5m_percent": 56.04,
-      "taker_buy_prev_5m_percent": 39.9,
-      "rsi_14_1m": 63.7,
-      "from_30m_high_percent": -4.83,
-      "last_closed_candle_utc": "2026-11-09T08:50:00+00:00",
+      "change_5m_percent": 0.13,
+      "change_15m_percent": -0.59,
+      "taker_buy_last_5m_percent": 53.69,
+      "taker_buy_prev_5m_percent": 51.17,
+      "rsi_14_1m": 46.0,
+      "from_30m_high_percent": -4.06,
+      "last_closed_candle_utc": "2026-11-09T09:42:00+00:00",
       "oi": {
-        "value_contracts": 26956260.0,
+        "value_contracts": 26930440.0,
         "change_15m_percent": null,
-        "change_1h_percent": null
+        "change_1h_percent": -0.1
       },
       "data_status": "OK"
     }
