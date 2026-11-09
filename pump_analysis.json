@@ -1,9 +1,33 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-09T14:29:54.470687+00:00",
-  "minutes_since_previous_analysis": 58.6,
+  "updated_at_utc": "2026-11-09T15:24:46.756216+00:00",
+  "minutes_since_previous_analysis": 54.9,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
-  "coins": []
+  "coins": [
+    {
+      "symbol": "PIEVERSEUSDT",
+      "change_24h_percent": 30.79,
+      "ticker_price": 1.9289,
+      "observed_at_utc": "2026-11-09T15:24:46.756216+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "OBECNE",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": 3.58,
+      "change_15m_percent": 5.35,
+      "taker_buy_last_5m_percent": 40.29,
+      "taker_buy_prev_5m_percent": 46.13,
+      "rsi_14_1m": 88.6,
+      "from_30m_high_percent": -0.61,
+      "last_closed_candle_utc": "2026-11-09T15:22:00+00:00",
+      "oi": {
+        "value_contracts": 171743060.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
+      },
+      "data_status": "OK"
+    }
+  ]
 }
