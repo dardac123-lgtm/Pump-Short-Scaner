@@ -1518,5 +1518,13 @@
     "price": 0.18656,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "PIEVERSEUSDT",
+    "detected_at": "2026-11-09T22:09:23.465934+00:00",
+    "change_percent": 42.97,
+    "price": 2.0543,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
