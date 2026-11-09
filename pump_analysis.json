@@ -1,56 +1,58 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-09T19:48:46.702428+00:00",
-  "minutes_since_previous_analysis": 48.9,
+  "updated_at_utc": "2026-11-09T20:37:23.429146+00:00",
+  "minutes_since_previous_analysis": 48.6,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
-      "symbol": "PIEVERSEUSDT",
-      "change_24h_percent": 46.85,
-      "ticker_price": 2.1827,
-      "observed_at_utc": "2026-11-09T19:48:46.702428+00:00",
-      "state": "POMPA_TRWA",
+      "symbol": "INITUSDT",
+      "change_24h_percent": 54.92,
+      "ticker_price": 0.18659,
+      "observed_at_utc": "2026-11-09T20:37:23.429146+00:00",
+      "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [],
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
       "near_30m_high": true,
-      "change_5m_percent": 0.35,
-      "change_15m_percent": 0.87,
-      "taker_buy_last_5m_percent": 49.58,
-      "taker_buy_prev_5m_percent": 38.65,
-      "rsi_14_1m": 54.3,
-      "from_30m_high_percent": -1.88,
-      "last_closed_candle_utc": "2026-11-09T19:46:00+00:00",
+      "change_5m_percent": 0.5,
+      "change_15m_percent": -1.77,
+      "taker_buy_last_5m_percent": 54.73,
+      "taker_buy_prev_5m_percent": 75.97,
+      "rsi_14_1m": 44.6,
+      "from_30m_high_percent": -4.17,
+      "last_closed_candle_utc": "2026-11-09T20:35:00+00:00",
       "oi": {
-        "value_contracts": 171919840.0,
+        "value_contracts": 50233782.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.01
+        "change_1h_percent": 0.11
       },
       "data_status": "OK"
     },
     {
-      "symbol": "INITUSDT",
-      "change_24h_percent": 32.82,
-      "ticker_price": 0.16108,
-      "observed_at_utc": "2026-11-09T19:48:46.702428+00:00",
+      "symbol": "PIEVERSEUSDT",
+      "change_24h_percent": 38.99,
+      "ticker_price": 2.0503,
+      "observed_at_utc": "2026-11-09T20:37:23.429146+00:00",
       "state": "POMPA_SLABNIE",
       "continuation_risk": "OBECNE",
       "signals": [
         "malejaca_przewaga_agresywnych_zakupow"
       ],
       "near_30m_high": true,
-      "change_5m_percent": 2.3,
-      "change_15m_percent": 3.83,
-      "taker_buy_last_5m_percent": 25.5,
-      "taker_buy_prev_5m_percent": 70.76,
-      "rsi_14_1m": 68.0,
-      "from_30m_high_percent": -1.7,
-      "last_closed_candle_utc": "2026-11-09T19:46:00+00:00",
+      "change_5m_percent": 2.28,
+      "change_15m_percent": 4.04,
+      "taker_buy_last_5m_percent": 46.55,
+      "taker_buy_prev_5m_percent": 57.1,
+      "rsi_14_1m": 52.4,
+      "from_30m_high_percent": -2.95,
+      "last_closed_candle_utc": "2026-11-09T20:35:00+00:00",
       "oi": {
-        "value_contracts": 50180194.0,
+        "value_contracts": 172154600.0,
         "change_15m_percent": null,
-        "change_1h_percent": null
+        "change_1h_percent": 0.14
       },
       "data_status": "OK"
     }

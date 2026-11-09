@@ -1510,5 +1510,13 @@
     "price": 2.2171,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "INITUSDT",
+    "detected_at": "2026-11-09T20:37:22.717948+00:00",
+    "change_percent": 54.9,
+    "price": 0.18656,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
