@@ -1,58 +1,9 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-09T13:31:18.728808+00:00",
-  "minutes_since_previous_analysis": 73.6,
+  "updated_at_utc": "2026-11-09T14:29:54.470687+00:00",
+  "minutes_since_previous_analysis": 58.6,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
-  "coins": [
-    {
-      "symbol": "ONUSDT",
-      "change_24h_percent": 65.05,
-      "ticker_price": 0.2697,
-      "observed_at_utc": "2026-11-09T13:31:18.728808+00:00",
-      "state": "POMPA_TRWA",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [],
-      "near_30m_high": false,
-      "change_5m_percent": 2.1,
-      "change_15m_percent": -1.34,
-      "taker_buy_last_5m_percent": 51.65,
-      "taker_buy_prev_5m_percent": 52.08,
-      "rsi_14_1m": 46.9,
-      "from_30m_high_percent": -11.12,
-      "last_closed_candle_utc": "2026-11-09T13:29:00+00:00",
-      "oi": {
-        "value_contracts": 27188220.0,
-        "change_15m_percent": null,
-        "change_1h_percent": 0.02
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "TSTUSDT",
-      "change_24h_percent": 31.22,
-      "ticker_price": 0.01534,
-      "observed_at_utc": "2026-11-09T13:31:18.728808+00:00",
-      "state": "POMPA_SLABNIE",
-      "continuation_risk": "PODWYZSZONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
-      "near_30m_high": true,
-      "change_5m_percent": 6.4,
-      "change_15m_percent": 13.32,
-      "taker_buy_last_5m_percent": 64.56,
-      "taker_buy_prev_5m_percent": 89.62,
-      "rsi_14_1m": 83.4,
-      "from_30m_high_percent": -1.9,
-      "last_closed_candle_utc": "2026-11-09T13:29:00+00:00",
-      "oi": {
-        "value_contracts": 111868440.0,
-        "change_15m_percent": null,
-        "change_1h_percent": null
-      },
-      "data_status": "OK"
-    }
-  ]
+  "coins": []
 }
