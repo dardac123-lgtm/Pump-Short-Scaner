@@ -1,54 +1,31 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-10T12:40:07.859395+00:00",
-  "minutes_since_previous_analysis": 47.3,
+  "updated_at_utc": "2026-11-10T13:46:12.715248+00:00",
+  "minutes_since_previous_analysis": 66.1,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "INITUSDT",
-      "change_24h_percent": 60.78,
-      "ticker_price": 0.1956,
-      "observed_at_utc": "2026-11-10T12:40:07.859395+00:00",
+      "change_24h_percent": 80.72,
+      "ticker_price": 0.22631,
+      "observed_at_utc": "2026-11-10T13:46:12.715248+00:00",
       "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
       "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": 0.0,
-      "change_15m_percent": 0.27,
-      "taker_buy_last_5m_percent": 60.35,
-      "taker_buy_prev_5m_percent": 47.44,
-      "rsi_14_1m": 53.3,
-      "from_30m_high_percent": -2.41,
-      "last_closed_candle_utc": "2026-11-10T12:38:00+00:00",
+      "change_5m_percent": 1.02,
+      "change_15m_percent": -0.04,
+      "taker_buy_last_5m_percent": 49.81,
+      "taker_buy_prev_5m_percent": 50.99,
+      "rsi_14_1m": 56.7,
+      "from_30m_high_percent": -1.12,
+      "last_closed_candle_utc": "2026-11-10T13:44:00+00:00",
       "oi": {
-        "value_contracts": 50502742.0,
+        "value_contracts": 50518602.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.19
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "ARIAUSDT",
-      "change_24h_percent": 31.0,
-      "ticker_price": 0.21033,
-      "observed_at_utc": "2026-11-10T12:40:07.859395+00:00",
-      "state": "POMPA_TRWA",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [],
-      "near_30m_high": true,
-      "change_5m_percent": -0.96,
-      "change_15m_percent": -0.11,
-      "taker_buy_last_5m_percent": 57.44,
-      "taker_buy_prev_5m_percent": 46.52,
-      "rsi_14_1m": 53.1,
-      "from_30m_high_percent": -1.68,
-      "last_closed_candle_utc": "2026-11-10T12:38:00+00:00",
-      "oi": {
-        "value_contracts": 447422820.0,
-        "change_15m_percent": null,
-        "change_1h_percent": null
+        "change_1h_percent": 0.03
       },
       "data_status": "OK"
     }
