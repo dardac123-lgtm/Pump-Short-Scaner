@@ -1,31 +1,31 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-10T16:04:41.842701+00:00",
-  "minutes_since_previous_analysis": 46.9,
+  "updated_at_utc": "2026-11-10T17:33:21.272593+00:00",
+  "minutes_since_previous_analysis": 88.7,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "INITUSDT",
-      "change_24h_percent": 91.9,
-      "ticker_price": 0.24924,
-      "observed_at_utc": "2026-11-10T16:04:41.842701+00:00",
+      "change_24h_percent": 80.86,
+      "ticker_price": 0.24987,
+      "observed_at_utc": "2026-11-10T17:33:21.272593+00:00",
       "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
       "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": -0.94,
-      "change_15m_percent": -2.07,
-      "taker_buy_last_5m_percent": 61.74,
-      "taker_buy_prev_5m_percent": 46.24,
-      "rsi_14_1m": 39.7,
-      "from_30m_high_percent": -2.8,
-      "last_closed_candle_utc": "2026-11-10T16:02:00+00:00",
+      "change_5m_percent": -1.86,
+      "change_15m_percent": -3.06,
+      "taker_buy_last_5m_percent": 53.34,
+      "taker_buy_prev_5m_percent": 52.36,
+      "rsi_14_1m": 34.2,
+      "from_30m_high_percent": -4.27,
+      "last_closed_candle_utc": "2026-11-10T17:31:00+00:00",
       "oi": {
-        "value_contracts": 49517498.0,
+        "value_contracts": 50729982.0,
         "change_15m_percent": null,
-        "change_1h_percent": -1.65
+        "change_1h_percent": null
       },
       "data_status": "OK"
     }
