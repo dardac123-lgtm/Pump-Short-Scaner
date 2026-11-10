@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-10T23:03:20.395201+00:00",
-  "minutes_since_previous_analysis": 37.6,
+  "updated_at_utc": "2026-11-10T23:34:31.267497+00:00",
+  "minutes_since_previous_analysis": 31.2,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
