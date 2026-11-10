@@ -1550,5 +1550,21 @@
     "price": 0.17574,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "UPUSDT",
+    "detected_at": "2026-11-10T07:43:32.019785+00:00",
+    "change_percent": 46.3,
+    "price": 0.1542,
+    "threshold": 40.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "UNITASUSDT",
+    "detected_at": "2026-11-10T07:43:32.019785+00:00",
+    "change_percent": 45.6,
+    "price": 0.1539,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
