@@ -1,31 +1,56 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-11T15:12:25.448082+00:00",
-  "minutes_since_previous_analysis": 49.3,
+  "updated_at_utc": "2026-11-11T15:56:48.792364+00:00",
+  "minutes_since_previous_analysis": 44.4,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "AGTUSDT",
-      "change_24h_percent": 144.97,
-      "ticker_price": 0.06014,
-      "observed_at_utc": "2026-11-11T15:12:25.448082+00:00",
+      "change_24h_percent": 198.06,
+      "ticker_price": 0.07213,
+      "observed_at_utc": "2026-11-11T15:56:48.792364+00:00",
       "state": "POMPA_TRWA",
-      "continuation_risk": "NIEUSTALONE",
+      "continuation_risk": "OBECNE",
       "signals": [],
-      "near_30m_high": false,
-      "change_5m_percent": 0.74,
-      "change_15m_percent": -3.02,
-      "taker_buy_last_5m_percent": 52.6,
-      "taker_buy_prev_5m_percent": 51.36,
-      "rsi_14_1m": 41.1,
-      "from_30m_high_percent": -6.58,
-      "last_closed_candle_utc": "2026-11-11T15:10:00+00:00",
+      "near_30m_high": true,
+      "change_5m_percent": 1.52,
+      "change_15m_percent": 7.13,
+      "taker_buy_last_5m_percent": 48.8,
+      "taker_buy_prev_5m_percent": 41.78,
+      "rsi_14_1m": 63.0,
+      "from_30m_high_percent": -4.21,
+      "last_closed_candle_utc": "2026-11-11T15:54:00+00:00",
       "oi": {
-        "value_contracts": 8758044800.0,
+        "value_contracts": 8755546400.0,
         "change_15m_percent": null,
-        "change_1h_percent": -0.0
+        "change_1h_percent": -0.03
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "SNXXUSDT",
+      "change_24h_percent": 32.49,
+      "ticker_price": 4.575,
+      "observed_at_utc": "2026-11-11T15:56:48.792364+00:00",
+      "state": "POMPA_SLABNIE",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
+      "near_30m_high": true,
+      "change_5m_percent": 0.69,
+      "change_15m_percent": 2.55,
+      "taker_buy_last_5m_percent": 28.18,
+      "taker_buy_prev_5m_percent": 58.88,
+      "rsi_14_1m": 77.0,
+      "from_30m_high_percent": -0.15,
+      "last_closed_candle_utc": "2026-11-11T15:54:00+00:00",
+      "oi": {
+        "value_contracts": 14425.4,
+        "change_15m_percent": null,
+        "change_1h_percent": null
       },
       "data_status": "OK"
     }
