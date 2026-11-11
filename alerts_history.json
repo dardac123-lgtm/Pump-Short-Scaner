@@ -1590,5 +1590,13 @@
     "price": 0.28627,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "SNXXUSDT",
+    "detected_at": "2026-11-11T17:37:28.855281+00:00",
+    "change_percent": 40.33,
+    "price": 4.607,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
