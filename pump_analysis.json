@@ -1,9 +1,35 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-11T00:06:45.022418+00:00",
-  "minutes_since_previous_analysis": 32.2,
+  "updated_at_utc": "2026-11-11T01:02:00.751701+00:00",
+  "minutes_since_previous_analysis": 55.3,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
-  "coins": []
+  "coins": [
+    {
+      "symbol": "ONEUSDT",
+      "change_24h_percent": 31.7,
+      "ticker_price": 0.0018779,
+      "observed_at_utc": "2026-11-11T01:02:00.751701+00:00",
+      "state": "POMPA_SLABNIE",
+      "continuation_risk": "OBECNE",
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
+      "near_30m_high": true,
+      "change_5m_percent": 3.58,
+      "change_15m_percent": 3.52,
+      "taker_buy_last_5m_percent": 22.0,
+      "taker_buy_prev_5m_percent": 56.68,
+      "rsi_14_1m": 72.3,
+      "from_30m_high_percent": -1.53,
+      "last_closed_candle_utc": "2026-11-11T01:00:00+00:00",
+      "oi": {
+        "value_contracts": 16129267800.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
+      },
+      "data_status": "OK"
+    }
+  ]
 }
