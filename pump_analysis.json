@@ -1,59 +1,31 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-11T14:23:07.924200+00:00",
-  "minutes_since_previous_analysis": 71.0,
+  "updated_at_utc": "2026-11-11T15:12:25.448082+00:00",
+  "minutes_since_previous_analysis": 49.3,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "AGTUSDT",
-      "change_24h_percent": 103.12,
-      "ticker_price": 0.05005,
-      "observed_at_utc": "2026-11-11T14:23:07.924200+00:00",
-      "state": "MOZLIWY_PULLBACK",
-      "continuation_risk": "OBECNE",
-      "signals": [
-        "hamowanie_5m",
-        "dlugi_gorny_knot"
-      ],
-      "near_30m_high": true,
-      "change_5m_percent": 2.2,
-      "change_15m_percent": 24.44,
-      "taker_buy_last_5m_percent": 45.01,
-      "taker_buy_prev_5m_percent": 48.05,
-      "rsi_14_1m": 84.5,
-      "from_30m_high_percent": -3.21,
-      "last_closed_candle_utc": "2026-11-11T14:21:00+00:00",
-      "oi": {
-        "value_contracts": 8758204200.0,
-        "change_15m_percent": null,
-        "change_1h_percent": 0.05
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "ARIAUSDT",
-      "change_24h_percent": 34.43,
-      "ticker_price": 0.27259,
-      "observed_at_utc": "2026-11-11T14:23:07.924200+00:00",
-      "state": "POMPA_SLABNIE",
+      "change_24h_percent": 144.97,
+      "ticker_price": 0.06014,
+      "observed_at_utc": "2026-11-11T15:12:25.448082+00:00",
+      "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
-      "near_30m_high": true,
-      "change_5m_percent": 4.43,
-      "change_15m_percent": 2.62,
-      "taker_buy_last_5m_percent": 36.99,
-      "taker_buy_prev_5m_percent": 48.59,
-      "rsi_14_1m": 72.1,
-      "from_30m_high_percent": -4.17,
-      "last_closed_candle_utc": "2026-11-11T14:21:00+00:00",
+      "signals": [],
+      "near_30m_high": false,
+      "change_5m_percent": 0.74,
+      "change_15m_percent": -3.02,
+      "taker_buy_last_5m_percent": 52.6,
+      "taker_buy_prev_5m_percent": 51.36,
+      "rsi_14_1m": 41.1,
+      "from_30m_high_percent": -6.58,
+      "last_closed_candle_utc": "2026-11-11T15:10:00+00:00",
       "oi": {
-        "value_contracts": 545011000.0,
+        "value_contracts": 8758044800.0,
         "change_15m_percent": null,
-        "change_1h_percent": -0.04
+        "change_1h_percent": -0.0
       },
       "data_status": "OK"
     }
