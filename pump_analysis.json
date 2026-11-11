@@ -1,31 +1,31 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-11T01:57:23.595067+00:00",
-  "minutes_since_previous_analysis": 55.4,
+  "updated_at_utc": "2026-11-11T02:38:50.819401+00:00",
+  "minutes_since_previous_analysis": 41.5,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "ONEUSDT",
-      "change_24h_percent": 33.1,
-      "ticker_price": 0.0018885,
-      "observed_at_utc": "2026-11-11T01:57:23.595067+00:00",
+      "change_24h_percent": 33.66,
+      "ticker_price": 0.0018876,
+      "observed_at_utc": "2026-11-11T02:38:50.819401+00:00",
       "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
       "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": 1.01,
-      "change_15m_percent": -0.57,
-      "taker_buy_last_5m_percent": 56.98,
-      "taker_buy_prev_5m_percent": 55.56,
-      "rsi_14_1m": 46.8,
-      "from_30m_high_percent": -2.51,
-      "last_closed_candle_utc": "2026-11-11T01:55:00+00:00",
+      "change_5m_percent": -0.17,
+      "change_15m_percent": -0.76,
+      "taker_buy_last_5m_percent": 66.42,
+      "taker_buy_prev_5m_percent": 43.75,
+      "rsi_14_1m": 29.3,
+      "from_30m_high_percent": -2.98,
+      "last_closed_candle_utc": "2026-11-11T02:36:00+00:00",
       "oi": {
-        "value_contracts": 16157058200.0,
+        "value_contracts": 16149734200.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.17
+        "change_1h_percent": -0.05
       },
       "data_status": "OK"
     }
