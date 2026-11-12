@@ -1,33 +1,31 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-12T02:17:47.286416+00:00",
-  "minutes_since_previous_analysis": 64.6,
+  "updated_at_utc": "2026-11-12T03:05:58.030497+00:00",
+  "minutes_since_previous_analysis": 48.2,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "AGTUSDT",
-      "change_24h_percent": 199.36,
-      "ticker_price": 0.07469,
-      "observed_at_utc": "2026-11-12T02:17:47.286416+00:00",
-      "state": "POMPA_SLABNIE",
+      "change_24h_percent": 202.17,
+      "ticker_price": 0.07533,
+      "observed_at_utc": "2026-11-12T03:05:58.030497+00:00",
+      "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
+      "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": -0.51,
-      "change_15m_percent": 0.19,
-      "taker_buy_last_5m_percent": 50.53,
-      "taker_buy_prev_5m_percent": 63.14,
-      "rsi_14_1m": 45.0,
-      "from_30m_high_percent": -1.13,
-      "last_closed_candle_utc": "2026-11-12T02:15:00+00:00",
+      "change_5m_percent": 0.98,
+      "change_15m_percent": 1.48,
+      "taker_buy_last_5m_percent": 50.73,
+      "taker_buy_prev_5m_percent": 49.32,
+      "rsi_14_1m": 83.9,
+      "from_30m_high_percent": -0.37,
+      "last_closed_candle_utc": "2026-11-12T03:03:00+00:00",
       "oi": {
-        "value_contracts": 8757308200.0,
+        "value_contracts": 8757237600.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.0
+        "change_1h_percent": -0.0
       },
       "data_status": "OK"
     }
