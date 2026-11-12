@@ -1598,5 +1598,13 @@
     "price": 4.607,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "BARDUSDT",
+    "detected_at": "2026-11-12T17:21:57.807676+00:00",
+    "change_percent": 45.08,
+    "price": 0.1239,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
