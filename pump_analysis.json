@@ -1,31 +1,31 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-12T18:57:21.263891+00:00",
-  "minutes_since_previous_analysis": 48.5,
+  "updated_at_utc": "2026-11-12T19:43:35.238327+00:00",
+  "minutes_since_previous_analysis": 46.2,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "BARDUSDT",
-      "change_24h_percent": 57.55,
-      "ticker_price": 0.1314,
-      "observed_at_utc": "2026-11-12T18:57:21.263891+00:00",
+      "change_24h_percent": 53.56,
+      "ticker_price": 0.1273,
+      "observed_at_utc": "2026-11-12T19:43:35.238327+00:00",
       "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
       "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": 0.0,
-      "change_15m_percent": -2.59,
-      "taker_buy_last_5m_percent": 84.41,
-      "taker_buy_prev_5m_percent": 87.03,
-      "rsi_14_1m": 38.6,
-      "from_30m_high_percent": -4.08,
-      "last_closed_candle_utc": "2026-11-12T18:55:00+00:00",
+      "change_5m_percent": 1.11,
+      "change_15m_percent": 1.11,
+      "taker_buy_last_5m_percent": 48.94,
+      "taker_buy_prev_5m_percent": 46.93,
+      "rsi_14_1m": 52.7,
+      "from_30m_high_percent": -4.44,
+      "last_closed_candle_utc": "2026-11-12T19:41:00+00:00",
       "oi": {
-        "value_contracts": 113450114.0,
+        "value_contracts": 113080780.0,
         "change_15m_percent": null,
-        "change_1h_percent": -0.21
+        "change_1h_percent": -0.33
       },
       "data_status": "OK"
     }
