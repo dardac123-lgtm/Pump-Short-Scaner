@@ -1,31 +1,54 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-13T05:54:27.807102+00:00",
-  "minutes_since_previous_analysis": 53.7,
+  "updated_at_utc": "2026-11-13T06:48:02.261054+00:00",
+  "minutes_since_previous_analysis": 53.6,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
+      "symbol": "AKEUSDT",
+      "change_24h_percent": 71.2,
+      "ticker_price": 0.004208,
+      "observed_at_utc": "2026-11-13T06:48:02.261054+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "PODWYZSZONE",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": 11.62,
+      "change_15m_percent": 6.39,
+      "taker_buy_last_5m_percent": 41.11,
+      "taker_buy_prev_5m_percent": 24.77,
+      "rsi_14_1m": 59.8,
+      "from_30m_high_percent": -4.95,
+      "last_closed_candle_utc": "2026-11-13T06:46:00+00:00",
+      "oi": {
+        "value_contracts": 5696922000.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
+      },
+      "data_status": "OK"
+    },
+    {
       "symbol": "BARDUSDT",
-      "change_24h_percent": 51.55,
-      "ticker_price": 0.1273,
-      "observed_at_utc": "2026-11-13T05:54:27.807102+00:00",
+      "change_24h_percent": 67.86,
+      "ticker_price": 0.1363,
+      "observed_at_utc": "2026-11-13T06:48:02.261054+00:00",
       "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
       "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": 0.47,
-      "change_15m_percent": -3.77,
-      "taker_buy_last_5m_percent": 86.7,
-      "taker_buy_prev_5m_percent": 93.91,
-      "rsi_14_1m": 22.5,
-      "from_30m_high_percent": -4.84,
-      "last_closed_candle_utc": "2026-11-13T05:52:00+00:00",
+      "change_5m_percent": 0.15,
+      "change_15m_percent": 2.33,
+      "taker_buy_last_5m_percent": 45.82,
+      "taker_buy_prev_5m_percent": 47.52,
+      "rsi_14_1m": 66.0,
+      "from_30m_high_percent": -1.05,
+      "last_closed_candle_utc": "2026-11-13T06:46:00+00:00",
       "oi": {
-        "value_contracts": 111035574.0,
+        "value_contracts": 110690414.0,
         "change_15m_percent": null,
-        "change_1h_percent": -0.03
+        "change_1h_percent": -0.31
       },
       "data_status": "OK"
     }
