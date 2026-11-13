@@ -1,102 +1,108 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-13T17:34:56.987725+00:00",
-  "minutes_since_previous_analysis": 49.7,
+  "updated_at_utc": "2026-11-13T18:22:09.362128+00:00",
+  "minutes_since_previous_analysis": 47.2,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "AKEUSDT",
-      "change_24h_percent": 369.31,
-      "ticker_price": 0.012507,
-      "observed_at_utc": "2026-11-13T17:34:56.987725+00:00",
-      "state": "POMPA_TRWA",
-      "continuation_risk": "OBECNE",
-      "signals": [],
-      "near_30m_high": true,
-      "change_5m_percent": 4.03,
-      "change_15m_percent": 3.11,
-      "taker_buy_last_5m_percent": 49.95,
-      "taker_buy_prev_5m_percent": 43.93,
-      "rsi_14_1m": 59.6,
-      "from_30m_high_percent": -3.78,
-      "last_closed_candle_utc": "2026-11-13T17:32:00+00:00",
+      "change_24h_percent": 342.41,
+      "ticker_price": 0.011578,
+      "observed_at_utc": "2026-11-13T18:22:09.362128+00:00",
+      "state": "POMPA_SLABNIE",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
+      "near_30m_high": false,
+      "change_5m_percent": 1.49,
+      "change_15m_percent": -2.5,
+      "taker_buy_last_5m_percent": 44.94,
+      "taker_buy_prev_5m_percent": 57.32,
+      "rsi_14_1m": 56.9,
+      "from_30m_high_percent": -9.36,
+      "last_closed_candle_utc": "2026-11-13T18:20:00+00:00",
       "oi": {
-        "value_contracts": 7144318000.0,
+        "value_contracts": 7172708000.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.36
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "SOPHUSDT",
-      "change_24h_percent": 52.89,
-      "ticker_price": 0.00196,
-      "observed_at_utc": "2026-11-13T17:34:56.987725+00:00",
-      "state": "POMPA_TRWA",
-      "continuation_risk": "OBECNE",
-      "signals": [],
-      "near_30m_high": true,
-      "change_5m_percent": 1.34,
-      "change_15m_percent": 5.03,
-      "taker_buy_last_5m_percent": 60.26,
-      "taker_buy_prev_5m_percent": 58.26,
-      "rsi_14_1m": 72.6,
-      "from_30m_high_percent": -0.76,
-      "last_closed_candle_utc": "2026-11-13T17:32:00+00:00",
-      "oi": {
-        "value_contracts": 2083808200.0,
-        "change_15m_percent": null,
-        "change_1h_percent": -0.5
+        "change_1h_percent": 0.4
       },
       "data_status": "OK"
     },
     {
       "symbol": "SHELLUSDT",
-      "change_24h_percent": 38.71,
-      "ticker_price": 0.02684,
-      "observed_at_utc": "2026-11-13T17:34:56.987725+00:00",
+      "change_24h_percent": 65.4,
+      "ticker_price": 0.03189,
+      "observed_at_utc": "2026-11-13T18:22:09.362128+00:00",
+      "state": "POMPA_SLABNIE",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [
+        "hamowanie_5m"
+      ],
+      "near_30m_high": true,
+      "change_5m_percent": -2.16,
+      "change_15m_percent": 0.67,
+      "taker_buy_last_5m_percent": 46.79,
+      "taker_buy_prev_5m_percent": 51.08,
+      "rsi_14_1m": 50.7,
+      "from_30m_high_percent": -3.32,
+      "last_closed_candle_utc": "2026-11-13T18:20:00+00:00",
+      "oi": {
+        "value_contracts": 3757440.0,
+        "change_15m_percent": null,
+        "change_1h_percent": 2.49
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "SOPHUSDT",
+      "change_24h_percent": 43.84,
+      "ticker_price": 0.001834,
+      "observed_at_utc": "2026-11-13T18:22:09.362128+00:00",
       "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
       "signals": [
         "malejaca_przewaga_agresywnych_zakupow"
       ],
       "near_30m_high": true,
-      "change_5m_percent": 0.19,
-      "change_15m_percent": -1.03,
-      "taker_buy_last_5m_percent": 48.44,
-      "taker_buy_prev_5m_percent": 60.8,
-      "rsi_14_1m": 46.5,
-      "from_30m_high_percent": -2.72,
-      "last_closed_candle_utc": "2026-11-13T17:32:00+00:00",
+      "change_5m_percent": -0.87,
+      "change_15m_percent": 0.22,
+      "taker_buy_last_5m_percent": 41.04,
+      "taker_buy_prev_5m_percent": 76.81,
+      "rsi_14_1m": 55.3,
+      "from_30m_high_percent": -2.03,
+      "last_closed_candle_utc": "2026-11-13T18:20:00+00:00",
       "oi": {
-        "value_contracts": 3666200.0,
+        "value_contracts": 2076134800.0,
         "change_15m_percent": null,
-        "change_1h_percent": null
+        "change_1h_percent": -0.37
       },
       "data_status": "OK"
     },
     {
-      "symbol": "ARIAUSDT",
-      "change_24h_percent": 33.31,
-      "ticker_price": 0.21837,
-      "observed_at_utc": "2026-11-13T17:34:56.987725+00:00",
-      "state": "POMPA_TRWA",
+      "symbol": "KIMCHIUSDT",
+      "change_24h_percent": 37.1,
+      "ticker_price": 0.002125,
+      "observed_at_utc": "2026-11-13T18:22:09.362128+00:00",
+      "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [],
-      "near_30m_high": true,
-      "change_5m_percent": 0.06,
-      "change_15m_percent": 1.27,
-      "taker_buy_last_5m_percent": 62.39,
-      "taker_buy_prev_5m_percent": 48.46,
-      "rsi_14_1m": 57.8,
-      "from_30m_high_percent": -2.85,
-      "last_closed_candle_utc": "2026-11-13T17:32:00+00:00",
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
+      "near_30m_high": false,
+      "change_5m_percent": 0.52,
+      "change_15m_percent": -2.34,
+      "taker_buy_last_5m_percent": 22.17,
+      "taker_buy_prev_5m_percent": 50.04,
+      "rsi_14_1m": 37.3,
+      "from_30m_high_percent": -5.42,
+      "last_closed_candle_utc": "2026-11-13T18:20:00+00:00",
       "oi": {
-        "value_contracts": 624130940.0,
+        "value_contracts": 525000.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.76
+        "change_1h_percent": null
       },
       "data_status": "OK"
     }
