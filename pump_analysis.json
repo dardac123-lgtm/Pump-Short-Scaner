@@ -1,58 +1,54 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-13T02:29:46.119874+00:00",
-  "minutes_since_previous_analysis": 40.4,
+  "updated_at_utc": "2026-11-13T03:16:46.351734+00:00",
+  "minutes_since_previous_analysis": 47.0,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "BARDUSDT",
-      "change_24h_percent": 68.82,
-      "ticker_price": 0.1386,
-      "observed_at_utc": "2026-11-13T02:29:46.119874+00:00",
-      "state": "POMPA_SLABNIE",
+      "change_24h_percent": 43.18,
+      "ticker_price": 0.1197,
+      "observed_at_utc": "2026-11-13T03:16:46.351734+00:00",
+      "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
+      "signals": [],
       "near_30m_high": false,
-      "change_5m_percent": -0.07,
-      "change_15m_percent": -2.82,
-      "taker_buy_last_5m_percent": 49.13,
-      "taker_buy_prev_5m_percent": 70.81,
-      "rsi_14_1m": 32.5,
-      "from_30m_high_percent": -7.08,
-      "last_closed_candle_utc": "2026-11-13T02:27:00+00:00",
+      "change_5m_percent": -1.22,
+      "change_15m_percent": -7.2,
+      "taker_buy_last_5m_percent": 63.45,
+      "taker_buy_prev_5m_percent": 49.12,
+      "rsi_14_1m": 16.2,
+      "from_30m_high_percent": -9.62,
+      "last_closed_candle_utc": "2026-11-13T03:14:00+00:00",
       "oi": {
-        "value_contracts": 111862852.0,
+        "value_contracts": 111594770.0,
         "change_15m_percent": null,
-        "change_1h_percent": -0.22
+        "change_1h_percent": -0.24
       },
       "data_status": "OK"
     },
     {
       "symbol": "PLAYUSDT",
-      "change_24h_percent": 34.17,
-      "ticker_price": 0.00856,
-      "observed_at_utc": "2026-11-13T02:29:46.119874+00:00",
-      "state": "POMPA_SLABNIE",
+      "change_24h_percent": 38.64,
+      "ticker_price": 0.00879,
+      "observed_at_utc": "2026-11-13T03:16:46.351734+00:00",
+      "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "hamowanie_5m"
-      ],
-      "near_30m_high": false,
-      "change_5m_percent": -6.75,
-      "change_15m_percent": -5.62,
-      "taker_buy_last_5m_percent": 64.77,
-      "taker_buy_prev_5m_percent": 44.33,
-      "rsi_14_1m": 26.9,
-      "from_30m_high_percent": -7.75,
-      "last_closed_candle_utc": "2026-11-13T02:27:00+00:00",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": 1.51,
+      "change_15m_percent": -1.24,
+      "taker_buy_last_5m_percent": 50.41,
+      "taker_buy_prev_5m_percent": 43.18,
+      "rsi_14_1m": 40.6,
+      "from_30m_high_percent": -4.17,
+      "last_closed_candle_utc": "2026-11-13T03:14:00+00:00",
       "oi": {
-        "value_contracts": 30388800.0,
+        "value_contracts": 31015600.0,
         "change_15m_percent": null,
-        "change_1h_percent": -0.79
+        "change_1h_percent": 2.06
       },
       "data_status": "OK"
     }
