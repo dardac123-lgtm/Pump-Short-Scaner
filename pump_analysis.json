@@ -1,54 +1,58 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-13T07:59:30.053821+00:00",
-  "minutes_since_previous_analysis": 71.5,
+  "updated_at_utc": "2026-11-13T08:50:16.021259+00:00",
+  "minutes_since_previous_analysis": 50.8,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
-      "symbol": "AKEUSDT",
-      "change_24h_percent": 85.98,
-      "ticker_price": 0.004564,
-      "observed_at_utc": "2026-11-13T07:59:30.053821+00:00",
-      "state": "POMPA_TRWA",
+      "symbol": "BARDUSDT",
+      "change_24h_percent": 61.45,
+      "ticker_price": 0.1382,
+      "observed_at_utc": "2026-11-13T08:50:16.021259+00:00",
+      "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [],
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
       "near_30m_high": true,
-      "change_5m_percent": 0.64,
-      "change_15m_percent": 2.0,
-      "taker_buy_last_5m_percent": 56.12,
-      "taker_buy_prev_5m_percent": 42.88,
-      "rsi_14_1m": 57.6,
-      "from_30m_high_percent": -3.29,
-      "last_closed_candle_utc": "2026-11-13T07:57:00+00:00",
+      "change_5m_percent": 0.22,
+      "change_15m_percent": 0.07,
+      "taker_buy_last_5m_percent": 54.95,
+      "taker_buy_prev_5m_percent": 65.24,
+      "rsi_14_1m": 48.8,
+      "from_30m_high_percent": -2.18,
+      "last_closed_candle_utc": "2026-11-13T08:48:00+00:00",
       "oi": {
-        "value_contracts": 5874750000.0,
+        "value_contracts": 110447678.0,
         "change_15m_percent": null,
-        "change_1h_percent": 3.12
+        "change_1h_percent": -0.09
       },
       "data_status": "OK"
     },
     {
-      "symbol": "BARDUSDT",
-      "change_24h_percent": 58.44,
-      "ticker_price": 0.1296,
-      "observed_at_utc": "2026-11-13T07:59:30.053821+00:00",
-      "state": "POMPA_TRWA",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [],
+      "symbol": "AKEUSDT",
+      "change_24h_percent": 51.43,
+      "ticker_price": 0.004932,
+      "observed_at_utc": "2026-11-13T08:50:16.021259+00:00",
+      "state": "POMPA_SLABNIE",
+      "continuation_risk": "OBECNE",
+      "signals": [
+        "hamowanie_5m"
+      ],
       "near_30m_high": true,
-      "change_5m_percent": -0.69,
-      "change_15m_percent": 0.08,
-      "taker_buy_last_5m_percent": 62.12,
-      "taker_buy_prev_5m_percent": 14.56,
-      "rsi_14_1m": 47.4,
-      "from_30m_high_percent": -1.6,
-      "last_closed_candle_utc": "2026-11-13T07:57:00+00:00",
+      "change_5m_percent": -1.08,
+      "change_15m_percent": 5.44,
+      "taker_buy_last_5m_percent": 66.7,
+      "taker_buy_prev_5m_percent": 39.17,
+      "rsi_14_1m": 68.4,
+      "from_30m_high_percent": -4.54,
+      "last_closed_candle_utc": "2026-11-13T08:48:00+00:00",
       "oi": {
-        "value_contracts": 110550244.0,
+        "value_contracts": 5933138000.0,
         "change_15m_percent": null,
-        "change_1h_percent": -0.13
+        "change_1h_percent": 0.99
       },
       "data_status": "OK"
     }
