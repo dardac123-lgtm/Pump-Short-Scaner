@@ -1726,5 +1726,13 @@
     "price": 0.002567,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "EVAAUSDT",
+    "detected_at": "2026-11-14T15:08:39.771020+00:00",
+    "change_percent": 67.22,
+    "price": 1.8147,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
