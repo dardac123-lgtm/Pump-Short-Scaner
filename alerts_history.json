@@ -1718,5 +1718,13 @@
     "price": 0.00237,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "SOPHUSDT",
+    "detected_at": "2026-11-14T13:04:54.101021+00:00",
+    "change_percent": 51.8,
+    "price": 0.002567,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
