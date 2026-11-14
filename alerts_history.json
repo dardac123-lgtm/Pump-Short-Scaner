@@ -1678,5 +1678,13 @@
     "price": 0.2018,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "KIMCHIUSDT",
+    "detected_at": "2026-11-14T01:59:04.491975+00:00",
+    "change_percent": 56.14,
+    "price": 0.002339,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
