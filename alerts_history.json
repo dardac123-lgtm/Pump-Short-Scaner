@@ -1702,5 +1702,13 @@
     "price": 0.1881,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "TACUSDT",
+    "detected_at": "2026-11-14T09:13:02.373641+00:00",
+    "change_percent": 43.09,
+    "price": 0.001295,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
