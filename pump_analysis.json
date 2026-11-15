@@ -1,33 +1,31 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-15T08:28:30.926682+00:00",
-  "minutes_since_previous_analysis": 47.9,
+  "updated_at_utc": "2026-11-15T09:13:12.676006+00:00",
+  "minutes_since_previous_analysis": 44.7,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "EVAAUSDT",
-      "change_24h_percent": 101.48,
-      "ticker_price": 2.2245,
-      "observed_at_utc": "2026-11-15T08:28:30.926682+00:00",
-      "state": "POMPA_SLABNIE",
-      "continuation_risk": "PODWYZSZONE",
-      "signals": [
-        "dlugi_gorny_knot"
-      ],
+      "change_24h_percent": 94.9,
+      "ticker_price": 2.1422,
+      "observed_at_utc": "2026-11-15T09:13:12.676006+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": 11.33,
-      "change_15m_percent": 16.51,
-      "taker_buy_last_5m_percent": 37.73,
-      "taker_buy_prev_5m_percent": 47.03,
-      "rsi_14_1m": 94.0,
-      "from_30m_high_percent": -2.14,
-      "last_closed_candle_utc": "2026-11-15T08:26:00+00:00",
+      "change_5m_percent": -0.11,
+      "change_15m_percent": -1.46,
+      "taker_buy_last_5m_percent": 49.76,
+      "taker_buy_prev_5m_percent": 45.64,
+      "rsi_14_1m": 41.6,
+      "from_30m_high_percent": -4.81,
+      "last_closed_candle_utc": "2026-11-15T09:11:00+00:00",
       "oi": {
-        "value_contracts": 52840100.0,
+        "value_contracts": 52881062.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.02
+        "change_1h_percent": 0.08
       },
       "data_status": "OK"
     }
