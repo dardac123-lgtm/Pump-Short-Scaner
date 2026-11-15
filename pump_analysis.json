@@ -1,56 +1,31 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-15T11:43:57.995867+00:00",
-  "minutes_since_previous_analysis": 35.2,
+  "updated_at_utc": "2026-11-15T12:19:43.181794+00:00",
+  "minutes_since_previous_analysis": 35.8,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "EVAAUSDT",
-      "change_24h_percent": 112.26,
-      "ticker_price": 2.3378,
-      "observed_at_utc": "2026-11-15T11:43:57.995867+00:00",
+      "change_24h_percent": 116.15,
+      "ticker_price": 2.4224,
+      "observed_at_utc": "2026-11-15T12:19:43.181794+00:00",
       "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
       "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": -0.05,
-      "change_15m_percent": 1.32,
-      "taker_buy_last_5m_percent": 93.98,
-      "taker_buy_prev_5m_percent": 40.77,
-      "rsi_14_1m": 51.9,
-      "from_30m_high_percent": -1.27,
-      "last_closed_candle_utc": "2026-11-15T11:41:00+00:00",
-      "oi": {
-        "value_contracts": 52922620.0,
-        "change_15m_percent": null,
-        "change_1h_percent": -0.01
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "INITUSDT",
-      "change_24h_percent": 38.1,
-      "ticker_price": 0.13742,
-      "observed_at_utc": "2026-11-15T11:43:57.995867+00:00",
-      "state": "POMPA_SLABNIE",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
-      "near_30m_high": true,
-      "change_5m_percent": 1.99,
-      "change_15m_percent": 1.1,
-      "taker_buy_last_5m_percent": 18.75,
-      "taker_buy_prev_5m_percent": 37.67,
+      "change_5m_percent": 2.74,
+      "change_15m_percent": 2.49,
+      "taker_buy_last_5m_percent": 27.69,
+      "taker_buy_prev_5m_percent": 35.83,
       "rsi_14_1m": 59.9,
-      "from_30m_high_percent": -1.23,
-      "last_closed_candle_utc": "2026-11-15T11:41:00+00:00",
+      "from_30m_high_percent": -1.16,
+      "last_closed_candle_utc": "2026-11-15T12:17:00+00:00",
       "oi": {
-        "value_contracts": 50745832.0,
+        "value_contracts": 52900960.0,
         "change_15m_percent": null,
-        "change_1h_percent": -1.17
+        "change_1h_percent": -0.11
       },
       "data_status": "OK"
     }
