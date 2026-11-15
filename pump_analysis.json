@@ -1,9 +1,33 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-15T00:27:36.272358+00:00",
-  "minutes_since_previous_analysis": 32.2,
+  "updated_at_utc": "2026-11-15T01:39:52.495453+00:00",
+  "minutes_since_previous_analysis": 72.3,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
-  "coins": []
+  "coins": [
+    {
+      "symbol": "SOPHUSDT",
+      "change_24h_percent": 37.62,
+      "ticker_price": 0.002389,
+      "observed_at_utc": "2026-11-15T01:39:52.495453+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [],
+      "near_30m_high": false,
+      "change_5m_percent": 0.25,
+      "change_15m_percent": -4.77,
+      "taker_buy_last_5m_percent": 77.54,
+      "taker_buy_prev_5m_percent": 69.2,
+      "rsi_14_1m": 29.2,
+      "from_30m_high_percent": -6.01,
+      "last_closed_candle_utc": "2026-11-15T01:37:00+00:00",
+      "oi": {
+        "value_contracts": 2213494200.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
+      },
+      "data_status": "OK"
+    }
+  ]
 }
