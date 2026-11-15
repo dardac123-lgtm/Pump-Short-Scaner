@@ -1,58 +1,56 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-15T17:40:16.897465+00:00",
-  "minutes_since_previous_analysis": 31.9,
+  "updated_at_utc": "2026-11-15T18:13:41.096961+00:00",
+  "minutes_since_previous_analysis": 33.4,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "EVAAUSDT",
-      "change_24h_percent": 33.78,
-      "ticker_price": 2.5656,
-      "observed_at_utc": "2026-11-15T17:40:16.897465+00:00",
+      "change_24h_percent": 44.88,
+      "ticker_price": 2.5883,
+      "observed_at_utc": "2026-11-15T18:13:41.096961+00:00",
       "state": "POMPA_SLABNIE",
       "continuation_risk": "NIEUSTALONE",
       "signals": [
         "malejaca_przewaga_agresywnych_zakupow"
       ],
       "near_30m_high": true,
-      "change_5m_percent": 0.3,
-      "change_15m_percent": 0.76,
-      "taker_buy_last_5m_percent": 79.81,
-      "taker_buy_prev_5m_percent": 96.98,
-      "rsi_14_1m": 58.9,
-      "from_30m_high_percent": -1.32,
-      "last_closed_candle_utc": "2026-11-15T17:38:00+00:00",
+      "change_5m_percent": -0.82,
+      "change_15m_percent": 0.08,
+      "taker_buy_last_5m_percent": 46.11,
+      "taker_buy_prev_5m_percent": 96.79,
+      "rsi_14_1m": 44.8,
+      "from_30m_high_percent": -1.45,
+      "last_closed_candle_utc": "2026-11-15T18:11:00+00:00",
       "oi": {
-        "value_contracts": 53002024.0,
+        "value_contracts": 53011844.0,
         "change_15m_percent": null,
-        "change_1h_percent": -0.02
+        "change_1h_percent": 0.07
       },
       "data_status": "OK"
     },
     {
       "symbol": "ARIAUSDT",
-      "change_24h_percent": 30.99,
-      "ticker_price": 0.26225,
-      "observed_at_utc": "2026-11-15T17:40:16.897465+00:00",
-      "state": "POMPA_SLABNIE",
+      "change_24h_percent": 34.3,
+      "ticker_price": 0.25633,
+      "observed_at_utc": "2026-11-15T18:13:41.096961+00:00",
+      "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
+      "signals": [],
       "near_30m_high": true,
-      "change_5m_percent": 0.98,
-      "change_15m_percent": 2.01,
-      "taker_buy_last_5m_percent": 38.49,
-      "taker_buy_prev_5m_percent": 50.62,
-      "rsi_14_1m": 72.2,
-      "from_30m_high_percent": -0.23,
-      "last_closed_candle_utc": "2026-11-15T17:38:00+00:00",
+      "change_5m_percent": -0.38,
+      "change_15m_percent": 0.42,
+      "taker_buy_last_5m_percent": 54.42,
+      "taker_buy_prev_5m_percent": 49.05,
+      "rsi_14_1m": 52.8,
+      "from_30m_high_percent": -2.42,
+      "last_closed_candle_utc": "2026-11-15T18:11:00+00:00",
       "oi": {
-        "value_contracts": 657062380.0,
+        "value_contracts": 657017860.0,
         "change_15m_percent": null,
-        "change_1h_percent": 0.73
+        "change_1h_percent": null
       },
       "data_status": "OK"
     }
