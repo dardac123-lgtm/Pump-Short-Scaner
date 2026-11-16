@@ -1766,5 +1766,13 @@
     "price": 0.01499,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "RAINUSDT",
+    "detected_at": "2026-11-16T10:04:03.740352+00:00",
+    "change_percent": 78.66,
+    "price": 0.00653,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
