@@ -1774,5 +1774,29 @@
     "price": 0.00653,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "BLESSUSDT",
+    "detected_at": "2026-11-16T20:17:59.765736+00:00",
+    "change_percent": 94.22,
+    "price": 0.017484,
+    "threshold": 40.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "SPACEUSDT",
+    "detected_at": "2026-11-16T20:17:59.765736+00:00",
+    "change_percent": 46.2,
+    "price": 0.004215,
+    "threshold": 40.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "HUMAUSDT",
+    "detected_at": "2026-11-16T20:17:59.765736+00:00",
+    "change_percent": 41.42,
+    "price": 0.009079,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
