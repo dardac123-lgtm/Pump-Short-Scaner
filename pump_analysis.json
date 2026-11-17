@@ -1,9 +1,35 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-17T11:26:01.643484+00:00",
-  "minutes_since_previous_analysis": 508.2,
+  "updated_at_utc": "2026-11-17T19:56:26.879985+00:00",
+  "minutes_since_previous_analysis": 510.4,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
-  "coins": []
+  "coins": [
+    {
+      "symbol": "BREVUSDT",
+      "change_24h_percent": 77.6,
+      "ticker_price": 0.09983,
+      "observed_at_utc": "2026-11-17T19:56:26.879985+00:00",
+      "state": "POMPA_SLABNIE",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [
+        "malejaca_przewaga_agresywnych_zakupow"
+      ],
+      "near_30m_high": true,
+      "change_5m_percent": 1.29,
+      "change_15m_percent": 2.55,
+      "taker_buy_last_5m_percent": 40.57,
+      "taker_buy_prev_5m_percent": 65.99,
+      "rsi_14_1m": 73.2,
+      "from_30m_high_percent": -1.98,
+      "last_closed_candle_utc": "2026-11-17T19:54:00+00:00",
+      "oi": {
+        "value_contracts": 308302520.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
+      },
+      "data_status": "OK"
+    }
+  ]
 }
