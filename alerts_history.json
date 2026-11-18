@@ -1806,5 +1806,21 @@
     "price": 0.09984,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "MMTUSDT",
+    "detected_at": "2026-11-18T09:40:29.149054+00:00",
+    "change_percent": 111.21,
+    "price": 0.2393,
+    "threshold": 40.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "PIPPINUSDT",
+    "detected_at": "2026-11-18T09:40:29.149054+00:00",
+    "change_percent": 47.77,
+    "price": 0.01627,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
