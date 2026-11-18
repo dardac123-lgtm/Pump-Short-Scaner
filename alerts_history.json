@@ -1822,5 +1822,21 @@
     "price": 0.01627,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "PIEVERSEUSDT",
+    "detected_at": "2026-11-18T18:22:38.525083+00:00",
+    "change_percent": 61.76,
+    "price": 3.3062,
+    "threshold": 40.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "ICNTUSDT",
+    "detected_at": "2026-11-18T18:22:38.525083+00:00",
+    "change_percent": 42.56,
+    "price": 0.3276,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
