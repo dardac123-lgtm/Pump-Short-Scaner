@@ -1838,5 +1838,29 @@
     "price": 0.3276,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "BITOUSDT",
+    "detected_at": "2026-11-19T07:49:23.869987+00:00",
+    "change_percent": 95.57,
+    "price": 16.79,
+    "threshold": 40.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "IRYSUSDT",
+    "detected_at": "2026-11-19T07:49:23.869987+00:00",
+    "change_percent": 50.51,
+    "price": 0.02369,
+    "threshold": 40.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "BTWUSDT",
+    "detected_at": "2026-11-19T07:49:23.869987+00:00",
+    "change_percent": 44.05,
+    "price": 0.6576,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
