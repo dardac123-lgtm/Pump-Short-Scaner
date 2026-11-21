@@ -1,9 +1,56 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-21T16:23:52.406990+00:00",
-  "minutes_since_previous_analysis": 458.0,
+  "updated_at_utc": "2026-11-21T21:43:43.645411+00:00",
+  "minutes_since_previous_analysis": 319.9,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
-  "coins": []
+  "coins": [
+    {
+      "symbol": "IDOLUSDT",
+      "change_24h_percent": 83.54,
+      "ticker_price": 0.043909,
+      "observed_at_utc": "2026-11-21T21:43:43.645411+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": 1.67,
+      "change_15m_percent": 1.1,
+      "taker_buy_last_5m_percent": 46.14,
+      "taker_buy_prev_5m_percent": 53.95,
+      "rsi_14_1m": 55.4,
+      "from_30m_high_percent": -1.75,
+      "last_closed_candle_utc": "2026-11-21T21:41:00+00:00",
+      "oi": {
+        "value_contracts": 10523600.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
+      },
+      "data_status": "OK"
+    },
+    {
+      "symbol": "SKYAIUSDT",
+      "change_24h_percent": 33.5,
+      "ticker_price": 0.03822,
+      "observed_at_utc": "2026-11-21T21:43:43.645411+00:00",
+      "state": "POMPA_TRWA",
+      "continuation_risk": "NIEUSTALONE",
+      "signals": [],
+      "near_30m_high": true,
+      "change_5m_percent": -0.1,
+      "change_15m_percent": -0.6,
+      "taker_buy_last_5m_percent": 49.17,
+      "taker_buy_prev_5m_percent": 50.73,
+      "rsi_14_1m": 37.9,
+      "from_30m_high_percent": -0.96,
+      "last_closed_candle_utc": "2026-11-21T21:41:00+00:00",
+      "oi": {
+        "value_contracts": 6651100.0,
+        "change_15m_percent": null,
+        "change_1h_percent": null
+      },
+      "data_status": "OK"
+    }
+  ]
 }

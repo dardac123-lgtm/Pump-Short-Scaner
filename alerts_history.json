@@ -1878,5 +1878,13 @@
     "price": 0.020431,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "IDOLUSDT",
+    "detected_at": "2026-11-21T21:43:42.961462+00:00",
+    "change_percent": 83.78,
+    "price": 0.043968,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
