@@ -1870,5 +1870,13 @@
     "price": 0.033,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "BLESSUSDT",
+    "detected_at": "2026-11-21T08:45:51.057542+00:00",
+    "change_percent": 69.23,
+    "price": 0.020431,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
