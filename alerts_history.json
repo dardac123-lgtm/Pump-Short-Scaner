@@ -1886,5 +1886,13 @@
     "price": 0.043968,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "SKYAIUSDT",
+    "detected_at": "2026-11-22T08:44:02.371001+00:00",
+    "change_percent": 45.86,
+    "price": 0.03947,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
