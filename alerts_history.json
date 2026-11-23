@@ -1902,5 +1902,21 @@
     "price": 0.017507,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "BULLAUSDT",
+    "detected_at": "2026-11-23T10:46:30.964137+00:00",
+    "change_percent": 54.11,
+    "price": 0.02606,
+    "threshold": 40.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "ARIAUSDT",
+    "detected_at": "2026-11-23T10:46:30.964137+00:00",
+    "change_percent": 44.96,
+    "price": 0.34348,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
