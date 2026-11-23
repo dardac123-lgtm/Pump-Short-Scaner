@@ -1918,5 +1918,29 @@
     "price": 0.34348,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "KIMCHIUSDT",
+    "detected_at": "2026-11-23T22:14:54.378028+00:00",
+    "change_percent": 98.11,
+    "price": 0.002411,
+    "threshold": 40.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "CYSUSDT",
+    "detected_at": "2026-11-23T22:14:54.378028+00:00",
+    "change_percent": 46.53,
+    "price": 0.05977,
+    "threshold": 40.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "NVDLUSDT",
+    "detected_at": "2026-11-23T22:14:54.378028+00:00",
+    "change_percent": 44.28,
+    "price": 16.684,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
