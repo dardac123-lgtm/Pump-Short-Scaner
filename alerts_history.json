@@ -1942,5 +1942,13 @@
     "price": 16.684,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "GUAUSDT",
+    "detected_at": "2026-11-25T01:29:54.071120+00:00",
+    "change_percent": 47.07,
+    "price": 0.03918,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
