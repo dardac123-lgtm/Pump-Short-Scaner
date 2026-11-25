@@ -1958,5 +1958,21 @@
     "price": 0.006483,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "MANTRAUSDT",
+    "detected_at": "2026-11-25T19:56:00.390326+00:00",
+    "change_percent": 96.61,
+    "price": 0.003301,
+    "threshold": 40.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "SSVUSDT",
+    "detected_at": "2026-11-25T19:56:00.390326+00:00",
+    "change_percent": 45.76,
+    "price": 2.249,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
