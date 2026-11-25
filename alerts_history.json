@@ -1950,5 +1950,13 @@
     "price": 0.03918,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "BIGTIMEUSDT",
+    "detected_at": "2026-11-25T10:12:26.958203+00:00",
+    "change_percent": 59.6,
+    "price": 0.006483,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
