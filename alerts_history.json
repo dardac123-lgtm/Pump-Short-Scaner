@@ -1974,5 +1974,37 @@
     "price": 2.249,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "MMTUSDT",
+    "detected_at": "2026-11-26T02:33:05.168305+00:00",
+    "change_percent": 45.84,
+    "price": 0.3229,
+    "threshold": 40.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "BULLAUSDT",
+    "detected_at": "2026-11-26T02:33:05.168305+00:00",
+    "change_percent": 41.65,
+    "price": 0.03714,
+    "threshold": 40.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "EVAAUSDT",
+    "detected_at": "2026-11-26T02:33:05.168305+00:00",
+    "change_percent": 41.59,
+    "price": 2.8044,
+    "threshold": 40.0,
+    "telegram_sent": true
+  },
+  {
+    "symbol": "MOVEUSDT",
+    "detected_at": "2026-11-26T02:33:05.168305+00:00",
+    "change_percent": 40.56,
+    "price": 0.006286,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
