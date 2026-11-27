@@ -2022,5 +2022,13 @@
     "price": 0.07976,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "PORTALUSDT",
+    "detected_at": "2026-11-27T11:32:45.046389+00:00",
+    "change_percent": 82.61,
+    "price": 0.0231,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
