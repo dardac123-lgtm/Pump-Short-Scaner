@@ -2038,5 +2038,13 @@
     "price": 0.06262,
     "threshold": 40.0,
     "telegram_sent": true
+  },
+  {
+    "symbol": "BTWUSDT",
+    "detected_at": "2026-11-28T10:52:03.609294+00:00",
+    "change_percent": 46.16,
+    "price": 1.4578,
+    "threshold": 40.0,
+    "telegram_sent": true
   }
 ]
