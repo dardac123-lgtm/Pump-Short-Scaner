@@ -1,79 +1,29 @@
 {
   "version": 1,
-  "updated_at_utc": "2026-11-27T20:13:29.309845+00:00",
-  "minutes_since_previous_analysis": 520.7,
+  "updated_at_utc": "2026-11-28T02:40:15.655391+00:00",
+  "minutes_since_previous_analysis": 386.8,
   "watch_threshold_24h_percent": 30.0,
   "alarm_threshold_24h_percent": 40.0,
   "note": "Wstepne wskazniki; brak niezawodnej czestotliwosci 1m, brak gwarancji kierunku.",
   "coins": [
     {
       "symbol": "PORTALUSDT",
-      "change_24h_percent": 208.62,
-      "ticker_price": 0.03833,
-      "observed_at_utc": "2026-11-27T20:13:29.309845+00:00",
-      "state": "POMPA_SLABNIE",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
-      "near_30m_high": true,
-      "change_5m_percent": 1.07,
-      "change_15m_percent": 2.84,
-      "taker_buy_last_5m_percent": 31.81,
-      "taker_buy_prev_5m_percent": 76.73,
-      "rsi_14_1m": 55.6,
-      "from_30m_high_percent": -2.95,
-      "last_closed_candle_utc": "2026-11-27T20:11:00+00:00",
-      "oi": {
-        "value_contracts": 899992038.0,
-        "change_15m_percent": null,
-        "change_1h_percent": null
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "BULLAUSDT",
-      "change_24h_percent": 92.97,
-      "ticker_price": 0.06262,
-      "observed_at_utc": "2026-11-27T20:13:29.309845+00:00",
+      "change_24h_percent": 209.73,
+      "ticker_price": 0.03884,
+      "observed_at_utc": "2026-11-28T02:40:15.655391+00:00",
       "state": "POMPA_TRWA",
       "continuation_risk": "NIEUSTALONE",
       "signals": [],
-      "near_30m_high": true,
-      "change_5m_percent": -0.05,
-      "change_15m_percent": 0.14,
-      "taker_buy_last_5m_percent": 46.23,
-      "taker_buy_prev_5m_percent": 46.1,
-      "rsi_14_1m": 56.3,
-      "from_30m_high_percent": -0.81,
-      "last_closed_candle_utc": "2026-11-27T20:11:00+00:00",
+      "near_30m_high": false,
+      "change_5m_percent": -0.7,
+      "change_15m_percent": -0.48,
+      "taker_buy_last_5m_percent": 60.41,
+      "taker_buy_prev_5m_percent": 54.51,
+      "rsi_14_1m": 49.5,
+      "from_30m_high_percent": -11.2,
+      "last_closed_candle_utc": "2026-11-28T02:38:00+00:00",
       "oi": {
-        "value_contracts": 270939200.0,
-        "change_15m_percent": null,
-        "change_1h_percent": null
-      },
-      "data_status": "OK"
-    },
-    {
-      "symbol": "THEUSDT",
-      "change_24h_percent": 30.88,
-      "ticker_price": 0.03378,
-      "observed_at_utc": "2026-11-27T20:13:29.309845+00:00",
-      "state": "POMPA_SLABNIE",
-      "continuation_risk": "NIEUSTALONE",
-      "signals": [
-        "malejaca_przewaga_agresywnych_zakupow"
-      ],
-      "near_30m_high": true,
-      "change_5m_percent": 0.15,
-      "change_15m_percent": 0.06,
-      "taker_buy_last_5m_percent": 23.23,
-      "taker_buy_prev_5m_percent": 53.73,
-      "rsi_14_1m": 49.1,
-      "from_30m_high_percent": -2.98,
-      "last_closed_candle_utc": "2026-11-27T20:11:00+00:00",
-      "oi": {
-        "value_contracts": 589722504.0,
+        "value_contracts": 897915726.0,
         "change_15m_percent": null,
         "change_1h_percent": null
       },
